@@ -32,7 +32,7 @@ public class HibernateConfigs {
     @Bean
     public LocalSessionFactoryBean getSessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setPackagesToScan(new String[]{"com.htweb.pojo"});
+        sessionFactory.setPackagesToScan(new String[]{"com.htweb.core.pojo"});
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;

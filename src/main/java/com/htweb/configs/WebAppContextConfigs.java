@@ -17,10 +17,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @ComponentScan(
         basePackages = {
-                "com.htweb.controllers",
-                "com.htweb.services",
-                "com.htweb.repositories",
-                "com.htweb.mappers"
+                "com.htweb.api.controllers",
+                "com.htweb.api.services",
+                "com.htweb.api.repositories",
+                "com.htweb.api.mappers",
+                "com.htweb.admin.controllers",
+                "com.htweb.admin.services",
+                "com.htweb.admin.repositories"
         }
 )
 @EnableWebMvc
