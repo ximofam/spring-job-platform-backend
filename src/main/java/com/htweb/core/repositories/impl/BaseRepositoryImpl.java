@@ -19,13 +19,13 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
         this.entityClass = entityClass;
     }
 
-    protected Session getSession() {
+    protected Session getCurrentSession() {
         return this.factory.getCurrentSession();
     }
 
     @Override
     public Optional<T> findById(ID id) {
-        Session s = this.getSession();
+        Session s = this.getCurrentSession();
 
         return Optional.ofNullable(
                 s.get(this.entityClass, id)
@@ -34,7 +34,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
 
     @Override
     public List<T> findAll() {
-        Session s = this.getSession();
+        Session s = this.getCurrentSession();
 
         return s.createQuery(String.format("FROM %s", this.entityClass.getName()), this.entityClass)
                 .getResultList();
@@ -42,13 +42,13 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
 
     @Override
     public T save(T entity) {
-        this.getSession().persist(entity);
+        this.getCurrentSession().persist(entity);
         return entity;
     }
 
     @Override
     public T update(T entity) {
-        return this.getSession().merge(entity);
+        return this.getCurrentSession().merge(entity);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
         T entity = this.findById(id)
                 .orElseThrow(() -> new RuntimeException("Entity not found"));
 
-        this.getSession().remove(entity);
+        this.getCurrentSession().remove(entity);
     }
 
     @Override
     public void delete(T entity) {
-        this.getSession().remove(entity);
+        this.getCurrentSession().remove(entity);
     }
 
 }

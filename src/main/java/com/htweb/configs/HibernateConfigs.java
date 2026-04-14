@@ -4,9 +4,11 @@
  */
 package com.htweb.configs;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -46,6 +48,16 @@ public class HibernateConfigs {
         dataSource.setUsername(env.getProperty("hibernate.connection.username"));
         dataSource.setPassword(env.getProperty("hibernate.connection.password"));
         return dataSource;
+    }
+
+    @Bean(initMethod = "migrate")
+    @DependsOn("dataSource")
+    public Flyway flyway() {
+        return Flyway.configure()
+                .dataSource(dataSource())
+                .locations("classpath:db/migration", "classpath:db/seed")
+                .baselineOnMigrate(true)
+                .load();
     }
 
     private Properties hibernateProperties() {
