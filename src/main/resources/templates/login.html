@@ -2,10 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Đăng nhập</title>
-    <th:block th:replace="base :: css"></th:block>
 </head>
 <body>
-<div th:replace="base :: header"></div>
 
 <section class="container">
     <form method="post" th:action="@{/login}">
@@ -23,6 +21,5 @@
     </form>
 </section>
 
-<div th:replace="base :: footer"></div>
 </body>
 </html>

@@ -19,8 +19,8 @@ public class V3__seed_users extends BaseJavaMigration {
         }
 
         List<SeedUser> users = List.of(
-                new SeedUser("admin", "test01@gmail.com", "admin123", "ADMIN"),
-                new SeedUser("ximofam", "test02@gmail.com", "123456", "CANDIDATE")
+                new SeedUser("ximofam", "ximofam@gmail.com", "admin123", "ADMIN"),
+                new SeedUser("huy", "huy@gmail.com", "123456", "CANDIDATE")
         );
 
         insertUsers(context, users);

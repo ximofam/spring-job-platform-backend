@@ -5,6 +5,10 @@ import org.springframework.http.HttpStatus;
 public class InternalServerException extends BaseHttpException {
     private static final String CODE = "INTERNAL_SERVER_ERROR";
 
+    protected InternalServerException(String code, String message) {
+        super(HttpStatus.INTERNAL_SERVER_ERROR, code, message);
+    }
+
     public InternalServerException(String message) {
         super(HttpStatus.INTERNAL_SERVER_ERROR, CODE, message);
     }

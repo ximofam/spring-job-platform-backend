@@ -1,11 +1,13 @@
 package com.htweb.api.exceptions;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.htweb.api.dtos.HttpErrorResponse;
 import com.htweb.api.exceptions.http.BaseHttpException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -46,6 +48,44 @@ public class GlobalExceptionHandlerController {
         });
 
         HttpErrorResponse res = new HttpErrorResponse("INVALID_DATA", "Invalid request data", errors);
+        return ResponseEntity.badRequest().body(res);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<HttpErrorResponse> handleInvalidJson(HttpMessageNotReadableException ex) {
+        Map<String, Object> errors = new HashMap<>();
+        Throwable cause = ex.getCause();
+
+        switch (cause) {
+            case com.fasterxml.jackson.databind.exc.InvalidFormatException ife -> {
+                String field = ife.getPath().stream()
+                        .map(JsonMappingException.Reference::getFieldName)
+                        .reduce((first, second) -> second)
+                        .orElse("unknown");
+
+                errors.put(field, "Invalid value format");
+
+            }
+            case com.fasterxml.jackson.databind.exc.MismatchedInputException mie -> {
+                String field = mie.getPath().stream()
+                        .map(JsonMappingException.Reference::getFieldName)
+                        .reduce((first, second) -> second)
+                        .orElse("unknown");
+
+                errors.put(field, "Missing or invalid field");
+            }
+            case com.fasterxml.jackson.core.JsonParseException jsonParseException ->
+                    errors.put("body", "Malformed JSON");
+            
+            case null, default -> errors.put("body", "Unreadable request body");
+        }
+
+        HttpErrorResponse res = new HttpErrorResponse(
+                "INVALID_DATA",
+                "Request body is invalid",
+                errors
+        );
+
         return ResponseEntity.badRequest().body(res);
     }
 }

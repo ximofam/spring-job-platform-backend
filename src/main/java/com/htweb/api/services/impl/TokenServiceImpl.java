@@ -5,10 +5,10 @@ import com.htweb.api.dtos.TokenDto;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import com.htweb.api.exceptions.http.UnauthorizedException;
-import com.htweb.api.exceptions.users.UserNotFoundException;
 import com.htweb.api.repositories.RefreshTokenRepository;
 import com.htweb.api.services.TokenService;
 import com.htweb.core.pojo.RefreshToken;
+import com.htweb.core.pojo.Role;
 import com.htweb.core.pojo.User;
 import com.htweb.core.repositories.UserAuthRepository;
 import com.nimbusds.jose.*;
@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +34,6 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Map;
 
 @Service("apiTokenService")
 @RequiredArgsConstructor
@@ -93,51 +90,14 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDto.AccessToken generateAccessToken(String subject, Map<String, Object> info) {
+    public TokenDto.AccessToken generateAccessToken(User user) {
         Date exp = new Date(System.currentTimeMillis() + accessTokenTtlMillis);
 
+        List<String> roles = user.getRoles().stream().map(Role::getName).toList();
 
         JWTClaimsSet.Builder claimsSetBd = new JWTClaimsSet.Builder()
-                .subject(subject)
-                .issueTime(new Date())
-                .expirationTime(exp);
-
-        for (Map.Entry<String, Object> entry : info.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            claimsSetBd.claim(key, value);
-        }
-
-        SignedJWT signedJWT = new SignedJWT(
-                new JWSHeader(JWSAlgorithm.HS256),
-                claimsSetBd.build()
-        );
-
-        try {
-            signedJWT.sign(signer);
-        } catch (JOSEException e) {
-            throw new InternalServerException(e.getMessage());
-        }
-
-        LocalDateTime ldt = exp.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-
-        return new TokenDto.AccessToken(signedJWT.serialize(), ldt);
-    }
-
-    @Override
-    public TokenDto.AccessToken generateAccessToken(Authentication authentication) {
-        Date exp = new Date(System.currentTimeMillis() + accessTokenTtlMillis);
-
-        List<String> authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
-
-        JWTClaimsSet.Builder claimsSetBd = new JWTClaimsSet.Builder()
-                .subject(authentication.getName())
-                .claim("authorities", authorities)
+                .subject(user.getUsername())
+                .claim("roles", roles)
                 .issueTime(new Date())
                 .expirationTime(exp);
 
@@ -158,26 +118,6 @@ public class TokenServiceImpl implements TokenService {
                 .toLocalDateTime();
 
         return new TokenDto.AccessToken(signedJWT.serialize(), ldt);
-    }
-
-    @Override
-    @Transactional
-    public TokenDto.RefreshToken generateRefreshToken(String username) {
-        User user = userAuthRepository.findUserByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-        String rawToken = generateRefreshTokenStr();
-        String tokenHash = hashRefreshTokenStr(rawToken);
-
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setTokenHash(tokenHash);
-        refreshToken.setUser(user);
-        refreshToken.setActive(true);
-        refreshToken.setExpiresAt(LocalDateTime.now().plusDays(refreshTokenTtlDays));
-
-        RefreshToken refreshTokenCreated = refreshTokenRepository.save(refreshToken);
-
-        return new TokenDto.RefreshToken(rawToken, refreshTokenCreated.getExpiresAt());
     }
 
     @Override
@@ -198,7 +138,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public RefreshToken verifyAndGetRefreshToken(String rawToken) {
         String tokenHash = hashRefreshTokenStr(rawToken);
         RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
@@ -216,7 +155,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @Transactional
     public void revokeRefreshToken(String rawToken) {
         String tokenHash = hashRefreshTokenStr(rawToken);
         if (!refreshTokenRepository.revokeTokenByTokenHash(tokenHash)) {

@@ -1,17 +1,11 @@
 package com.htweb.api.exceptions.users;
 
-import com.htweb.api.exceptions.http.BaseHttpException;
-import org.springframework.http.HttpStatus;
+import com.htweb.api.exceptions.http.NotFoundException;
 
-public class UserNotFoundException extends BaseHttpException {
+public class UserNotFoundException extends NotFoundException {
     private static final String CODE = "USER_NOT_FOUND";
 
     public UserNotFoundException(String username) {
-        super(
-                HttpStatus.NOT_FOUND,
-                CODE,
-                "Not found user with username: %s",
-                username
-        );
+        super(CODE, String.format("Not found user: %s", username));
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -37,7 +39,6 @@ import java.util.List;
 @EnableWebMvc
 @EnableTransactionManagement
 public class WebAppContextConfigs implements WebMvcConfigurer {
-//    private final LocalValidatorFactoryBean validator;
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -67,8 +68,13 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
         registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/scripts/");
     }
 
-//    @Override
-//    public Validator getValidator() {
-//        return validator;
-//    }
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        return new LocalValidatorFactoryBean();
+    }
+
+    @Override
+    public Validator getValidator() {
+        return validator();
+    }
 }

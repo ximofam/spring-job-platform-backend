@@ -1,7 +1,11 @@
 package com.htweb.api.services.impl;
 
 import com.htweb.api.dtos.TokenDto;
-import com.htweb.api.exceptions.http.UnauthorizedException;
+import com.htweb.api.dtos.UserDto;
+import com.htweb.api.exceptions.tokens.TokenInvalidException;
+import com.htweb.api.exceptions.users.IncorrectUsernameOrPasswordException;
+import com.htweb.api.exceptions.users.UserNotFoundException;
+import com.htweb.api.mappers.UserMapper;
 import com.htweb.api.services.AuthService;
 import com.htweb.api.services.TokenService;
 import com.htweb.core.pojo.RefreshToken;
@@ -9,39 +13,29 @@ import com.htweb.core.pojo.User;
 import com.htweb.core.repositories.UserAuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 @Service("apiAuthService")
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     @Qualifier("apiTokenService")
     private final TokenService tokenService;
-    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
     private final UserAuthRepository userAuthRepository;
+    private final UserMapper userMapper;
 
     @Override
-    @Transactional()
+    @Transactional
     public TokenDto.TokenResponse login(String username, String password) {
-        try {
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        User user = authenticate(username, password);
 
-            TokenDto.AccessToken accessToken = tokenService.generateAccessToken(authentication);
-            TokenDto.RefreshToken refreshToken = tokenService.generateRefreshToken(username);
+        TokenDto.AccessToken accessToken = tokenService.generateAccessToken(user);
+        TokenDto.RefreshToken refreshToken = tokenService.generateRefreshToken(user);
 
-            return new TokenDto.TokenResponse(accessToken, refreshToken);
-        } catch (AuthenticationException e) {
-            System.out.println("LỖI ĐĂNG NHẬP SPRING SECURITY: " + e.getMessage());
-            throw new UnauthorizedException("Incorrect username or password");
-        }
+        return new TokenDto.TokenResponse(accessToken, refreshToken);
+
     }
 
     @Override
@@ -51,14 +45,41 @@ public class AuthServiceImpl implements AuthService {
         tokenService.revokeRefreshToken(rawToken);
 
         User user = refreshToken.getUser();
-        List<String> authorities = userAuthRepository.getAuthoritiesByUsername(user.getUsername());
 
-        TokenDto.AccessToken accessToken = tokenService.generateAccessToken(
-                user.getUsername(),
-                Map.of("authorities", authorities));
-
-        TokenDto.RefreshToken refreshTokenNew = tokenService.generateRefreshToken(refreshToken.getUser());
+        TokenDto.AccessToken accessToken = tokenService.generateAccessToken(user);
+        TokenDto.RefreshToken refreshTokenNew = tokenService.generateRefreshToken(user);
 
         return new TokenDto.TokenResponse(accessToken, refreshTokenNew);
+    }
+
+    @Override
+    @Transactional
+    public void logout(String username, String refreshTokenStr) {
+        RefreshToken refreshToken = tokenService.verifyAndGetRefreshToken(refreshTokenStr);
+        if (!refreshToken.getUser().getUsername().equals(username)) {
+            throw new TokenInvalidException();
+        }
+
+        tokenService.revokeRefreshToken(refreshTokenStr);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDto.DetailResponse getUserByUsername(String username) {
+        User user = userAuthRepository.findUserByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+        return userMapper.toDetailResponse(user);
+    }
+
+    private User authenticate(String username, String password) {
+        User user = userAuthRepository.findUserByUsername(username)
+                .orElseThrow(IncorrectUsernameOrPasswordException::new);
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new IncorrectUsernameOrPasswordException();
+        }
+
+        return user;
     }
 }
