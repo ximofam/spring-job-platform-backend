@@ -34,3 +34,8 @@ replay_pid*
 
 
 target/
+
+
+# config
+database.properties
+config.properties
