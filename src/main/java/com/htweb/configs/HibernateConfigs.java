@@ -42,11 +42,19 @@ public class HibernateConfigs {
 
     @Bean
     public DataSource dataSource() {
+        String dbHost = getRequired("db.host");
+        String dbPort = getRequired("db.port");
+        String dbName = getRequired("db.name");
+        String hibernateConnectionUrl = String.format(
+                "jdbc:mysql://%s:%s/%s?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true",
+                dbHost, dbPort, dbName
+        );
+
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("hibernate.connection.driverClass"));
-        dataSource.setUrl(env.getProperty("hibernate.connection.url"));
-        dataSource.setUsername(env.getProperty("hibernate.connection.username"));
-        dataSource.setPassword(env.getProperty("hibernate.connection.password"));
+        dataSource.setDriverClassName(getRequired("hibernate.connection.driverClass"));
+        dataSource.setUrl(hibernateConnectionUrl);
+        dataSource.setUsername(getRequired("db.user"));
+        dataSource.setPassword(getRequired("db.password"));
         return dataSource;
     }
 
@@ -72,5 +80,13 @@ public class HibernateConfigs {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
         transactionManager.setSessionFactory(getSessionFactory().getObject());
         return transactionManager;
+    }
+
+    private String getRequired(String key) {
+        String value = env.getProperty(key);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("Missing required property: " + key);
+        }
+        return value;
     }
 }
