@@ -1,5 +1,6 @@
 package com.htweb.core.services.impl;
 
+import com.htweb.core.pojo.CustomUserDetails;
 import com.htweb.core.pojo.User;
 import com.htweb.core.repositories.UserAuthRepository;
 import com.htweb.core.services.AuthorityService;
@@ -22,12 +23,11 @@ public class UserAuthServiceImpl implements UserAuthService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userAuthRepository.findUserByUsername(username)
+        User user = userAuthRepository.findUserByUsernameOrEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("Not found user: %s", username)));
-        
+
         Set<GrantedAuthority> authorities = authorityService.getAuthorities(user.getRoles());
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPasswordHash(), authorities);
+        return new CustomUserDetails(user, authorities);
     }
 }

@@ -1,5 +1,6 @@
 package com.htweb.api.services;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.htweb.api.dtos.TokenDto;
 import com.htweb.core.pojo.RefreshToken;
 import com.htweb.core.pojo.User;
@@ -14,5 +15,7 @@ public interface TokenService {
 
     RefreshToken verifyAndGetRefreshToken(String rawToken);
 
-    void revokeRefreshToken(String rawToken);
+    void revokeRefreshToken(Long tokenId);
+
+    GoogleIdToken.Payload verifyGoogleToken(String token);
 }

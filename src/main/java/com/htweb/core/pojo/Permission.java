@@ -2,8 +2,9 @@ package com.htweb.core.pojo;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Filter;
 
-import java.io.Serializable;
+import java.io.Serial;
 import java.util.Set;
 
 /**
@@ -18,8 +19,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Permission extends BaseModel implements Serializable {
-
+public class Permission extends BaseModel {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Column(nullable = false, unique = true, length = 100)
@@ -36,19 +37,6 @@ public class Permission extends BaseModel implements Serializable {
     private String action;
 
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
+    @Filter(name = "activeFilter", condition = "is_active = :isActive")
     private Set<Role> roles;
-
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (!(object instanceof Permission other)) {
-            return false;
-        }
-
-        return this.id != null && this.id.equals(other.id);
-    }
 }

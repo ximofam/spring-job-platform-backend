@@ -8,7 +8,7 @@ public class AuthDto {
 
     public record LoginRequest(
             @NotBlank
-            String username,
+            String usernameOrEmail,
             @NotBlank
             String password
     ) {
@@ -23,6 +23,12 @@ public class AuthDto {
     public record LogoutRequest(
             @NotBlank
             String refreshToken
+    ) {
+    }
+
+    public record LoginGoogleRequest(
+            @NotBlank
+            String token
     ) {
     }
 }

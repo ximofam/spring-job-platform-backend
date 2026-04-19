@@ -1,10 +1,15 @@
 package com.htweb.api.services.impl;
 
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.htweb.api.dtos.TokenDto;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import com.htweb.api.exceptions.http.UnauthorizedException;
+import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.repositories.RefreshTokenRepository;
 import com.htweb.api.services.TokenService;
 import com.htweb.core.pojo.RefreshToken;
@@ -24,13 +29,16 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HexFormat;
 import java.util.List;
@@ -50,14 +58,24 @@ public class TokenServiceImpl implements TokenService {
     @Value("${token.refresh-token.ttl.days}")
     private long refreshTokenTtlDays;
 
+    @Value("${oauth2.google.client-id}")
+    private String googleClientId;
+
     private JWSSigner signer;
-    private JWSVerifier verifier;
+    private JWSVerifier jwtVerifier;
+    private GoogleIdTokenVerifier googleVerifier;
 
     @PostConstruct
     public void init() {
         try {
             this.signer = new MACSigner(secretKey);
-            this.verifier = new MACVerifier(secretKey);
+            this.jwtVerifier = new MACVerifier(secretKey);
+            this.googleVerifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(),
+                    new GsonFactory()
+            )
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
         } catch (KeyLengthException e) {
             throw new InternalServerException("Invalid secret key: %s", e.getMessage());
         } catch (JOSEException e) {
@@ -70,7 +88,7 @@ public class TokenServiceImpl implements TokenService {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            if (!signedJWT.verify(verifier)) {
+            if (!signedJWT.verify(jwtVerifier)) {
                 throw new UnauthorizedException("Invalid token signature");
             }
 
@@ -129,7 +147,7 @@ public class TokenServiceImpl implements TokenService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setTokenHash(tokenHash);
         refreshToken.setUser(user);
-        refreshToken.setActive(true);
+        refreshToken.setIsActive(true);
         refreshToken.setExpiresAt(LocalDateTime.now().plusDays(refreshTokenTtlDays));
 
         RefreshToken refreshTokenCreated = refreshTokenRepository.save(refreshToken);
@@ -155,10 +173,25 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void revokeRefreshToken(String rawToken) {
-        String tokenHash = hashRefreshTokenStr(rawToken);
-        if (!refreshTokenRepository.revokeTokenByTokenHash(tokenHash)) {
+    public void revokeRefreshToken(Long tokenId) {
+        if (!refreshTokenRepository.revokeTokenById(tokenId)) {
             throw new UnauthorizedException("Invalid token");
+        }
+    }
+
+    @Override
+    public GoogleIdToken.Payload verifyGoogleToken(String token) {
+        try {
+            GoogleIdToken idToken = googleVerifier.verify(token);
+            if (idToken != null) {
+                return idToken.getPayload();
+            } else {
+                throw new TokenInvalidException("Invalid or expired Google token");
+            }
+        } catch (GeneralSecurityException e) {
+            throw new TokenInvalidException("Security error during token verification", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot connect to Google API to verify token", e);
         }
     }
 

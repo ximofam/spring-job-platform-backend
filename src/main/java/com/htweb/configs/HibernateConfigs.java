@@ -18,8 +18,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-import static org.hibernate.cfg.JdbcSettings.DIALECT;
-import static org.hibernate.cfg.JdbcSettings.SHOW_SQL;
+import static org.hibernate.cfg.JdbcSettings.*;
 
 /**
  * @author PC
@@ -72,6 +71,7 @@ public class HibernateConfigs {
         Properties props = new Properties();
         props.put(DIALECT, env.getProperty("hibernate.dialect"));
         props.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
+        props.put(FORMAT_SQL, env.getProperty("hibernate.formatSql"));
         return props;
     }
 

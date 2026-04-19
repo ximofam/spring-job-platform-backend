@@ -22,10 +22,10 @@ public class ApiAuthController {
 
     @PostMapping("auth/login")
     public ResponseEntity<TokenDto.TokenResponse> login(@RequestBody @Valid AuthDto.LoginRequest request) {
-        String username = request.username();
+        String usernameOrEmail = request.usernameOrEmail();
         String password = request.password();
 
-        return ResponseEntity.ok(authService.login(username, password));
+        return ResponseEntity.ok(authService.login(usernameOrEmail, password));
     }
 
     @PostMapping("auth/refresh")
@@ -44,7 +44,7 @@ public class ApiAuthController {
             @RequestBody @Valid AuthDto.LogoutRequest request) {
 
         authService.logout(username, request.refreshToken());
-        
+
         return ResponseEntity.ok(
                 new ApiResponse("Logout successfully", null)
         );

@@ -19,8 +19,18 @@ public class V3__seed_users extends BaseJavaMigration {
         }
 
         List<SeedUser> users = List.of(
-                new SeedUser("ximofam", "ximofam@gmail.com", "admin123", "ADMIN"),
-                new SeedUser("huy", "huy@gmail.com", "123456", "CANDIDATE")
+                new SeedUser(
+                        "ximofam",
+                        "ximofam@gmail.com",
+                        "admin123",
+                        "ADMIN",
+                        "Pham Dang Quoc Vien"),
+                new SeedUser(
+                        "huy",
+                        "huy@gmail.com",
+                        "admin123",
+                        "ADMIN",
+                        "Nguyen Bao Huy")
         );
 
         insertUsers(context, users);
@@ -29,8 +39,8 @@ public class V3__seed_users extends BaseJavaMigration {
 
     private void insertUsers(Context context, List<SeedUser> users) throws Exception {
         String sql = """
-                INSERT INTO users (username, email, password_hash)
-                VALUES (?, ?, ?)
+                INSERT INTO users (username, email, password_hash, name, avatar_url)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement stmt = context.getConnection().prepareStatement(sql)) {
@@ -38,6 +48,8 @@ public class V3__seed_users extends BaseJavaMigration {
                 stmt.setString(1, user.username());
                 stmt.setString(2, user.email());
                 stmt.setString(3, encoder.encode(user.password()));
+                stmt.setString(4, user.name());
+                stmt.setString(5, "https://res.cloudinary.com/datah8lgd/image/upload/v1773747273/images_patu6r.png");
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -75,6 +87,6 @@ public class V3__seed_users extends BaseJavaMigration {
         }
     }
 
-    private record SeedUser(String username, String email, String password, String role) {
+    private record SeedUser(String username, String email, String password, String role, String name) {
     }
 }
