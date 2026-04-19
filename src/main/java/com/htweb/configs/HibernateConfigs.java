@@ -4,9 +4,11 @@
  */
 package com.htweb.configs;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -16,8 +18,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-import static org.hibernate.cfg.JdbcSettings.DIALECT;
-import static org.hibernate.cfg.JdbcSettings.SHOW_SQL;
+import static org.hibernate.cfg.JdbcSettings.*;
 
 /**
  * @author PC
@@ -40,18 +41,37 @@ public class HibernateConfigs {
 
     @Bean
     public DataSource dataSource() {
+        String dbHost = getRequired("db.host");
+        String dbPort = getRequired("db.port");
+        String dbName = getRequired("db.name");
+        String hibernateConnectionUrl = String.format(
+                "jdbc:mysql://%s:%s/%s?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true",
+                dbHost, dbPort, dbName
+        );
+
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("hibernate.connection.driverClass"));
-        dataSource.setUrl(env.getProperty("hibernate.connection.url"));
-        dataSource.setUsername(env.getProperty("hibernate.connection.username"));
-        dataSource.setPassword(env.getProperty("hibernate.connection.password"));
+        dataSource.setDriverClassName(getRequired("hibernate.connection.driverClass"));
+        dataSource.setUrl(hibernateConnectionUrl);
+        dataSource.setUsername(getRequired("db.user"));
+        dataSource.setPassword(getRequired("db.password"));
         return dataSource;
+    }
+
+    @Bean(initMethod = "migrate")
+    @DependsOn("dataSource")
+    public Flyway flyway() {
+        return Flyway.configure()
+                .dataSource(dataSource())
+                .locations("classpath:db/migration", "classpath:db/seed")
+                .baselineOnMigrate(true)
+                .load();
     }
 
     private Properties hibernateProperties() {
         Properties props = new Properties();
         props.put(DIALECT, env.getProperty("hibernate.dialect"));
         props.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
+        props.put(FORMAT_SQL, env.getProperty("hibernate.formatSql"));
         return props;
     }
 
@@ -60,5 +80,13 @@ public class HibernateConfigs {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
         transactionManager.setSessionFactory(getSessionFactory().getObject());
         return transactionManager;
+    }
+
+    private String getRequired(String key) {
+        String value = env.getProperty(key);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("Missing required property: " + key);
+        }
+        return value;
     }
 }

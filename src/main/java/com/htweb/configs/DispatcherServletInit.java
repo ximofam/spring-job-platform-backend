@@ -17,7 +17,9 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
     protected Class<?>[] getRootConfigClasses() {
         return new Class[]{
                 ThymeleafConfigs.class,
-                HibernateConfigs.class
+                HibernateConfigs.class,
+                SpringSecurityConfigs.class,
+                CacheConfig.class,
         };
     }
 
@@ -35,11 +37,6 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
 
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
-        String location = "/tmp";
-        long maxFileSize = 5242880; // 5MB
-        long maxRequestSize = 20971520; // 20MB
-        int fileSizeThreshold = 0;
-
-        registration.setMultipartConfig(new MultipartConfigElement(location, maxFileSize, maxRequestSize, fileSizeThreshold));
+        registration.setMultipartConfig(new MultipartConfigElement("/tmp", 5000000, 15000000, 0));
     }
 }
