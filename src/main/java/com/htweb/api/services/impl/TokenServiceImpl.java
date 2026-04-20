@@ -1,15 +1,10 @@
 package com.htweb.api.services.impl;
 
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import com.htweb.api.dtos.TokenDto;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import com.htweb.api.exceptions.http.UnauthorizedException;
-import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.repositories.RefreshTokenRepository;
 import com.htweb.api.services.TokenService;
 import com.htweb.core.pojo.RefreshToken;
@@ -29,16 +24,13 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HexFormat;
 import java.util.List;
@@ -61,21 +53,14 @@ public class TokenServiceImpl implements TokenService {
     @Value("${oauth2.google.client-id}")
     private String googleClientId;
 
-    private JWSSigner signer;
+    private JWSSigner jwtSigner;
     private JWSVerifier jwtVerifier;
-    private GoogleIdTokenVerifier googleVerifier;
 
     @PostConstruct
     public void init() {
         try {
-            this.signer = new MACSigner(secretKey);
+            this.jwtSigner = new MACSigner(secretKey);
             this.jwtVerifier = new MACVerifier(secretKey);
-            this.googleVerifier = new GoogleIdTokenVerifier.Builder(
-                    new NetHttpTransport(),
-                    new GsonFactory()
-            )
-                    .setAudience(Collections.singletonList(googleClientId))
-                    .build();
         } catch (KeyLengthException e) {
             throw new InternalServerException("Invalid secret key: %s", e.getMessage());
         } catch (JOSEException e) {
@@ -114,7 +99,7 @@ public class TokenServiceImpl implements TokenService {
         List<String> roles = user.getRoles().stream().map(Role::getName).toList();
 
         JWTClaimsSet.Builder claimsSetBd = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getId().toString())
                 .claim("roles", roles)
                 .issueTime(new Date())
                 .expirationTime(exp);
@@ -126,7 +111,7 @@ public class TokenServiceImpl implements TokenService {
         );
 
         try {
-            signedJWT.sign(signer);
+            signedJWT.sign(jwtSigner);
         } catch (JOSEException e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -176,22 +161,6 @@ public class TokenServiceImpl implements TokenService {
     public void revokeRefreshToken(Long tokenId) {
         if (!refreshTokenRepository.revokeTokenById(tokenId)) {
             throw new UnauthorizedException("Invalid token");
-        }
-    }
-
-    @Override
-    public GoogleIdToken.Payload verifyGoogleToken(String token) {
-        try {
-            GoogleIdToken idToken = googleVerifier.verify(token);
-            if (idToken != null) {
-                return idToken.getPayload();
-            } else {
-                throw new TokenInvalidException("Invalid or expired Google token");
-            }
-        } catch (GeneralSecurityException e) {
-            throw new TokenInvalidException("Security error during token verification", e);
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot connect to Google API to verify token", e);
         }
     }
 

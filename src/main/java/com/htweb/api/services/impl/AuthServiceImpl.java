@@ -1,17 +1,13 @@
 package com.htweb.api.services.impl;
 
 import com.htweb.api.dtos.TokenDto;
-import com.htweb.api.dtos.UserDto;
 import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.exceptions.users.IncorrectUsernameOrPasswordException;
-import com.htweb.api.exceptions.users.UserNotFoundException;
-import com.htweb.api.mappers.UserMapper;
 import com.htweb.api.services.AuthService;
 import com.htweb.api.services.TokenService;
 import com.htweb.core.pojo.CustomUserDetails;
 import com.htweb.core.pojo.RefreshToken;
 import com.htweb.core.pojo.User;
-import com.htweb.core.repositories.UserAuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,8 +23,6 @@ public class AuthServiceImpl implements AuthService {
     @Qualifier("apiTokenService")
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
-    private final UserAuthRepository userAuthRepository;
-    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -73,14 +67,5 @@ public class AuthServiceImpl implements AuthService {
         }
 
         tokenService.revokeRefreshToken(refreshToken.getId());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserDto.DetailResponse getUserByUsername(String username) {
-        User user = userAuthRepository.findUserByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-        return userMapper.toDetailResponse(user);
     }
 }

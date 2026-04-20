@@ -2,17 +2,21 @@ package com.htweb.configs;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.htweb.api.exceptions.CustomAccessDeniedHandler;
+import com.htweb.api.exceptions.CustomAuthenticationEntryPoint;
 import com.htweb.api.filters.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,21 +44,49 @@ import java.util.List;
 public class SpringSecurityConfigs {
     private final UserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+    @Order(1)
+    public SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/**")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(s ->
+                        s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/login", "/api/auth/register", "/api/auth/refresh"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/admin/**", "/login", "/")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/admin").hasRole("ADMIN")
-                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form.loginPage("/admin/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/admin/login?error=true")
                         .permitAll()
-                ).logout((logout) -> logout.logoutSuccessUrl("/admin/login").permitAll())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                ).logout((logout) -> logout.logoutSuccessUrl("/admin/login").permitAll());
 
         return http.build();
     }
@@ -96,7 +128,7 @@ public class SpringSecurityConfigs {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:3000/"));
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));
