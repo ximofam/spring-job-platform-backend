@@ -5,6 +5,8 @@ import com.htweb.core.repositories.BaseRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
@@ -41,6 +43,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
     }
 
     @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Optional<T> findById(ID id) {
         String hql = String.format("FROM %s e WHERE e.id = :id", entityClass.getName());
 
@@ -53,6 +56,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
     }
 
     @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<T> findAll() {
         Session s = this.getCurrentSession();
 
@@ -61,17 +65,20 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
     }
 
     @Override
+    @Transactional
     public T save(T entity) {
         this.getCurrentSession().persist(entity);
         return entity;
     }
 
     @Override
+    @Transactional
     public T update(T entity) {
         return this.getCurrentSession().merge(entity);
     }
 
     @Override
+    @Transactional
     public void delete(ID id) {
         if (isSoftDeletable()) {
             softDelete(id);
@@ -80,6 +87,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
         }
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public void softDelete(ID id) {
         if (!isSoftDeletable()) {
             throw new UnsupportedOperationException(
@@ -99,6 +107,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
         }
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public void hardDelete(ID id) {
         String hql = String.format("DELETE FROM %s e WHERE e.id = :id", entityClass.getName());
 

@@ -7,5 +7,5 @@ public interface AuthService {
 
     TokenDto.TokenResponse refreshToken(String rawToken);
 
-    void logout(String username, String refreshToken);
+    void logout(Long userId, String refreshToken);
 }
