@@ -14,26 +14,6 @@ public class UserAuthRepositoryImpl extends BaseRepositoryImpl<User, Long> imple
     }
 
     @Override
-    public Optional<User> findUserByUsername(String username) {
-        Session session = this.getCurrentSession();
-        User user = session.createQuery("FROM User u JOIN FETCH u.roles WHERE u.username = :username", User.class)
-                .setParameter("username", username)
-                .getSingleResultOrNull();
-
-        return Optional.ofNullable(user);
-    }
-
-    @Override
-    public Optional<User> findUserByEmail(String email) {
-        Session session = this.getCurrentSession();
-        User user = session.createQuery("FROM User u JOIN FETCH u.roles WHERE u.email = :email", User.class)
-                .setParameter("email", email)
-                .getSingleResultOrNull();
-
-        return Optional.ofNullable(user);
-    }
-
-    @Override
     public Optional<User> findUserByUsernameOrEmail(String usernameOrEmail) {
         Session session = this.getCurrentSession();
         User user = session.createQuery(
