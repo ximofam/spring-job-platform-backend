@@ -36,10 +36,10 @@ public class ApiAuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(
-            @AuthenticationPrincipal String username,
+            @AuthenticationPrincipal Long userId,
             @RequestBody @Valid AuthDto.LogoutRequest request) {
 
-        authService.logout(username, request.refreshToken());
+        authService.logout(userId, request.refreshToken());
 
         return ResponseEntity.ok(
                 new ApiResponse("Logout successfully", null)

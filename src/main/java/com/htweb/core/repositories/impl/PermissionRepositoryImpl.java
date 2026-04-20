@@ -4,6 +4,7 @@ import com.htweb.core.pojo.Permission;
 import com.htweb.core.repositories.PermissionRepository;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -16,7 +17,7 @@ public class PermissionRepositoryImpl extends BaseRepositoryImpl<Permission, Lon
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Set<Permission> findByRoleName(String roleName) {
         Session session = this.getCurrentSession();
         return session.createQuery(

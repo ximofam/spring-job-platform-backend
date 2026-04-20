@@ -37,9 +37,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = customUserDetails.getUser();
 
-        TokenDto.AccessToken accessToken = tokenService.generateAccessToken(customUserDetails.getUser());
-        TokenDto.RefreshToken refreshToken = tokenService.generateRefreshToken(customUserDetails.getUser());
+        TokenDto.AccessToken accessToken = tokenService.generateAccessToken(user);
+        TokenDto.RefreshToken refreshToken = tokenService.generateRefreshToken(user);
 
         return new TokenDto.TokenResponse(accessToken, refreshToken);
     }
@@ -60,9 +61,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void logout(String username, String refreshTokenStr) {
+    public void logout(Long userId, String refreshTokenStr) {
         RefreshToken refreshToken = tokenService.verifyAndGetRefreshToken(refreshTokenStr);
-        if (!refreshToken.getUser().getUsername().equals(username)) {
+        if (!refreshToken.getUser().getId().equals(userId)) {
             throw new TokenInvalidException();
         }
 

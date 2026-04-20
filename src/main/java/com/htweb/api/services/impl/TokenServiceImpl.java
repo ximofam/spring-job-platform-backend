@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -124,7 +123,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @Transactional
     public TokenDto.RefreshToken generateRefreshToken(User user) {
         String rawToken = generateRefreshTokenStr();
         String tokenHash = hashRefreshTokenStr(rawToken);

@@ -5,6 +5,7 @@ import com.htweb.core.pojo.RefreshToken;
 import com.htweb.core.repositories.impl.BaseRepositoryImpl;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -16,7 +17,7 @@ public class RefreshTokenRepositoryImpl extends BaseRepositoryImpl<RefreshToken,
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Optional<RefreshToken> findByTokenHash(String tokenHash) {
         Session session = this.getSessionWithoutActiveFilter();
         RefreshToken refreshToken = session.createQuery(
