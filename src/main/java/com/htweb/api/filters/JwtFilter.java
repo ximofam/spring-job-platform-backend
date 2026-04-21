@@ -1,8 +1,6 @@
 package com.htweb.api.filters;
 
-import com.htweb.api.exceptions.http.UnauthorizedException;
 import com.htweb.api.services.TokenService;
-import com.htweb.api.utils.FilterUtils;
 import com.htweb.api.utils.Utils;
 import com.htweb.core.services.AuthorityService;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -33,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            FilterUtils.handleException(response, new UnauthorizedException("Missing or invalid Authorization header."));
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -41,19 +39,15 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             JWTClaimsSet claims = tokenService.verifyAndParseAccessToken(token);
 
-            String username = claims.getSubject();
+            Long userId = Long.parseLong(claims.getSubject());
             List<String> roles = Utils.castToStringList(claims.getClaim("roles"));
             Set<GrantedAuthority> authorities = authorityService.getAuthorities(roles);
 
             SecurityContextHolder.getContext().setAuthentication(
-                    new UsernamePasswordAuthenticationToken(username, null, authorities)
+                    new UsernamePasswordAuthenticationToken(userId, null, authorities)
             );
-        } catch (UnauthorizedException ex) {
-            FilterUtils.handleException(response, ex);
-            return;
-        } catch (Exception ex) {
-            FilterUtils.handleException(response, ex);
-            return;
+        } catch (Exception ignored) {
+
         }
 
         filterChain.doFilter(request, response);
@@ -61,6 +55,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !request.getServletPath().startsWith("/api/secure/");
+        return !request.getServletPath().startsWith("/api/");
     }
 }

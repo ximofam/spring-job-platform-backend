@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -50,14 +49,17 @@ public class TokenServiceImpl implements TokenService {
     @Value("${token.refresh-token.ttl.days}")
     private long refreshTokenTtlDays;
 
-    private JWSSigner signer;
-    private JWSVerifier verifier;
+    @Value("${oauth2.google.client-id}")
+    private String googleClientId;
+
+    private JWSSigner jwtSigner;
+    private JWSVerifier jwtVerifier;
 
     @PostConstruct
     public void init() {
         try {
-            this.signer = new MACSigner(secretKey);
-            this.verifier = new MACVerifier(secretKey);
+            this.jwtSigner = new MACSigner(secretKey);
+            this.jwtVerifier = new MACVerifier(secretKey);
         } catch (KeyLengthException e) {
             throw new InternalServerException("Invalid secret key: %s", e.getMessage());
         } catch (JOSEException e) {
@@ -70,7 +72,7 @@ public class TokenServiceImpl implements TokenService {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            if (!signedJWT.verify(verifier)) {
+            if (!signedJWT.verify(jwtVerifier)) {
                 throw new UnauthorizedException("Invalid token signature");
             }
 
@@ -96,7 +98,7 @@ public class TokenServiceImpl implements TokenService {
         List<String> roles = user.getRoles().stream().map(Role::getName).toList();
 
         JWTClaimsSet.Builder claimsSetBd = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getId().toString())
                 .claim("roles", roles)
                 .issueTime(new Date())
                 .expirationTime(exp);
@@ -108,7 +110,7 @@ public class TokenServiceImpl implements TokenService {
         );
 
         try {
-            signedJWT.sign(signer);
+            signedJWT.sign(jwtSigner);
         } catch (JOSEException e) {
             throw new InternalServerException(e.getMessage());
         }
@@ -121,7 +123,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @Transactional
     public TokenDto.RefreshToken generateRefreshToken(User user) {
         String rawToken = generateRefreshTokenStr();
         String tokenHash = hashRefreshTokenStr(rawToken);
@@ -129,7 +130,7 @@ public class TokenServiceImpl implements TokenService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setTokenHash(tokenHash);
         refreshToken.setUser(user);
-        refreshToken.setActive(true);
+        refreshToken.setIsActive(true);
         refreshToken.setExpiresAt(LocalDateTime.now().plusDays(refreshTokenTtlDays));
 
         RefreshToken refreshTokenCreated = refreshTokenRepository.save(refreshToken);
@@ -155,9 +156,8 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void revokeRefreshToken(String rawToken) {
-        String tokenHash = hashRefreshTokenStr(rawToken);
-        if (!refreshTokenRepository.revokeTokenByTokenHash(tokenHash)) {
+    public void revokeRefreshToken(Long tokenId) {
+        if (!refreshTokenRepository.revokeTokenById(tokenId)) {
             throw new UnauthorizedException("Invalid token");
         }
     }

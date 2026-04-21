@@ -4,6 +4,6 @@ import com.htweb.core.pojo.User;
 
 import java.util.Optional;
 
-public interface UserAuthRepository {
-    Optional<User> findUserByUsername(String username);
+public interface UserAuthRepository extends BaseRepository<User, Long> {
+    Optional<User> findUserByUsernameOrEmail(String usernameOrEmail);
 }

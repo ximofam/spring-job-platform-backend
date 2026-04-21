@@ -2,28 +2,28 @@ package com.htweb.core.repositories.impl;
 
 import com.htweb.core.pojo.Permission;
 import com.htweb.core.repositories.PermissionRepository;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-@RequiredArgsConstructor
-public class PermissionRepositoryImpl implements PermissionRepository {
-    private final SessionFactory sessionFactory;
+public class PermissionRepositoryImpl extends BaseRepositoryImpl<Permission, Long> implements PermissionRepository {
+    public PermissionRepositoryImpl() {
+        super(Permission.class);
+    }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Set<Permission> findByRoleName(String roleName) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = this.getCurrentSession();
         return session.createQuery(
                         "FROM Permission p JOIN p.roles r WHERE r.name = :roleName",
-                        Permission.class
-                ).setParameter("roleName", roleName)
+                        Permission.class)
+                .setParameter("roleName", roleName)
                 .getResultStream().collect(Collectors.toSet());
     }
 }

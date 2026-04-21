@@ -10,4 +10,8 @@ public class TokenInvalidException extends UnauthorizedException {
     public TokenInvalidException(String format, Object... args) {
         super(format, args);
     }
+
+    public TokenInvalidException(String msg) {
+        super(msg);
+    }
 }

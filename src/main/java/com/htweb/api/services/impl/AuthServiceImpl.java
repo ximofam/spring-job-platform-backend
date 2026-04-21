@@ -1,19 +1,19 @@
 package com.htweb.api.services.impl;
 
 import com.htweb.api.dtos.TokenDto;
-import com.htweb.api.dtos.UserDto;
 import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.exceptions.users.IncorrectUsernameOrPasswordException;
-import com.htweb.api.exceptions.users.UserNotFoundException;
-import com.htweb.api.mappers.UserMapper;
 import com.htweb.api.services.AuthService;
 import com.htweb.api.services.TokenService;
+import com.htweb.core.pojo.CustomUserDetails;
 import com.htweb.core.pojo.RefreshToken;
 import com.htweb.core.pojo.User;
-import com.htweb.core.repositories.UserAuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,27 +22,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
     @Qualifier("apiTokenService")
     private final TokenService tokenService;
-    private final PasswordEncoder passwordEncoder;
-    private final UserAuthRepository userAuthRepository;
-    private final UserMapper userMapper;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     @Transactional
-    public TokenDto.TokenResponse login(String username, String password) {
-        User user = authenticate(username, password);
+    public TokenDto.TokenResponse login(String usernameOrEmail, String password) {
+        Authentication authentication = null;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(usernameOrEmail, password)
+            );
+        } catch (AuthenticationException ex) {
+            throw new IncorrectUsernameOrPasswordException();
+        }
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = customUserDetails.getUser();
 
         TokenDto.AccessToken accessToken = tokenService.generateAccessToken(user);
         TokenDto.RefreshToken refreshToken = tokenService.generateRefreshToken(user);
 
         return new TokenDto.TokenResponse(accessToken, refreshToken);
-
     }
 
     @Override
     @Transactional
     public TokenDto.TokenResponse refreshToken(String rawToken) {
         RefreshToken refreshToken = tokenService.verifyAndGetRefreshToken(rawToken);
-        tokenService.revokeRefreshToken(rawToken);
+        tokenService.revokeRefreshToken(refreshToken.getId());
 
         User user = refreshToken.getUser();
 
@@ -54,32 +61,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void logout(String username, String refreshTokenStr) {
+    public void logout(Long userId, String refreshTokenStr) {
         RefreshToken refreshToken = tokenService.verifyAndGetRefreshToken(refreshTokenStr);
-        if (!refreshToken.getUser().getUsername().equals(username)) {
+        if (!refreshToken.getUser().getId().equals(userId)) {
             throw new TokenInvalidException();
         }
 
-        tokenService.revokeRefreshToken(refreshTokenStr);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserDto.DetailResponse getUserByUsername(String username) {
-        User user = userAuthRepository.findUserByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-        return userMapper.toDetailResponse(user);
-    }
-
-    private User authenticate(String username, String password) {
-        User user = userAuthRepository.findUserByUsername(username)
-                .orElseThrow(IncorrectUsernameOrPasswordException::new);
-
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new IncorrectUsernameOrPasswordException();
-        }
-
-        return user;
+        tokenService.revokeRefreshToken(refreshToken.getId());
     }
 }

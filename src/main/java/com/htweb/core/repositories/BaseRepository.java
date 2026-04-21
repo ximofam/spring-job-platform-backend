@@ -14,6 +14,4 @@ public interface BaseRepository<T, ID extends Serializable> {
     T update(T entity);
 
     void delete(ID id);
-
-    void delete(T entity);
 }

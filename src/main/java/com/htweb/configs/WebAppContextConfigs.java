@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -38,6 +39,7 @@ import java.util.List;
 )
 @EnableWebMvc
 @EnableTransactionManagement
+@EnableMethodSecurity
 public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override

@@ -2,23 +2,27 @@ package com.htweb.core.repositories.impl;
 
 import com.htweb.core.pojo.User;
 import com.htweb.core.repositories.UserAuthRepository;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
-public class UserAuthRepositoryImpl implements UserAuthRepository {
-    private final SessionFactory sessionFactory;
+public class UserAuthRepositoryImpl extends BaseRepositoryImpl<User, Long> implements UserAuthRepository {
+    public UserAuthRepositoryImpl() {
+        super(User.class);
+    }
 
     @Override
-    public Optional<User> findUserByUsername(String username) {
-        Session session = sessionFactory.getCurrentSession();
-        User user = session.createQuery("FROM User u JOIN FETCH u.roles WHERE u.username = :username", User.class)
-                .setParameter("username", username)
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Optional<User> findUserByUsernameOrEmail(String usernameOrEmail) {
+        Session session = this.getCurrentSession();
+        User user = session.createQuery(
+                        "FROM User u JOIN FETCH u.roles WHERE (u.username = :usernameOrEmail or u.email = :usernameOrEmail)",
+                        User.class)
+                .setParameter("usernameOrEmail", usernameOrEmail)
                 .getSingleResultOrNull();
 
         return Optional.ofNullable(user);

@@ -14,5 +14,5 @@ public interface TokenService {
 
     RefreshToken verifyAndGetRefreshToken(String rawToken);
 
-    void revokeRefreshToken(String rawToken);
+    void revokeRefreshToken(Long tokenId);
 }
