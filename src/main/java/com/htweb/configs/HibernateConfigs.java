@@ -18,13 +18,17 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-import static org.hibernate.cfg.JdbcSettings.*;
+import static org.hibernate.cfg.JdbcSettings.DIALECT;
 
 /**
  * @author PC
  */
 @Configuration
-@PropertySource("classpath:database.properties")
+@PropertySource("classpath:application.properties")
+@PropertySource(
+        value = "classpath:database.${spring.database.active}.${spring.profiles.active}.properties",
+        ignoreResourceNotFound = false
+)
 public class HibernateConfigs {
 
     @Autowired
@@ -41,17 +45,11 @@ public class HibernateConfigs {
 
     @Bean
     public DataSource dataSource() {
-        String dbHost = getRequired("db.host");
-        String dbPort = getRequired("db.port");
-        String dbName = getRequired("db.name");
-        String hibernateConnectionUrl = String.format(
-                "jdbc:mysql://%s:%s/%s?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true",
-                dbHost, dbPort, dbName
-        );
+        String hibernateConnUrl = String.format("%s", getRequired("hibernate.connection.url"));
 
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(getRequired("hibernate.connection.driverClass"));
-        dataSource.setUrl(hibernateConnectionUrl);
+        dataSource.setUrl(hibernateConnUrl);
         dataSource.setUsername(getRequired("db.user"));
         dataSource.setPassword(getRequired("db.password"));
         return dataSource;
@@ -60,9 +58,11 @@ public class HibernateConfigs {
     @Bean(initMethod = "migrate")
     @DependsOn("dataSource")
     public Flyway flyway() {
+        String dbActive = env.getProperty("spring.database.active");
+
         return Flyway.configure()
                 .dataSource(dataSource())
-                .locations("classpath:db/migration", "classpath:db/seed")
+                .locations("classpath:db/migration/" + dbActive, "classpath:db/seed/" + dbActive)
                 .baselineOnMigrate(true)
                 .load();
     }
@@ -70,8 +70,6 @@ public class HibernateConfigs {
     private Properties hibernateProperties() {
         Properties props = new Properties();
         props.put(DIALECT, env.getProperty("hibernate.dialect"));
-        props.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
-        props.put(FORMAT_SQL, env.getProperty("hibernate.formatSql"));
         return props;
     }
 

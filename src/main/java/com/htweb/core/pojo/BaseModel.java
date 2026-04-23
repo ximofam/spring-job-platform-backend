@@ -8,12 +8,12 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
 @MappedSuperclass
-@Filter(name = "activeFilter", condition = "is_active = :isActive")
+@Filter(name = "activeFilter", condition = "deleted_at IS NULL")
 public abstract class BaseModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,14 +21,18 @@ public abstract class BaseModel implements Serializable {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    protected LocalDateTime createdAt;
+    protected Instant createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    protected LocalDateTime updatedAt;
+    protected Instant updatedAt;
 
-    @Column(name = "is_active", nullable = false)
-    protected Boolean isActive = true;
+    @Column(name = "deleted_at")
+    protected Instant deletedAt;
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 
     @Override
     public boolean equals(Object o) {

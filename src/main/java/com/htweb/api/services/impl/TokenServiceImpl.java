@@ -1,7 +1,8 @@
 package com.htweb.api.services.impl;
 
 
-import com.htweb.api.dtos.TokenDto;
+import com.htweb.api.dtos.token.AccessTokenResponse;
+import com.htweb.api.dtos.token.RefreshTokenResponse;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import com.htweb.api.exceptions.http.UnauthorizedException;
@@ -28,6 +29,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -92,7 +94,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDto.AccessToken generateAccessToken(User user) {
+    public AccessTokenResponse generateAccessToken(User user) {
         Date exp = new Date(System.currentTimeMillis() + accessTokenTtlMillis);
 
         List<String> roles = user.getRoles().stream().map(Role::getName).toList();
@@ -119,23 +121,26 @@ public class TokenServiceImpl implements TokenService {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
 
-        return new TokenDto.AccessToken(signedJWT.serialize(), ldt);
+        return new AccessTokenResponse(signedJWT.serialize(), ldt);
     }
 
     @Override
-    public TokenDto.RefreshToken generateRefreshToken(User user) {
+    public RefreshTokenResponse generateRefreshToken(User user) {
         String rawToken = generateRefreshTokenStr();
         String tokenHash = hashRefreshTokenStr(rawToken);
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setTokenHash(tokenHash);
         refreshToken.setUser(user);
-        refreshToken.setIsActive(true);
-        refreshToken.setExpiresAt(LocalDateTime.now().plusDays(refreshTokenTtlDays));
+        refreshToken.setExpiresAt(Instant.now().plusSeconds(refreshTokenTtlDays * 24 * 60 * 60));
 
         RefreshToken refreshTokenCreated = refreshTokenRepository.save(refreshToken);
 
-        return new TokenDto.RefreshToken(rawToken, refreshTokenCreated.getExpiresAt());
+        LocalDateTime ldt = LocalDateTime.ofInstant(
+                refreshTokenCreated.getExpiresAt(), ZoneId.systemDefault()
+        );
+
+        return new RefreshTokenResponse(rawToken, ldt);
     }
 
     @Override

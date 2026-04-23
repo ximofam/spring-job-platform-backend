@@ -34,7 +34,7 @@ public class RefreshTokenRepositoryImpl extends BaseRepositoryImpl<RefreshToken,
     public boolean revokeTokenById(Long id) {
         Session session = this.getCurrentSession();
 
-        int rowAffect = session.createMutationQuery("UPDATE RefreshToken rt SET rt.isActive = false WHERE rt.id = :id")
+        int rowAffect = session.createMutationQuery("UPDATE RefreshToken rt SET rt.isRevoked = true WHERE rt.id = :id")
                 .setParameter("id", id)
                 .executeUpdate();
 

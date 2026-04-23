@@ -35,7 +35,14 @@ replay_pid*
 
 target/
 
+.env
+
+**/application.properties
+**/application.*.properties
 
 # config
-database.properties
-config.properties
+**/database.properties
+**/config.properties
+**/database.*.properties
+**/config.*.properties
+
