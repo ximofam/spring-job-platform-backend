@@ -28,6 +28,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -130,12 +131,15 @@ public class TokenServiceImpl implements TokenService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setTokenHash(tokenHash);
         refreshToken.setUser(user);
-        refreshToken.setIsActive(true);
-        refreshToken.setExpiresAt(LocalDateTime.now().plusDays(refreshTokenTtlDays));
+        refreshToken.setExpiresAt(Instant.now().plusSeconds(refreshTokenTtlDays * 24 * 60 * 60));
 
         RefreshToken refreshTokenCreated = refreshTokenRepository.save(refreshToken);
 
-        return new TokenDto.RefreshToken(rawToken, refreshTokenCreated.getExpiresAt());
+        LocalDateTime ldt = LocalDateTime.ofInstant(
+                refreshTokenCreated.getExpiresAt(), ZoneId.systemDefault()
+        );
+        
+        return new TokenDto.RefreshToken(rawToken, ldt);
     }
 
     @Override
