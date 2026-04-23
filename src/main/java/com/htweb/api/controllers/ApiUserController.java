@@ -1,6 +1,6 @@
 package com.htweb.api.controllers;
 
-import com.htweb.api.dtos.UserDto;
+import com.htweb.api.dtos.user.UserDetailResponse;
 import com.htweb.api.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +18,7 @@ public class ApiUserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto.DetailResponse> getMe(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<UserDetailResponse> getMe(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 }

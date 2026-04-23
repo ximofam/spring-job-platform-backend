@@ -1,7 +1,7 @@
 package com.htweb.api.services;
 
-import com.htweb.api.dtos.UserDto;
+import com.htweb.api.dtos.user.UserDetailResponse;
 
 public interface UserService {
-    UserDto.DetailResponse getUserById(Long id);
+    UserDetailResponse getUserById(Long id);
 }

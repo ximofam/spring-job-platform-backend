@@ -1,7 +1,8 @@
 package com.htweb.api.services.impl;
 
 
-import com.htweb.api.dtos.TokenDto;
+import com.htweb.api.dtos.token.AccessTokenResponse;
+import com.htweb.api.dtos.token.RefreshTokenResponse;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import com.htweb.api.exceptions.http.UnauthorizedException;
@@ -93,7 +94,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDto.AccessToken generateAccessToken(User user) {
+    public AccessTokenResponse generateAccessToken(User user) {
         Date exp = new Date(System.currentTimeMillis() + accessTokenTtlMillis);
 
         List<String> roles = user.getRoles().stream().map(Role::getName).toList();
@@ -120,11 +121,11 @@ public class TokenServiceImpl implements TokenService {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
 
-        return new TokenDto.AccessToken(signedJWT.serialize(), ldt);
+        return new AccessTokenResponse(signedJWT.serialize(), ldt);
     }
 
     @Override
-    public TokenDto.RefreshToken generateRefreshToken(User user) {
+    public RefreshTokenResponse generateRefreshToken(User user) {
         String rawToken = generateRefreshTokenStr();
         String tokenHash = hashRefreshTokenStr(rawToken);
 
@@ -138,8 +139,8 @@ public class TokenServiceImpl implements TokenService {
         LocalDateTime ldt = LocalDateTime.ofInstant(
                 refreshTokenCreated.getExpiresAt(), ZoneId.systemDefault()
         );
-        
-        return new TokenDto.RefreshToken(rawToken, ldt);
+
+        return new RefreshTokenResponse(rawToken, ldt);
     }
 
     @Override

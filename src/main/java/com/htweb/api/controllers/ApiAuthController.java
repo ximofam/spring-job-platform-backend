@@ -1,8 +1,10 @@
 package com.htweb.api.controllers;
 
 import com.htweb.api.dtos.ApiResponse;
-import com.htweb.api.dtos.AuthDto;
-import com.htweb.api.dtos.TokenDto;
+import com.htweb.api.dtos.auth.AuthLoginRequest;
+import com.htweb.api.dtos.auth.AuthLogoutRequest;
+import com.htweb.api.dtos.auth.AuthRefreshRequest;
+import com.htweb.api.dtos.auth.AuthTokenResponse;
 import com.htweb.api.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class ApiAuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto.TokenResponse> login(@RequestBody @Valid AuthDto.LoginRequest request) {
+    public ResponseEntity<AuthTokenResponse> login(@RequestBody @Valid AuthLoginRequest request) {
         String usernameOrEmail = request.usernameOrEmail();
         String password = request.password();
 
@@ -30,14 +32,14 @@ public class ApiAuthController {
     }
 
     @PostMapping("refresh")
-    public ResponseEntity<TokenDto.TokenResponse> refresh(@RequestBody @Valid AuthDto.RefreshRequest request) {
+    public ResponseEntity<AuthTokenResponse> refresh(@RequestBody @Valid AuthRefreshRequest request) {
         return ResponseEntity.ok(authService.refreshToken(request.token()));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(
             @AuthenticationPrincipal Long userId,
-            @RequestBody @Valid AuthDto.LogoutRequest request) {
+            @RequestBody @Valid AuthLogoutRequest request) {
 
         authService.logout(userId, request.refreshToken());
 

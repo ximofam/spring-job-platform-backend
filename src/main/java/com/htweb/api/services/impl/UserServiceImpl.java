@@ -1,6 +1,6 @@
 package com.htweb.api.services.impl;
 
-import com.htweb.api.dtos.UserDto;
+import com.htweb.api.dtos.user.UserDetailResponse;
 import com.htweb.api.exceptions.users.UserNotFoundException;
 import com.htweb.api.mappers.UserMapper;
 import com.htweb.api.services.UserService;
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDto.DetailResponse getUserById(Long id) {
+    public UserDetailResponse getUserById(Long id) {
         User user = userAuthRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
         return userMapper.toDetailResponse(user);
