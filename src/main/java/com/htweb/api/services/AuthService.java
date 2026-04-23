@@ -1,11 +1,11 @@
 package com.htweb.api.services;
 
-import com.htweb.api.dtos.TokenDto;
+import com.htweb.api.dtos.auth.AuthTokenResponse;
 
 public interface AuthService {
-    TokenDto.TokenResponse login(String usernameOrEmail, String password);
+    AuthTokenResponse login(String usernameOrEmail, String password);
 
-    TokenDto.TokenResponse refreshToken(String rawToken);
+    AuthTokenResponse refreshToken(String rawToken);
 
     void logout(Long userId, String refreshToken);
 }

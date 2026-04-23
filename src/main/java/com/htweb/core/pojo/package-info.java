@@ -1,8 +1,4 @@
-@FilterDef(
-        name = "activeFilter",
-        parameters = @ParamDef(name = "isActive", type = Boolean.class)
-)
+@FilterDef(name = "activeFilter")
 package com.htweb.core.pojo;
 
 import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;

@@ -1,5 +1,4 @@
-// src/main/java/db/seed/V2__seed_users.java
-package db.seed;
+package db.seed.postgres;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
@@ -14,23 +13,9 @@ public class V3__seed_users extends BaseJavaMigration {
 
     @Override
     public void migrate(Context context) throws Exception {
-        if (isAlreadySeeded(context)) {
-            return;
-        }
-
         List<SeedUser> users = List.of(
-                new SeedUser(
-                        "ximofam",
-                        "ximofam@gmail.com",
-                        "admin123",
-                        "ADMIN",
-                        "Pham Dang Quoc Vien"),
-                new SeedUser(
-                        "huy",
-                        "huy@gmail.com",
-                        "admin123",
-                        "ADMIN",
-                        "Nguyen Bao Huy")
+                new SeedUser("ximofam", "ximofam@gmail.com", "admin123", "ADMIN", "Pham Dang Quoc Vien"),
+                new SeedUser("huy", "huy@gmail.com", "admin123", "ADMIN", "Nguyen Bao Huy")
         );
 
         insertUsers(context, users);
@@ -38,9 +23,14 @@ public class V3__seed_users extends BaseJavaMigration {
     }
 
     private void insertUsers(Context context, List<SeedUser> users) throws Exception {
+        // Sử dụng câu lệnh INSERT từ SELECT với NOT EXISTS
+        // Cách này không yêu cầu Unique Constraint toàn phần
         String sql = """
                 INSERT INTO users (username, email, password_hash, name, avatar_url)
-                VALUES (?, ?, ?, ?, ?)
+                SELECT ?, ?, ?, ?, ?
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM users WHERE username = ?
+                )
                 """;
 
         try (PreparedStatement stmt = context.getConnection().prepareStatement(sql)) {
@@ -50,6 +40,7 @@ public class V3__seed_users extends BaseJavaMigration {
                 stmt.setString(3, encoder.encode(user.password()));
                 stmt.setString(4, user.name());
                 stmt.setString(5, "https://res.cloudinary.com/datah8lgd/image/upload/v1773747273/images_patu6r.png");
+                stmt.setString(6, user.username());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -60,11 +51,12 @@ public class V3__seed_users extends BaseJavaMigration {
         String sql = """
                 INSERT INTO user_roles (user_id, role_id)
                 SELECT u.id, r.id
-                FROM users u, roles r
-                WHERE u.username = ?
+                FROM users u
+                CROSS JOIN roles r
+                WHERE u.username = ? 
                   AND r.name = ?
                   AND NOT EXISTS (
-                      SELECT 1 FROM user_roles ur
+                      SELECT 1 FROM user_roles ur 
                       WHERE ur.user_id = u.id AND ur.role_id = r.id
                   )
                 """;
@@ -76,14 +68,6 @@ public class V3__seed_users extends BaseJavaMigration {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-        }
-    }
-
-    private boolean isAlreadySeeded(Context context) throws Exception {
-        try (var stmt = context.getConnection()
-                .prepareStatement("SELECT COUNT(*) FROM users");
-             var rs = stmt.executeQuery()) {
-            return rs.next() && rs.getInt(1) > 0;
         }
     }
 

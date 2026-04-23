@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +30,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
     protected Session getCurrentSession() {
         Session session = this.factory.getCurrentSession();
         if (isSoftDeletable() && session.getEnabledFilter("activeFilter") == null) {
-            session.enableFilter("activeFilter")
-                    .setParameter("isActive", true);
+            session.enableFilter("activeFilter");
         }
 
         return session;
@@ -95,11 +95,13 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
             );
         }
 
-        String hql = String.format("UPDATE %s e SET e.isActive = false WHERE e.id = :id", this.entityClass.getName());
+        String hql = String.format("UPDATE %s e SET e.deletedAt = :deletedAt WHERE e.id = :id",
+                this.entityClass.getName());
 
         int affectRow = getCurrentSession()
                 .createMutationQuery(hql)
                 .setParameter("id", id)
+                .setParameter("deletedAt", Instant.now())
                 .executeUpdate();
 
         if (affectRow == 0) {

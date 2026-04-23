@@ -18,10 +18,10 @@ public class User extends BaseModel {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "username", nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "password_hash")
@@ -39,7 +39,7 @@ public class User extends BaseModel {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @Filter(name = "activeFilter", condition = "is_active = :isActive")
+    @Filter(name = "activeFilter", condition = "deleted_at IS NULL")
     private Set<Role> roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -1,34 +1,41 @@
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255),
     name VARCHAR(50),
     avatar_url VARCHAR(255),
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    deleted_at DATETIME DEFAULT '1970-01-01 00:00:00',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_users_username_active UNIQUE (username, deleted_at),
+    CONSTRAINT uq_users_email_active UNIQUE (email, deleted_at)
 );
 
 CREATE TABLE roles (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
     description TEXT,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    deleted_at DATETIME DEFAULT '1970-01-01 00:00:00',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_roles_name_active UNIQUE (name, deleted_at)
 );
 
 CREATE TABLE permissions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
     description TEXT,
     module VARCHAR(50) NOT NULL,
     action VARCHAR(50) NOT NULL,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    deleted_at DATETIME DEFAULT '1970-01-01 00:00:00',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_module_action (module, action)
+
+    CONSTRAINT uq_permissions_module_action UNIQUE (module, action, deleted_at),
+    CONSTRAINT uq_permissions_name UNIQUE (name, deleted_at)
 );
 
 CREATE TABLE user_roles (
@@ -52,7 +59,7 @@ CREATE TABLE refresh_tokens (
     user_id BIGINT NOT NULL,
     token_hash VARCHAR(255) NOT NULL UNIQUE,
     expires_at DATETIME NOT NULL,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    is_revoked  TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,

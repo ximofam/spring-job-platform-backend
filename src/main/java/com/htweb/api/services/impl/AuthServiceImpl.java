@@ -1,6 +1,8 @@
 package com.htweb.api.services.impl;
 
-import com.htweb.api.dtos.TokenDto;
+import com.htweb.api.dtos.auth.AuthTokenResponse;
+import com.htweb.api.dtos.token.AccessTokenResponse;
+import com.htweb.api.dtos.token.RefreshTokenResponse;
 import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.exceptions.users.IncorrectUsernameOrPasswordException;
 import com.htweb.api.services.AuthService;
@@ -26,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public TokenDto.TokenResponse login(String usernameOrEmail, String password) {
+    public AuthTokenResponse login(String usernameOrEmail, String password) {
         Authentication authentication = null;
         try {
             authentication = authenticationManager.authenticate(
@@ -39,24 +41,24 @@ public class AuthServiceImpl implements AuthService {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = customUserDetails.getUser();
 
-        TokenDto.AccessToken accessToken = tokenService.generateAccessToken(user);
-        TokenDto.RefreshToken refreshToken = tokenService.generateRefreshToken(user);
+        AccessTokenResponse accessToken = tokenService.generateAccessToken(user);
+        RefreshTokenResponse refreshToken = tokenService.generateRefreshToken(user);
 
-        return new TokenDto.TokenResponse(accessToken, refreshToken);
+        return new AuthTokenResponse(accessToken, refreshToken);
     }
 
     @Override
     @Transactional
-    public TokenDto.TokenResponse refreshToken(String rawToken) {
+    public AuthTokenResponse refreshToken(String rawToken) {
         RefreshToken refreshToken = tokenService.verifyAndGetRefreshToken(rawToken);
         tokenService.revokeRefreshToken(refreshToken.getId());
 
         User user = refreshToken.getUser();
 
-        TokenDto.AccessToken accessToken = tokenService.generateAccessToken(user);
-        TokenDto.RefreshToken refreshTokenNew = tokenService.generateRefreshToken(user);
+        AccessTokenResponse accessToken = tokenService.generateAccessToken(user);
+        RefreshTokenResponse refreshTokenNew = tokenService.generateRefreshToken(user);
 
-        return new TokenDto.TokenResponse(accessToken, refreshTokenNew);
+        return new AuthTokenResponse(accessToken, refreshTokenNew);
     }
 
     @Override
