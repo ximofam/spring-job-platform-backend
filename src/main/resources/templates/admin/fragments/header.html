@@ -1,0 +1,18 @@
+<header th:fragment="header" class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 shrink-0">
+    <nav class="flex items-center space-x-2 text-sm">
+        <span class="text-gray-400 hover:text-blue-600 cursor-pointer">Cấu hình</span>
+        <i class="fas fa-chevron-right text-[10px] text-gray-300"></i>
+        <span class="text-gray-400 hover:text-blue-600 cursor-pointer">Bảo mật</span>
+        <i class="fas fa-chevron-right text-[10px] text-gray-300"></i>
+        <span class="font-semibold text-slate-800">Quản lý Phân quyền</span>
+    </nav>
+
+    <div class="flex items-center space-x-4">
+        <div class="relative">
+            <i class="fas fa-bell text-gray-400 hover:text-blue-600 cursor-pointer"></i>
+            <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+        </div>
+        <div class="h-8 w-px bg-gray-200"></div>
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Server: Production</span>
+    </div>
+</header>

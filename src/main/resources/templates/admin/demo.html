@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>RBAC Demo</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+    }
+    .module {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    .module h3 {
+      margin: 0 0 10px;
+    }
+    label {
+      display: block;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .box {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f5f5f5;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>RBAC Permission Demo</h2>
+
+<div id="app"></div>
+
+<button onclick="saveChanges()">SAVE</button>
+
+<div class="box">
+  <b>Changes log:</b>
+  <pre id="log"></pre>
+</div>
+
+<script>
+// ======================
+// MOCK DATA (backend trả về)
+// ======================
+const data = {
+  role: { id: 1, name: "ADMIN" },
+  permissions: [
+    {
+      module: "USER",
+      moduleLabel: "Quản lý User",
+      permissions: [
+        { id: 1, name: "USER_READ", description: "Xem danh sách", assigned: true },
+        { id: 2, name: "USER_CREATE", description: "Thêm user", assigned: false },
+        { id: 3, name: "USER_DELETE", description: "Xóa user", assigned: true }
+      ]
+    },
+    {
+      module: "JOB",
+      moduleLabel: "Tin tuyển dụng",
+      permissions: [
+        { id: 4, name: "JOB_READ", description: "Xem tin", assigned: true },
+        { id: 5, name: "JOB_CREATE", description: "Tạo tin", assigned: false }
+      ]
+    }
+  ]
+};
+
+// ======================
+// TRACK CHANGES STATE
+// ======================
+const changes = {
+  added: new Set(),
+  removed: new Set()
+};
+
+// ======================
+// RENDER UI
+// ======================
+function render() {
+  const app = document.getElementById("app");
+
+  app.innerHTML = data.permissions.map(module => `
+    <div class="module">
+      <h3>${module.moduleLabel}</h3>
+
+      ${module.permissions.map(p => `
+        <label>
+          <input 
+            type="checkbox"
+            data-id="${p.id}"
+            ${p.assigned ? "checked" : ""}
+            onchange="togglePermission(event, ${p.id}, ${p.assigned})"
+          />
+          ${p.name} - ${p.description}
+        </label>
+      `).join("")} 
+    </div>
+  `).join("");
+}
+
+// ======================
+// HANDLE CHECKBOX CHANGE
+// ======================
+function togglePermission(e, permId, originalAssigned) {
+  const checked = e.target.checked;
+
+  // reset nếu quay lại trạng thái ban đầu
+  if (checked === originalAssigned) {
+    changes.added.delete(permId);
+    changes.removed.delete(permId);
+  }
+  else if (checked) {
+    changes.added.add(permId);
+    changes.removed.delete(permId);
+  }
+  else {
+    changes.removed.add(permId);
+    changes.added.delete(permId);
+  }
+
+  logChanges();
+}
+
+// ======================
+// SAVE BUTTON
+// ======================
+function saveChanges() {
+  const payload = {
+    roleId: data.role.id,
+    addPermissions: [...changes.added],
+    removePermissions: [...changes.removed]
+  };
+
+  console.log("SEND TO BACKEND:", payload);
+
+  alert("Check console để xem payload gửi backend");
+}
+
+// ======================
+// DEBUG LOG
+// ======================
+function logChanges() {
+  document.getElementById("log").innerText = JSON.stringify({
+    added: [...changes.added],
+    removed: [...changes.removed]
+  }, null, 2);
+}
+
+// init
+render();
+</script>
+
+</body>
+</html>
