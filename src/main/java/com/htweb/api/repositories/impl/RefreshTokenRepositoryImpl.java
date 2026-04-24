@@ -19,7 +19,7 @@ public class RefreshTokenRepositoryImpl extends BaseRepositoryImpl<RefreshToken,
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Optional<RefreshToken> findByTokenHash(String tokenHash) {
-        Session session = this.getSessionWithoutActiveFilter();
+        Session session = this.getCurrentSession();
         RefreshToken refreshToken = session.createQuery(
                         "FROM RefreshToken rt JOIN FETCH rt.user WHERE rt.tokenHash = :tokenHash",
                         RefreshToken.class)

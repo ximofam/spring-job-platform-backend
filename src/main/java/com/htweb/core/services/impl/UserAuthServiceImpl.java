@@ -22,9 +22,10 @@ public class UserAuthServiceImpl implements UserAuthService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userAuthRepository.findUserByUsernameOrEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("Not found user: %s", username)));
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        User user = userAuthRepository.findUserByUsername(usernameOrEmail)
+                .or(() -> userAuthRepository.findUserByEmail(usernameOrEmail))
+                .orElseThrow(() -> new UsernameNotFoundException(usernameOrEmail));
 
         Set<GrantedAuthority> authorities = authorityService.getAuthorities(user.getRoles());
 

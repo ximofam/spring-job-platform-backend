@@ -29,7 +29,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
 
     protected Session getCurrentSession() {
         Session session = this.factory.getCurrentSession();
-        if (isSoftDeletable() && session.getEnabledFilter("activeFilter") == null) {
+        if (session.getEnabledFilter("activeFilter") == null) {
             session.enableFilter("activeFilter");
         }
 
