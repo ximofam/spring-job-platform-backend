@@ -10,4 +10,5 @@ public class RoleRepositoryImpl extends BaseRepositoryImpl<Role,Long> implements
     public RoleRepositoryImpl() {
         super(Role.class);
     }
+
 }
