@@ -1,10 +1,13 @@
 package com.htweb.core.pojo;
 
+import com.htweb.core.helpers.models.SoftDeleteModel;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Filter;
 
-import java.io.Serial;
 import java.util.Set;
 
 /**
@@ -18,10 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Permission extends BaseModel {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class Permission extends SoftDeleteModel {
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -38,4 +38,5 @@ public class Permission extends BaseModel {
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     @Filter(name = "activeFilter", condition = "deleted_at IS NULL")
     private Set<Role> roles;
+
 }

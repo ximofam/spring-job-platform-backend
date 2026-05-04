@@ -1,20 +1,22 @@
-package com.htweb.core.pojo;
+package com.htweb.core.helpers.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
 @Setter
 @MappedSuperclass
-@Filter(name = "activeFilter", condition = "deleted_at IS NULL")
 public abstract class BaseModel implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
@@ -27,17 +29,10 @@ public abstract class BaseModel implements Serializable {
     @Column(name = "updated_at", nullable = false)
     protected Instant updatedAt;
 
-    @Column(name = "deleted_at")
-    protected Instant deletedAt;
-
-    public boolean isDeleted() {
-        return this.deletedAt != null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BaseModel other)) return false;
+        if (!(o instanceof com.htweb.core.helpers.models.BaseModel other)) return false;
         return id != null && id.equals(other.id);
     }
 

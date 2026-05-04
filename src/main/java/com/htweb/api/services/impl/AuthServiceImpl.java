@@ -7,7 +7,7 @@ import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.exceptions.users.IncorrectUsernameOrPasswordException;
 import com.htweb.api.services.AuthService;
 import com.htweb.api.services.TokenService;
-import com.htweb.core.pojo.CustomUserDetails;
+import com.htweb.core.helpers.security.CustomUserDetails;
 import com.htweb.core.pojo.RefreshToken;
 import com.htweb.core.pojo.User;
 import lombok.RequiredArgsConstructor;

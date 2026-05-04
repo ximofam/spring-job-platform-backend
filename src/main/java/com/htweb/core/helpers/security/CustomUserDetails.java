@@ -1,5 +1,6 @@
-package com.htweb.core.pojo;
+package com.htweb.core.helpers.security;
 
+import com.htweb.core.pojo.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,6 +47,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return !user.isDeleted();
     }
 }

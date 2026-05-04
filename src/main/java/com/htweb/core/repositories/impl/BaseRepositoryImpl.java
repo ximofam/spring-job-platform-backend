@@ -1,6 +1,6 @@
 package com.htweb.core.repositories.impl;
 
-import com.htweb.core.pojo.BaseModel;
+import com.htweb.core.helpers.models.SoftDeleteModel;
 import com.htweb.core.repositories.BaseRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -24,7 +24,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
     }
 
     protected boolean isSoftDeletable() {
-        return BaseModel.class.isAssignableFrom(entityClass);
+        return SoftDeleteModel.class.isAssignableFrom(entityClass);
     }
 
     protected Session getCurrentSession() {
