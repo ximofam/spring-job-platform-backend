@@ -1,6 +1,6 @@
 package com.htweb.core.services.impl;
 
-import com.htweb.core.pojo.CustomUserDetails;
+import com.htweb.core.helpers.security.CustomUserDetails;
 import com.htweb.core.pojo.User;
 import com.htweb.core.repositories.UserAuthRepository;
 import com.htweb.core.services.AuthorityService;

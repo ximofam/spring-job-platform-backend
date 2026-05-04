@@ -2,7 +2,7 @@ package com.htweb.configs;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.htweb.core.cache.SimpleGrantedAuthorityMixin;
+import com.htweb.core.helpers.cache.SimpleGrantedAuthorityMixin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;

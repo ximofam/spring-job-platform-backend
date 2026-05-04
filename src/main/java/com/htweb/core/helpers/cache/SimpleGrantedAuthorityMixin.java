@@ -1,4 +1,4 @@
-package com.htweb.core.cache;
+package com.htweb.core.helpers.cache;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,12 +1,12 @@
 package com.htweb.core.pojo;
 
+import com.htweb.core.helpers.models.BaseModel;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.Instant;
 
 /**
@@ -18,14 +18,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class RefreshToken implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+public class RefreshToken extends BaseModel {
 
     @Column(name = "token_hash", nullable = false, unique = true)
     private String tokenHash;
@@ -35,14 +28,6 @@ public class RefreshToken implements Serializable {
 
     @Column(name = "is_revoked", nullable = false)
     private Boolean isRevoked = false;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -55,4 +40,5 @@ public class RefreshToken implements Serializable {
     public boolean isExpired() {
         return this.expiresAt.isBefore(Instant.now());
     }
+
 }
