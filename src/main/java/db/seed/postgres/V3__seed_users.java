@@ -23,11 +23,9 @@ public class V3__seed_users extends BaseJavaMigration {
     }
 
     private void insertUsers(Context context, List<SeedUser> users) throws Exception {
-        // Sử dụng câu lệnh INSERT từ SELECT với NOT EXISTS
-        // Cách này không yêu cầu Unique Constraint toàn phần
         String sql = """
-                INSERT INTO users (username, email, password_hash, name, avatar_url)
-                SELECT ?, ?, ?, ?, ?
+                INSERT INTO users (username, email, password_hash, name, avatar_url, user_role)
+                SELECT ?, ?, ?, ?, ?, ?
                 WHERE NOT EXISTS (
                     SELECT 1 FROM users WHERE username = ?
                 )
@@ -40,7 +38,8 @@ public class V3__seed_users extends BaseJavaMigration {
                 stmt.setString(3, encoder.encode(user.password()));
                 stmt.setString(4, user.name());
                 stmt.setString(5, "https://res.cloudinary.com/datah8lgd/image/upload/v1773747273/images_patu6r.png");
-                stmt.setString(6, user.username());
+                stmt.setString(6, user.role());
+                stmt.setString(7, user.username());
                 stmt.addBatch();
             }
             stmt.executeBatch();

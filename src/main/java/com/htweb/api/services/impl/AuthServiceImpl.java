@@ -7,10 +7,12 @@ import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.exceptions.users.IncorrectUsernameOrPasswordException;
 import com.htweb.api.services.AuthService;
 import com.htweb.api.services.TokenService;
-import com.htweb.core.pojo.CustomUserDetails;
+import com.htweb.core.helpers.security.CustomUserDetails;
 import com.htweb.core.pojo.RefreshToken;
 import com.htweb.core.pojo.User;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("apiAuthService")
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+    private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Qualifier("apiTokenService")
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
@@ -35,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(usernameOrEmail, password)
             );
         } catch (AuthenticationException ex) {
+            log.error("Auth login error: ", ex);
             throw new IncorrectUsernameOrPasswordException();
         }
 
