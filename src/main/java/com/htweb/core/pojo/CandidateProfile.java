@@ -23,7 +23,7 @@ public class CandidateProfile implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
@@ -44,5 +44,17 @@ public class CandidateProfile implements Serializable {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CandidateProfile other)) return false;
+        return userId != null && userId.equals(other.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 
 }

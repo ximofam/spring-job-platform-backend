@@ -28,18 +28,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
     }
 
     protected Session getCurrentSession() {
-        Session session = this.factory.getCurrentSession();
-        if (session.getEnabledFilter("activeFilter") == null) {
-            session.enableFilter("activeFilter");
-        }
-
-        return session;
-    }
-
-    protected Session getSessionWithoutActiveFilter() {
-        Session session = factory.getCurrentSession();
-        session.disableFilter("activeFilter");
-        return session;
+        return factory.getCurrentSession();
     }
 
     @Override
@@ -113,7 +102,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
     public void hardDelete(ID id) {
         String hql = String.format("DELETE FROM %s e WHERE e.id = :id", entityClass.getName());
 
-        int affectRow = getSessionWithoutActiveFilter()
+        int affectRow = getCurrentSession()
                 .createMutationQuery(hql)
                 .setParameter("id", id)
                 .executeUpdate();

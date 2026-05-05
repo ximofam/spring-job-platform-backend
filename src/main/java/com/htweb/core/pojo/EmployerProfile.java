@@ -23,7 +23,7 @@ public class EmployerProfile implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
@@ -36,7 +36,7 @@ public class EmployerProfile implements Serializable {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "approved_by_id")
     private User approvedBy;
 
@@ -51,4 +51,16 @@ public class EmployerProfile implements Serializable {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EmployerProfile other)) return false;
+        return userId != null && userId.equals(other.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
