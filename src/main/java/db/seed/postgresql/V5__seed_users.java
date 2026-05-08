@@ -131,8 +131,9 @@ public class V5__seed_users extends BaseJavaMigration {
 
     private void seedCompanyAndEmployerProfile(Context context) throws Exception {
         String companySql = """
-                INSERT INTO companies (name, slug, type, employee_size, description, tax_code, country_id, created_at, updated_at)
-                SELECT 'TechCorp Vietnam',
+                INSERT INTO companies (status, name, slug, type, employee_size, description, tax_code, country_id, created_at, updated_at)
+                SELECT 'APPROVED',
+                        'TechCorp Vietnam',
                         'techcorp-vietnam',
                        'PRODUCT',
                        'ENTERPRISE',
@@ -146,10 +147,9 @@ public class V5__seed_users extends BaseJavaMigration {
         context.getConnection().prepareStatement(companySql).executeUpdate();
 
         String employerSql = """
-                INSERT INTO employer_profiles (user_id, company_id, status, created_at, updated_at)
+                INSERT INTO employer_profiles (user_id, company_id, created_at, updated_at)
                 SELECT u.id,
                        c.id,
-                       'APPROVED',
                        NOW(), NOW()
                 FROM users u
                 CROSS JOIN companies c

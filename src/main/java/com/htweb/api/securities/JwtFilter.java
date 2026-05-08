@@ -1,4 +1,4 @@
-package com.htweb.api.filters;
+package com.htweb.api.securities;
 
 import com.htweb.api.services.TokenService;
 import com.htweb.api.utils.Utils;

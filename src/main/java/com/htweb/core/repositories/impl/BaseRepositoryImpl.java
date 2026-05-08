@@ -31,6 +31,20 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
         return factory.getCurrentSession();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    protected boolean isFieldExists(String field, String value) {
+        Session session = this.getCurrentSession();
+        String hql = String.format(
+                "SELECT count(e.id) FROM %s e WHERE e.%s = :value", entityClass.getName(), field
+        );
+
+        Long count = session.createQuery(hql, Long.class)
+                .setParameter("value", value)
+                .uniqueResult();
+
+        return count != null && count > 0;
+    }
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Optional<T> findById(ID id) {
@@ -55,9 +69,8 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
 
     @Override
     @Transactional
-    public T save(T entity) {
+    public void save(T entity) {
         this.getCurrentSession().persist(entity);
-        return entity;
     }
 
     @Override
@@ -74,6 +87,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> implements BaseRepos
         } else {
             hardDelete(id);
         }
+    }
+
+    @Override
+    public T getReference(ID id) {
+        return getCurrentSession().getReference(entityClass, id);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)

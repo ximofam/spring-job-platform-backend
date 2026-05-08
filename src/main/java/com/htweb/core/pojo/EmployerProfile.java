@@ -1,6 +1,5 @@
 package com.htweb.core.pojo;
 
-import com.htweb.core.enums.EmployerProfileStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,12 +27,8 @@ public class EmployerProfile implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
-    private EmployerProfileStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false, unique = true)
     private Company company;
 
     @ManyToOne

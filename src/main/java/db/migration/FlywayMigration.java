@@ -7,11 +7,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class FlywayMigration {
 
     public static void main(String[] args) {
-        String dbActive = args.length > 0 ? args[0] : "postgres";
-        String profile = args.length > 1 ? args[1] : "dev";
-
-        System.setProperty("spring.database.active", dbActive);
-        System.setProperty("spring.profiles.active", profile);
+//        String dbActive = args.length > 0 ? args[0] : "postgresql";
+//        String profile = args.length > 1 ? args[1] : "dev";
+//
+//        System.setProperty("spring.database.active", dbActive);
+//        System.setProperty("spring.profiles.active", profile);
 
         AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext(HibernateConfigs.class);

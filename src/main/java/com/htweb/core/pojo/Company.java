@@ -1,5 +1,6 @@
 package com.htweb.core.pojo;
 
+import com.htweb.core.enums.CompanyStatus;
 import com.htweb.core.enums.CompanyType;
 import com.htweb.core.enums.EmployeeSize;
 import com.htweb.core.helpers.models.SoftDeleteModel;
@@ -10,8 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.util.Set;
-
 @Entity
 @Table(name = "companies")
 @Getter
@@ -20,6 +19,9 @@ import java.util.Set;
 @AllArgsConstructor
 @SQLRestriction("deleted_at IS NULL")
 public class Company extends SoftDeleteModel {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private CompanyStatus status;
 
     @Column(name = "logo_url")
     private String logoUrl;
@@ -47,8 +49,5 @@ public class Company extends SoftDeleteModel {
 
     @Column(name = "tax_code")
     private String taxCode;
-
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    private Set<EmployerProfile> employerProfiles;
 
 }

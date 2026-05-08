@@ -1,4 +1,10 @@
 package com.htweb.api.repositories;
 
-public interface EmployerProfileRepository {
+import com.htweb.core.pojo.EmployerProfile;
+import com.htweb.core.repositories.BaseRepository;
+
+import java.util.Optional;
+
+public interface EmployerProfileRepository extends BaseRepository<EmployerProfile, Long> {
+    Optional<EmployerProfile> findByUserId(Long userId);
 }

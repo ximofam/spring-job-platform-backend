@@ -1,4 +1,7 @@
 package com.htweb.api.repositories;
 
-public class CountryRepository {
+import com.htweb.core.pojo.Country;
+import com.htweb.core.repositories.BaseRepository;
+
+public interface CountryRepository extends BaseRepository<Country, Long> {
 }

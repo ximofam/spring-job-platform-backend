@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -76,7 +77,7 @@ public class GlobalExceptionHandlerController {
             }
             case com.fasterxml.jackson.core.JsonParseException jsonParseException ->
                     errors.put("body", "Malformed JSON");
-            
+
             case null, default -> errors.put("body", "Unreadable request body");
         }
 
@@ -87,5 +88,17 @@ public class GlobalExceptionHandlerController {
         );
 
         return ResponseEntity.badRequest().body(res);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<HttpErrorResponse> handleAccessDenied(AuthorizationDeniedException ex) {
+        log.warn("Access Denied: {}", ex.getMessage());
+
+        HttpErrorResponse error = new HttpErrorResponse(
+                "FORBIDDEN",
+                "Access Denied: You don't have permission to access this resource"
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

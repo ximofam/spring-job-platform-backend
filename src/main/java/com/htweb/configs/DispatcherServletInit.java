@@ -20,6 +20,8 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
                 HibernateConfigs.class,
                 SpringSecurityConfigs.class,
                 RedisConfig.class,
+                SwaggerConfig.class,
+                AsyncConfig.class
         };
     }
 
@@ -37,6 +39,13 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
 
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
-        registration.setMultipartConfig(new MultipartConfigElement("/tmp", 5000000, 15000000, 0));
+        registration.setMultipartConfig(
+                new MultipartConfigElement(
+                        null,
+                        10 * 1024 * 1024,   // max file size: 10MB
+                        20 * 1024 * 1024,   // max request size: 20MB
+                        0                   // file size threshold
+                )
+        );
     }
 }

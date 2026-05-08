@@ -1,12 +1,15 @@
 package com.htweb.api.dtos.token;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
-
-public record AccessTokenResponse(
-        String token,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        LocalDateTime expiresAt
-) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class AccessTokenResponse {
+    private String token;
+    private Long expiresIn;
 }

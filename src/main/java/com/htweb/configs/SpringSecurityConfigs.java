@@ -4,15 +4,17 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.htweb.api.exceptions.CustomAccessDeniedHandler;
 import com.htweb.api.exceptions.CustomAuthenticationEntryPoint;
-import com.htweb.api.filters.JwtFilter;
+import com.htweb.api.securities.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -31,6 +33,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import java.util.List;
 
 @Configuration
+@EnableMethodSecurity
 @EnableWebSecurity
 @EnableTransactionManagement
 @ComponentScan(
@@ -57,8 +60,14 @@ public class SpringSecurityConfigs {
                 .sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/login", "/api/auth/register", "/api/auth/refresh"
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/auth/login",
+                                "/api/auth/register/**",
+                                "/api/auth/refresh").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "api/auth/check-unique",
+                                "/api/countries",
+                                "/api/companies/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -75,11 +84,15 @@ public class SpringSecurityConfigs {
     @Order(2)
     public SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/admin/**", "/login", "/")
+                .securityMatcher("/admin/**", "/login", "/", "/swagger-ui/**", "/v3/api-docs/**")
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/admin").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/",
+                                "/admin**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 ).formLogin(form -> form.loginPage("/admin/login")
                         .loginProcessingUrl("/login")
