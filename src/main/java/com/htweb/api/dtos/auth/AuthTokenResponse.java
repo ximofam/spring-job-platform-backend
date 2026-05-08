@@ -1,10 +1,13 @@
 package com.htweb.api.dtos.auth;
 
-import com.htweb.api.dtos.token.AccessTokenResponse;
-import com.htweb.api.dtos.token.RefreshTokenResponse;
+import lombok.Getter;
+import lombok.Setter;
 
-public record AuthTokenResponse(
-        AccessTokenResponse accessToken,
-        RefreshTokenResponse refreshToken
-) {
+@Getter
+@Setter
+public class AuthTokenResponse {
+    private String refreshToken;
+    private String accessToken;
+    private long accessTokenExpiresIn;
+    private String accessTokenType = "Bearer";
 }

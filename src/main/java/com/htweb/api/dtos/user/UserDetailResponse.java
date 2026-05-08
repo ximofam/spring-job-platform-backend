@@ -1,13 +1,20 @@
 package com.htweb.api.dtos.user;
 
-import java.util.List;
+import com.htweb.api.dtos.country.CountryDetailResponse;
+import lombok.Getter;
+import lombok.Setter;
 
-public record UserDetailResponse(
-        Long id,
-        String username,
-        String email,
-        String name,
-        String avatarUrl,
-        List<String> roles
-) {
+@Getter
+@Setter
+public class UserDetailResponse {
+    private String username;
+    private String email;
+    private String role;
+    private String name;
+    private String avatarUrl;
+    private String gender;
+    private String address;
+    private String dateOfBirth;
+    private CountryDetailResponse country;
+    private Object profile;
 }

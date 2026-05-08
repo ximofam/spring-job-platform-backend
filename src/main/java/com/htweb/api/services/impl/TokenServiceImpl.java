@@ -2,7 +2,6 @@ package com.htweb.api.services.impl;
 
 
 import com.htweb.api.dtos.token.AccessTokenResponse;
-import com.htweb.api.dtos.token.RefreshTokenResponse;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import com.htweb.api.exceptions.http.UnauthorizedException;
@@ -30,8 +29,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HexFormat;
 import java.util.List;
@@ -46,10 +43,12 @@ public class TokenServiceImpl implements TokenService {
 
     @Value("${token.jwt.secret-key}")
     private String secretKey;
-    @Value("${token.access-token.ttl.millis}")
+    @Value("${token.access-token.ttl.seconds}")
+    private long accessTokenTtlSeconds;
     private long accessTokenTtlMillis;
     @Value("${token.refresh-token.ttl.days}")
     private long refreshTokenTtlDays;
+    private long refreshTokenTtlSeconds;
 
     @Value("${oauth2.google.client-id}")
     private String googleClientId;
@@ -60,6 +59,8 @@ public class TokenServiceImpl implements TokenService {
     @PostConstruct
     public void init() {
         try {
+            this.accessTokenTtlMillis = this.accessTokenTtlSeconds * 1000;
+            this.refreshTokenTtlSeconds = this.refreshTokenTtlDays * 24 * 60 * 60;
             this.jwtSigner = new MACSigner(secretKey);
             this.jwtVerifier = new MACVerifier(secretKey);
         } catch (KeyLengthException e) {
@@ -117,30 +118,22 @@ public class TokenServiceImpl implements TokenService {
             throw new InternalServerException(e.getMessage());
         }
 
-        LocalDateTime ldt = exp.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-
-        return new AccessTokenResponse(signedJWT.serialize(), ldt);
+        return new AccessTokenResponse(signedJWT.serialize(), exp.getTime());
     }
 
     @Override
-    public RefreshTokenResponse generateRefreshToken(User user) {
+    public String generateRefreshToken(User user) {
         String rawToken = generateRefreshTokenStr();
         String tokenHash = hashRefreshTokenStr(rawToken);
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setTokenHash(tokenHash);
         refreshToken.setUser(user);
-        refreshToken.setExpiresAt(Instant.now().plusSeconds(refreshTokenTtlDays * 24 * 60 * 60));
+        refreshToken.setExpiresAt(Instant.now().plusSeconds(refreshTokenTtlSeconds));
 
-        RefreshToken refreshTokenCreated = refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(refreshToken);
 
-        LocalDateTime ldt = LocalDateTime.ofInstant(
-                refreshTokenCreated.getExpiresAt(), ZoneId.systemDefault()
-        );
-
-        return new RefreshTokenResponse(rawToken, ldt);
+        return rawToken;
     }
 
     @Override

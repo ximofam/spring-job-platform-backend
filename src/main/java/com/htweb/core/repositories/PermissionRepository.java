@@ -4,6 +4,6 @@ import com.htweb.core.pojo.Permission;
 
 import java.util.Set;
 
-public interface PermissionRepository extends BaseRepository<Permission, Long> {
+public interface PermissionRepository {
     Set<Permission> findByRoleName(String roleName);
 }

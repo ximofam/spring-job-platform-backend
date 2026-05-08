@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Set;
 
@@ -21,6 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted_at IS NULL")
 public class Permission extends SoftDeleteModel {
 
     @Column(name = "name", nullable = false, length = 100)
@@ -36,7 +37,6 @@ public class Permission extends SoftDeleteModel {
     private String action;
 
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    @Filter(name = "activeFilter", condition = "deleted_at IS NULL")
     private Set<Role> roles;
 
 }
