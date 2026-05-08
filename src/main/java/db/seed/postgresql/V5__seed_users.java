@@ -1,4 +1,4 @@
-package db.seed.postgres;
+package db.seed.postgresql;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
