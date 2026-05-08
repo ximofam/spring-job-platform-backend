@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-public class V4__seed_users extends BaseJavaMigration {
+public class V5__seed_users extends BaseJavaMigration {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -28,8 +28,8 @@ public class V4__seed_users extends BaseJavaMigration {
 
     private void insertUsers(Context context, List<SeedUser> users) throws Exception {
         String sql = """
-                INSERT INTO users (username, email, password_hash, name, avatar_url, user_role, gender, date_of_birth, address)
-                SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
+                INSERT INTO users (username, email, password_hash, name, avatar_url, user_role, gender, date_of_birth, address, country_id)
+                SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, (SELECT id FROM countries WHERE code = 'VN' LIMIT 1)
                 WHERE NOT EXISTS (
                     SELECT 1 FROM users WHERE username = ?
                 )
@@ -92,7 +92,6 @@ public class V4__seed_users extends BaseJavaMigration {
                 """;
         context.getConnection().prepareStatement(profileSql).executeUpdate();
 
-        // Insert educations
         String eduSql = """
                 INSERT INTO educations (candidate_profile_id, school, major, degree, start_date, end_date, description, created_at, updated_at)
                 SELECT u.id,
@@ -111,9 +110,9 @@ public class V4__seed_users extends BaseJavaMigration {
                 """;
         context.getConnection().prepareStatement(eduSql).executeUpdate();
 
-        // Insert experiences
+
         String expSql = """
-                INSERT INTO experiences (candidate_profile_id, company_name, position, start_date, end_date, description, created_at, updated_at)
+                INSERT INTO experiences (candidate_profile_id, company, position, start_date, end_date, description, created_at, updated_at)
                 SELECT u.id,
                        'FPT Software',
                        'Java Backend Intern',
@@ -131,22 +130,21 @@ public class V4__seed_users extends BaseJavaMigration {
     }
 
     private void seedCompanyAndEmployerProfile(Context context) throws Exception {
-        // Insert company
         String companySql = """
-                INSERT INTO companies (name, type, employee_size, description, tax_code, created_at, updated_at)
+                INSERT INTO companies (name, slug, type, employee_size, description, tax_code, country_id, created_at, updated_at)
                 SELECT 'TechCorp Vietnam',
+                        'techcorp-vietnam',
                        'PRODUCT',
-                       'FROM_100_TO_499',
+                       'ENTERPRISE',
                        'A product-focused tech company building SaaS solutions for SEA market.',
                        '0123456789',
-                       NOW(), NOW()
+                       (SELECT id FROM countries WHERE code = 'VN' LIMIT 1), NOW(), NOW()
                 WHERE NOT EXISTS (
                     SELECT 1 FROM companies WHERE tax_code = '0123456789'
                 )
                 """;
         context.getConnection().prepareStatement(companySql).executeUpdate();
 
-        // Insert employer_profile
         String employerSql = """
                 INSERT INTO employer_profiles (user_id, company_id, status, created_at, updated_at)
                 SELECT u.id,
@@ -174,7 +172,6 @@ public class V4__seed_users extends BaseJavaMigration {
             String dob,
             String address
     ) {
-        // Constructor overload cho admin (không cần gender/dob/address)
         SeedUser(String username, String email, String password, String role, String name) {
             this(username, email, password, role, name, null, null, null);
         }

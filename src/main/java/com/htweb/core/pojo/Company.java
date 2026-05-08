@@ -21,11 +21,14 @@ import java.util.Set;
 @SQLRestriction("deleted_at IS NULL")
 public class Company extends SoftDeleteModel {
 
-    @Column(name = "logo")
-    private String logo;
+    @Column(name = "logo_url")
+    private String logoUrl;
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "slug")
+    private String slug;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")

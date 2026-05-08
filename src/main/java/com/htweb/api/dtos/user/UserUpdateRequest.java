@@ -1,4 +1,4 @@
 package com.htweb.api.dtos.user;
 
-public class UserDetailResponse {
+public class UserUpdateRequest {
 }

@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -27,6 +28,9 @@ public class User extends SoftDeleteModel {
 
     @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "phone")
+    private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
@@ -67,7 +71,7 @@ public class User extends SoftDeleteModel {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RefreshToken> refreshTokens;
