@@ -9,7 +9,7 @@ public interface RoleService {
     Role findById(long id);
     Role update(Role role);
     Set<Long> getPermissionIds(Long roleId);
-    Role save(Role role);
+    void save(Role role);
     void delete(Long id);
     void updatePermissions(Long roleId, List<Long> permissionIds);
 }

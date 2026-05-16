@@ -1,6 +1,6 @@
 package com.htweb.core.enums;
 
-public enum EmployerProfileStatus {
+public enum CompanyStatus {
     PENDING,
     APPROVED,
     DENIED

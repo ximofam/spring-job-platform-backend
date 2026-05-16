@@ -9,9 +9,11 @@ public interface BaseRepository<T, ID extends Serializable> {
 
     List<T> findAll();
 
-    T save(T entity);
+    void save(T entity);
 
     T update(T entity);
 
     void delete(ID id);
+
+    T getReference(ID id);
 }

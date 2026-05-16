@@ -4,14 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
 
 import java.time.Instant;
 
 @Getter
 @Setter
 @MappedSuperclass
-@Filter(name = "activeFilter", condition = "deleted_at IS NULL")
+//@Filter(name = "activeFilter", condition = "deleted_at IS NULL")
 public class SoftDeleteModel extends BaseModel {
     @Column(name = "deleted_at")
     protected Instant deletedAt;

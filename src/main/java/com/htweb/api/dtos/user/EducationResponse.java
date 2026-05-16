@@ -1,0 +1,17 @@
+package com.htweb.api.dtos.user;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class EducationResponse {
+    private String school;
+    private String major;
+    private String degree;
+    private String description;
+    private LocalDate startDate;
+    private LocalDate endDate;
+}

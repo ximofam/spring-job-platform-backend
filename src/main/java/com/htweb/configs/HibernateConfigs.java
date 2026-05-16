@@ -55,7 +55,7 @@ public class HibernateConfigs {
         return dataSource;
     }
 
-    @Bean(initMethod = "migrate")
+    @Bean
     @DependsOn("dataSource")
     public Flyway flyway() {
         String dbActive = env.getProperty("spring.database.active");

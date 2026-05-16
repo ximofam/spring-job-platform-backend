@@ -53,7 +53,7 @@ JOIN permissions p ON p.name IN (
     'payment:view',
     'report:view_own'
 )
-WHERE r.name = 'RECRUITER';
+WHERE r.name = 'EMPLOYER';
 
 
 INSERT INTO role_permissions (role_id, permission_id)

@@ -11,10 +11,22 @@ public class HomeController
 {
     @GetMapping("/")
     public String home(Model model) {
+        return "admin/pages/dashboard";
+    }
 
-        model.addAttribute("title", "Admin Dashboard");
-        model.addAttribute("name", "HTWEB");
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        return "admin/pages/dashboard";
+    }
 
-        return "demo";
+    @GetMapping("/user")
+    public String user(Model model) {
+        return "admin/pages/user";
+    }
+
+
+    @GetMapping("/role")
+    public String role(Model model) {
+        return "admin/pages/role";
     }
 }

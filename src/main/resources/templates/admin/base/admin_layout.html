@@ -1,0 +1,33 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Otika Dashboard Layout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="bg-gray-50 text-slate-600 font-sans antialiased">
+    <div class="flex min-h-screen overflow-hidden">
+      <div th:replace="admin/fragments/sidebar :: sidebar"></div>
+
+      <div class="flex-1 pl-0 md:pl-64 flex flex-col min-h-screen">
+        <div th:replace="admin/fragments/header :: header"></div>
+
+        <main class="flex-1 p-6 mt-16 overflow-y-auto">
+            <div layout:fragment="content"></div>
+        </main>
+
+        <button
+          class="fixed right-0 top-1/2 -translate-y-1/2 bg-indigo-600 text-white p-2.5 rounded-l-md shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-colors z-50"
+        >
+          <i data-lucide="settings" class="w-4 h-4 animate-spin-slow"></i>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

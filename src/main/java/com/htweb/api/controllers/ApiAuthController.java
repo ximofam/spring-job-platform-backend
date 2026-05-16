@@ -1,20 +1,16 @@
 package com.htweb.api.controllers;
 
 import com.htweb.api.dtos.ApiResponse;
-import com.htweb.api.dtos.auth.AuthLoginRequest;
-import com.htweb.api.dtos.auth.AuthLogoutRequest;
-import com.htweb.api.dtos.auth.AuthRefreshRequest;
-import com.htweb.api.dtos.auth.AuthTokenResponse;
+import com.htweb.api.dtos.auth.*;
+import com.htweb.api.dtos.user.UserSimpleResponse;
 import com.htweb.api.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -43,8 +39,35 @@ public class ApiAuthController {
 
         authService.logout(userId, request.refreshToken());
 
-        return ResponseEntity.ok(
-                new ApiResponse("Logout successfully", null)
+        return ResponseEntity.ok(new ApiResponse("Logout successfully", null));
+    }
+
+    @GetMapping("/check-unique")
+    public ResponseEntity<AuthCheckFieldResponse> checkUniqueField(
+            @RequestParam String field,
+            @RequestParam String value) {
+
+        boolean exist = authService.isFieldExists(field, value);
+
+        return ResponseEntity.ok(new AuthCheckFieldResponse(field, !exist));
+    }
+
+
+    @PostMapping("/register/candidate")
+    public ResponseEntity<ApiResponse> registerCandidate(@RequestBody @Valid AuthRegisterRequest request) {
+        UserSimpleResponse userRes = authService.registerCandidate(request);
+
+        return ResponseEntity.status(201).body(
+                new ApiResponse("Register candidate successfully!", userRes)
+        );
+    }
+
+    @PostMapping(value = "/register/employer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> registerEmployer(@ModelAttribute @Valid AuthRegisterEmployerRequest request) {
+        UserSimpleResponse userRes = authService.registerEmployer(request);
+
+        return ResponseEntity.status(201).body(
+                new ApiResponse("Register employer successfully!", userRes)
         );
     }
 }
