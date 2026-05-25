@@ -50,4 +50,7 @@ public class Company extends SoftDeleteModel {
     @Column(name = "tax_code")
     private String taxCode;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
 }
