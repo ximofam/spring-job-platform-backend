@@ -7,7 +7,6 @@ import com.htweb.api.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +26,7 @@ public class ApiAuthController {
         return ResponseEntity.ok(authService.login(usernameOrEmail, password));
     }
 
-    @PostMapping("refresh")
+    @PostMapping("/refresh")
     public ResponseEntity<AuthTokenResponse> refresh(@RequestBody @Valid AuthRefreshRequest request) {
         return ResponseEntity.ok(authService.refreshToken(request.token()));
     }
@@ -62,8 +61,8 @@ public class ApiAuthController {
         );
     }
 
-    @PostMapping(value = "/register/employer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse> registerEmployer(@ModelAttribute @Valid AuthRegisterEmployerRequest request) {
+    @PostMapping(value = "/register/employer")
+    public ResponseEntity<ApiResponse> registerEmployer(@RequestBody @Valid AuthRegisterEmployerRequest request) {
         UserSimpleResponse userRes = authService.registerEmployer(request);
 
         return ResponseEntity.status(201).body(

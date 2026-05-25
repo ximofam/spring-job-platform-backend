@@ -11,9 +11,9 @@ public class CompanyDetailResponse {
     private String name;
     private String slug;
     private String logoUrl;
-    private String address;
     private String employeeSize;
     private String type;
     private String description;
     private CountryDetailResponse country;
+    private String address;
 }
