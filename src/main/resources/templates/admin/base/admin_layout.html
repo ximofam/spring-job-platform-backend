@@ -14,8 +14,8 @@
       <div class="flex-1 pl-0 md:pl-64 flex flex-col min-h-screen">
         <div th:replace="admin/fragments/header :: header"></div>
 
-        <main class="flex-1 p-6 mt-16 overflow-y-auto">
-            <div layout:fragment="content"></div>
+        <main class="flex-1 p-3 mt-16 overflow-y-auto">
+          <div layout:fragment="content"></div>
         </main>
 
         <button
@@ -25,7 +25,7 @@
         </button>
       </div>
     </div>
-
+    <th:block layout:fragment="scripts"></th:block>
     <script>
       lucide.createIcons();
     </script>

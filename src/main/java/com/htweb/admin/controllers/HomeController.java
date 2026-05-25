@@ -24,9 +24,4 @@ public class HomeController
         return "admin/pages/user";
     }
 
-
-    @GetMapping("/role")
-    public String role(Model model) {
-        return "admin/pages/role";
-    }
 }

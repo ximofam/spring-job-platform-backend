@@ -2,51 +2,52 @@
 <html
   xmlns:th="http://www.thymeleaf.org"
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{admin/base/admin_layout}">
+  layout:decorate="~{admin/base/admin_layout}"
 >
+  >
   <div layout:fragment="content">
     <div class="max-w-6xl mx-auto">
       <!-- Header -->
       <div class="flex justify-between items-end mb-8">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900">Cấu hình Vai trò</h1>
-          <p class="text-gray-500 mt-1">Quản lý các nhóm quyền hạn trong hệ thống</p>
+          <h1 class="text-2xl font-bold text-gray-800">Cấu hình Vai trò</h1>
+          <p class="text-sm text-slate-400 mt-1">Quản lý các nhóm quyền hạn trong hệ thống</p>
         </div>
         <button
           onclick="document.getElementById('createRoleModal').classList.remove('hidden')"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold shadow-sm transition-all flex items-center"
+          class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm shadow-sm shadow-indigo-100 transition-all active:scale-[0.98]"
         >
           <i class="bi bi-plus-lg mr-2"></i>
-          Tạo Role mới
+          Tạo Vai Trò Mới
         </button>
       </div>
 
       <!-- Flash success -->
       <div
         th:if="${success}"
-        class="mb-6 flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm font-semibold"
+        class="flex items-center gap-3 my-3 bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium shadow-sm"
       >
-        <i class="bi bi-check-circle-fill"></i>
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 flex-shrink-0"></i>
         <span th:text="${success}"></span>
       </div>
 
       <!-- Role cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           th:each="role : ${roles}"
-          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow flex flex-col"
+          class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col relative group"
         >
           <div class="flex justify-between items-start mb-4">
-            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-2xl">
-              <i class="bi bi-shield-check"></i>
+            <div class="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+              <i data-lucide="shield-alert" class="w-5 h-5"></i>
             </div>
             <div class="flex gap-x-3">
               <a
                 href="#"
                 th:onclick="|window.open('@{/admin/roles/{id}/update(id=${role.id})}', 'popup', 'width=800,height=600')|"
-                class="text-gray-400 hover:text-blue-500"
+                class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors"
               >
-                <i class="bi bi-pencil"></i>
+                <i data-lucide="edit-2" class="w-4 h-4"></i>
               </a>
               <form
                 th:action="@{/admin/roles/{id}/delete(id=${role.id})}"
@@ -54,21 +55,24 @@
                 onsubmit="return confirm('Xóa role này?');"
                 style="display: inline"
               >
-                <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors">
-                  <i class="bi bi-trash"></i>
+                <button
+                  type="submit"
+                  class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                >
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </form>
             </div>
           </div>
 
-          <h3 class="text-xl font-bold text-gray-800" th:text="${role.name}">Role Name</h3>
-          <p class="text-gray-500 text-sm mt-2 mb-4 flex-1" th:text="${role.description} ?: 'Chưa có mô tả'">Mô tả</p>
+          <h3 class="text-base font-bold text-gray-800" th:text="${role.name}">Role Name</h3>
+          <p class="mb-4 text-sm text-slate-400 mt-2 line-clamp-2" th:text="${role.description} ?: 'Chưa có mô tả'">Mô tả</p>
 
           <a
-            th:href="@{/admin/roles/{id}/edit(id=${role.id})}"
-            class="block w-full text-center bg-gray-50 hover:bg-blue-600 hover:text-white text-gray-700 font-bold py-2.5 rounded-xl transition-all border border-gray-100"
+            th:href="@{/admin/roles/{id}/permission(id=${role.id})}"
+            class="mt-auto block w-full text-center bg-slate-50 hover:bg-indigo-600 text-slate-600 hover:text-white font-semibold py-2.5 text-xs rounded-xl transition-all border border-slate-100 hover:border-transparent"
           >
-            Chỉnh sửa quyền
+             Cấu hình chi tiết quyền
           </a>
         </div>
 
@@ -97,7 +101,7 @@
           </button>
         </div>
 
-        <form th:action="@{/admin/roles/create}" method="post">
+        <form th:action="@{/admin/roles}" method="post">
           <div class="mb-4">
             <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
               Tên vai trò

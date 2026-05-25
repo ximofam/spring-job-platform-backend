@@ -26,10 +26,10 @@ public class RoleController {
     @GetMapping("/roles")
     public String listRoles(Model model) {
         model.addAttribute("roles", roleService.findAll());
-        return "admin/rolePage";
+        return "admin/pages/role";
     }
 
-    @GetMapping("/roles/{id}/edit")
+    @GetMapping("/roles/{id}/permission")
     public String editRole(@PathVariable Long id, Model model) {
         Role role = roleService.findById(id);
 
@@ -40,7 +40,7 @@ public class RoleController {
         model.addAttribute("role", role);
         model.addAttribute("selectedPermIds", selectedPermIds);
         model.addAttribute("permsByModule", permsByModule);
-        return "admin/roleEditPermPage";
+        return "admin/pages/permission_role";
     }
 
     @PostMapping("/roles/{id}/edit")
@@ -55,7 +55,7 @@ public class RoleController {
     }
 
     // POST /admin/roles/create — tạo mới
-    @PostMapping("/roles/create")
+    @PostMapping("/roles")
     public String createRole(
             @RequestParam String name,
             @RequestParam(required = false) String description,
