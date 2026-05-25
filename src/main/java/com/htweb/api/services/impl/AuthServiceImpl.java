@@ -17,6 +17,7 @@ import com.htweb.api.services.AuthService;
 import com.htweb.api.services.CompanyService;
 import com.htweb.api.services.TokenService;
 import com.htweb.core.enums.CompanyStatus;
+import com.htweb.core.enums.EmployerStatus;
 import com.htweb.core.enums.UserRole;
 import com.htweb.core.helpers.security.CustomUserDetails;
 import com.htweb.core.pojo.*;
@@ -141,11 +142,12 @@ public class AuthServiceImpl implements AuthService {
             handleDuplicateEntry(ex);
         }
 
-        Company company = companyMapper.toCompany(request);
+        Company company = companyMapper.toCompany(request.getCompany());
         company.setStatus(CompanyStatus.PENDING);
         companyService.create(company);
 
         EmployerProfile profile = new EmployerProfile();
+        profile.setStatus(EmployerStatus.PENDING);
         profile.setUser(user);
         profile.setCompany(company);
         try {

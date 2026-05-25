@@ -37,6 +37,12 @@ public class CandidateProfile implements Serializable {
     @OneToMany(mappedBy = "candidateProfile", fetch = FetchType.LAZY)
     private Set<Experience> experiences;
 
+    @OneToMany(mappedBy = "candidateProfile", fetch = FetchType.LAZY)
+    private Set<CandidateCv> candidateCvs;
+
+    @OneToMany(mappedBy = "candidateProfile", fetch = FetchType.LAZY)
+    private Set<Application> applications;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
