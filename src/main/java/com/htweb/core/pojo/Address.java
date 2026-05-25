@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "addresses")
 @Getter
@@ -23,4 +25,7 @@ public class Address extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id", nullable = false, referencedColumnName = "id")
     private District district;
+
+    @OneToMany(mappedBy = "address")
+    private Set<Company> companies;
 }
