@@ -60,8 +60,8 @@ public class AsyncConfig implements AsyncConfigurer, SchedulingConfigurer {
         scheduler.setPoolSize(env.getProperty("scheduled.pool-size", Integer.class, 2));
         scheduler.setThreadNamePrefix(env.getProperty("scheduled.thread-name-prefix", "ScheduledThread-"));
 
-        scheduler.setWaitForTasksToCompleteOnShutdown(true);
-        scheduler.setAwaitTerminationSeconds(env.getProperty("task.await-termination-seconds", Integer.class, 60));
+//        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+//        scheduler.setAwaitTerminationSeconds(env.getProperty("task.await-termination-seconds", Integer.class, 60));
         scheduler.initialize();
         return scheduler;
     }
