@@ -20,8 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class CandidateProfile implements Serializable {
     @Id
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
@@ -55,7 +54,7 @@ public class CandidateProfile implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CandidateProfile other)) return false;
-        return userId != null && userId.equals(other.userId);
+        return id != null && id.equals(other.id);
     }
 
     @Override

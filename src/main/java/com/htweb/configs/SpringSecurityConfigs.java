@@ -91,7 +91,7 @@ public class SpringSecurityConfigs {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
                                 "/",
-                                "/admin**",
+                                "/admin/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

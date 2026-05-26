@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addEducationForCandidate(Long userId, EducationCreateRequest request) {
-        CandidateProfile profile = candidateProfileRepository.findByUserId(userId)
+        CandidateProfile profile = candidateProfileRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Not found candidate profile of user id: %d", userId));
 
         Education education = candidateProfileMapper.toEducation(request);
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addExperienceForCandidate(Long userId, ExperienceCreateRequest request) {
-        CandidateProfile profile = candidateProfileRepository.findByUserId(userId)
+        CandidateProfile profile = candidateProfileRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Not found candidate profile of user id: %d", userId));
 
         Experience experience = candidateProfileMapper.toExperience(request);
