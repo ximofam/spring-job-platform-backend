@@ -7,6 +7,7 @@ import com.htweb.api.services.CountryService;
 import com.htweb.core.pojo.Country;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class CountryServiceImpl implements CountryService {
     private final CountryMapper countryMapper;
 
     @Override
+    @Cacheable(value = "countries")
     public List<CountryDetailResponse> getAllCountries() {
         List<Country> countries = countryRepository.findAll();
         if (countries != null && !countries.isEmpty()) {
