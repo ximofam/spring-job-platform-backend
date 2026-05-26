@@ -1,6 +1,9 @@
 package com.htweb.api.controllers;
 
-import com.htweb.api.dtos.user.*;
+import com.htweb.api.dtos.user.EducationCreateRequest;
+import com.htweb.api.dtos.user.ExperienceCreateRequest;
+import com.htweb.api.dtos.user.UserDetailResponse;
+import com.htweb.api.dtos.user.UserUpdateRequest;
 import com.htweb.api.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +21,13 @@ public class ApiUserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserSimpleResponse> getMe(@AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(userService.getUserById(userId));
-    }
-
-    @GetMapping("/me/profile")
-    public ResponseEntity<UserDetailResponse> getMyProfile(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<UserDetailResponse> getMe(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(userService.getUserDetailById(userId));
     }
 
+
     @GetMapping("/{username}")
+    @PreAuthorize("hasAuthority('USER_READ') or hasRole('ADMIN')")
     public ResponseEntity<UserDetailResponse> getUserDetailByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserDetailByUsername(username));
     }

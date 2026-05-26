@@ -1,9 +1,11 @@
 package com.htweb.api.services;
 
-import com.htweb.api.dtos.user.*;
+import com.htweb.api.dtos.user.EducationCreateRequest;
+import com.htweb.api.dtos.user.ExperienceCreateRequest;
+import com.htweb.api.dtos.user.UserDetailResponse;
+import com.htweb.api.dtos.user.UserUpdateRequest;
 
 public interface UserService {
-    UserSimpleResponse getUserById(Long id);
 
     UserDetailResponse getUserDetailById(Long id);
 
