@@ -9,6 +9,7 @@
   </head>
   <body class="bg-gray-50 text-slate-600 font-sans antialiased">
     <div class="flex min-h-screen overflow-hidden">
+      <!-- SIDEBAR -->
       <aside class="w-64 bg-white border-r border-gray-100 fixed inset-y-0 left-0 z-50 flex flex-col hidden md:flex">
         <div class="h-16 flex items-center px-6 border-b border-gray-50">
           <a href="#" class="flex items-center gap-2 font-bold text-xl text-slate-800 tracking-wide uppercase">
@@ -22,10 +23,7 @@
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">Main</p>
             <ul class="space-y-1">
               <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-indigo-50/50 text-indigo-600 font-medium text-sm transition-all"
-                >
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-indigo-50/50 text-indigo-600 font-medium text-sm transition-all">
                   <div class="flex items-center gap-3">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>Dashboard</span>
@@ -33,10 +31,7 @@
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all"
-                >
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all">
                   <div class="flex items-center gap-3">
                     <i data-lucide="component" class="w-4 h-4"></i>
                     <span>Widgets</span>
@@ -45,10 +40,7 @@
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all"
-                >
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all">
                   <div class="flex items-center gap-3">
                     <i data-lucide="grid" class="w-4 h-4"></i>
                     <span>Apps</span>
@@ -63,10 +55,7 @@
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">UI Elements</p>
             <ul class="space-y-1">
               <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all"
-                >
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all">
                   <div class="flex items-center gap-3">
                     <i data-lucide="box" class="w-4 h-4"></i>
                     <span>Basic Components</span>
@@ -75,10 +64,7 @@
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all"
-                >
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all">
                   <div class="flex items-center gap-3">
                     <i data-lucide="cpu" class="w-4 h-4"></i>
                     <span>Advanced</span>
@@ -93,10 +79,7 @@
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">Otika</p>
             <ul class="space-y-1">
               <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all"
-                >
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all">
                   <div class="flex items-center gap-3">
                     <i data-lucide="check-square" class="w-4 h-4"></i>
                     <span>Forms</span>
@@ -105,10 +88,7 @@
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all"
-                >
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all">
                   <div class="flex items-center gap-3">
                     <i data-lucide="table" class="w-4 h-4"></i>
                     <span>Tables</span>
@@ -121,10 +101,10 @@
         </div>
       </aside>
 
+      <!-- MAIN CONTENT WRAPPER -->
       <div class="flex-1 pl-0 md:pl-64 flex flex-col min-h-screen">
-        <header
-          class="h-16 bg-white border-b border-gray-100 fixed top-0 right-0 left-0 md:left-64 z-40 flex items-center justify-between px-6"
-        >
+        <!-- HEADER -->
+        <header class="h-16 bg-white border-b border-gray-100 fixed top-0 right-0 left-0 md:left-64 z-40 flex items-center justify-between px-6">
           <div class="flex items-center gap-4 flex-1 max-w-xl">
             <button class="p-1.5 rounded hover:bg-gray-100 text-slate-500 transition-colors">
               <i data-lucide="menu" class="w-5 h-5"></i>
@@ -133,11 +113,7 @@
               <i data-lucide="maximize" class="w-4 h-4"></i>
             </button>
             <div class="relative w-full max-w-xs ml-2 hidden sm:block">
-              <input
-                type="text"
-                placeholder="Search"
-                class="w-full bg-slate-50 border border-transparent focus:border-indigo-500 focus:bg-white text-sm pl-4 pr-10 py-1.5 rounded-md outline-none transition-all"
-              />
+              <input type="text" placeholder="Search" class="w-full bg-slate-50 border border-transparent focus:border-indigo-500 focus:bg-white text-sm pl-4 pr-10 py-1.5 rounded-md outline-none transition-all" />
               <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-2.5"></i>
             </div>
           </div>
@@ -145,268 +121,337 @@
           <div class="flex items-center gap-4">
             <button class="p-2 text-slate-500 hover:bg-gray-50 rounded-full relative transition-colors">
               <i data-lucide="mail" class="w-5 h-5"></i>
-              <span
-                class="absolute top-1.5 right-1.5 w-4 h-4 bg-indigo-600 text-[10px] text-white rounded-full flex items-center justify-center font-semibold"
-              >
-                3
-              </span>
+              <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-indigo-600 text-[10px] text-white rounded-full flex items-center justify-center font-semibold">3</span>
             </button>
             <button class="p-2 text-slate-500 hover:bg-gray-50 rounded-full relative transition-colors">
               <i data-lucide="bell" class="w-5 h-5"></i>
               <span class="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full"></span>
             </button>
             <div class="flex items-center gap-3 pl-2 border-l border-gray-100">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
-                alt="Avatar"
-                class="w-8 h-8 rounded-full object-cover ring-2 ring-gray-100"
-              />
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-gray-100" />
             </div>
           </div>
         </header>
 
-        <main class="flex-1 p-6 mt-16 overflow-y-auto">
-          <div class="max-w-6xl mx-auto space-y-8">
-            <div
-              class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 pb-5"
-            >
-              <div>
-                <h1 class="text-2xl font-bold text-slate-800">Cấu hình Vai trò</h1>
-                <p class="text-sm text-slate-400 mt-1">
-                  Quản lý và phân rã các nhóm quyền hạn trong hệ thống doanh nghiệp
-                </p>
-              </div>
-              <button
-                onclick="document.getElementById('roleModalDemo').classList.remove('hidden')"
-                class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm shadow-sm shadow-indigo-100 transition-all active:scale-[0.98]"
-              >
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                <span>Tạo vai trò mới</span>
-              </button>
-            </div>
-
-            <div
-              class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium shadow-sm"
-            >
-              <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-              <span>Hệ thống đã cập nhật phân quyền thành công cho vai trò "Chuyên viên HR"!</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
-                class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col relative group"
-              >
-                <div class="flex justify-between items-start mb-5">
-                  <div class="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
+        <!-- FORM CONTENT -->
+        <main class="flex-1 p-6 mt-16 overflow-y-auto max-w-5xl w-full mx-auto">
+          <form id="unified-employer-form" action="#" method="POST" class="space-y-8">
+            
+            <!-- SECTION 1: USER MODEL -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div class="bg-slate-800 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-white/10 rounded-lg">
+                    <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
                   </div>
-                  <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                    <button
-                      class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors"
-                      title="Sửa thông tin nhanh"
-                    >
-                      <i data-lucide="edit-2" class="w-4 h-4"></i>
-                    </button>
-                    <button
-                      class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                      title="Xóa vai trò"
-                    >
-                      <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div class="flex-1">
-                  <div class="flex items-center gap-2">
-                    <h3 class="text-base font-bold text-slate-800">Quản trị viên tối cao</h3>
-                    <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                      Mặc định
-                    </span>
-                  </div>
-                  <p class="text-sm text-slate-400 mt-2 line-clamp-2">
-                    Toàn quyền truy cập, cấu hình và can thiệp sâu vào toàn bộ module Core của hệ thống.
-                  </p>
-
-                </div>
-
-                <a
-                  href="#"
-                  class="mt-6 block w-full text-center bg-slate-50 hover:bg-indigo-600 text-slate-600 hover:text-white font-semibold py-2.5 text-xs rounded-xl transition-all border border-slate-100 hover:border-transparent"
-                >
-                  Cấu hình chi tiết quyền
-                </a>
-              </div>
-
-              <div
-                class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col relative group"
-              >
-                <div class="flex justify-between items-start mb-5">
-                  <div class="w-11 h-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button
-                      class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors"
-                    >
-                      <i data-lucide="edit-2" class="w-4 h-4"></i>
-                    </button>
-                    <button
-                      class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                    >
-                      <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div class="flex-1">
-                  <h3 class="text-base font-bold text-slate-800">Quản lý nhân sự (HR)</h3>
-                  <p class="text-sm text-slate-400 mt-2 line-clamp-2">
-                    Quản lý hồ sơ nhân viên, phê duyệt bảng lương, chấm công và quy trình tuyển dụng nội bộ.
-                  </p>
-
-                  <div class="flex items-center gap-4 mt-4 text-xs text-slate-400">
-                    <span class="flex items-center gap-1">
-                      <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
-                      14 Quyền hạn
-                    </span>
-                    <span class="flex items-center gap-1">
-                      <i data-lucide="users" class="w-3.5 h-3.5"></i>
-                      5 tài khoản
-                    </span>
-                  </div>
-                </div>
-
-                <a
-                  href="#"
-                  class="mt-6 block w-full text-center bg-slate-50 hover:bg-indigo-600 text-slate-600 hover:text-white font-semibold py-2.5 text-xs rounded-xl transition-all border border-slate-100 hover:border-transparent"
-                >
-                  Cấu hình chi tiết quyền
-                </a>
-              </div>
-
-              <div
-                class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col relative group"
-              >
-                <div class="flex justify-between items-start mb-5">
-                  <div class="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                    <i data-lucide="shield" class="w-5 h-5"></i>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button
-                      class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors"
-                    >
-                      <i data-lucide="edit-2" class="w-4 h-4"></i>
-                    </button>
-                    <button
-                      class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                    >
-                      <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div class="flex-1">
-                  <h3 class="text-base font-bold text-slate-800">Nhân viên chính thức</h3>
-                  <p class="text-sm text-slate-400 mt-2 line-clamp-2">
-                    Xem thông tin cá nhân, thực hiện gửi đề xuất ngày nghỉ và chấm công hằng ngày.
-                  </p>
-
-                  <div class="flex items-center gap-4 mt-4 text-xs text-slate-400">
-                    <span class="flex items-center gap-1">
-                      <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
-                      3 Quyền hạn
-                    </span>
-                    <span class="flex items-center gap-1">
-                      <i data-lucide="users" class="w-3.5 h-3.5"></i>
-                      180 tài khoản
-                    </span>
-                  </div>
-                </div>
-
-                <a
-                  href="#"
-                  class="mt-6 block w-full text-center bg-slate-50 hover:bg-indigo-600 text-slate-600 hover:text-white font-semibold py-2.5 text-xs rounded-xl transition-all border border-slate-100 hover:border-transparent"
-                >
-                  Cấu hình chi tiết quyền
-                </a>
-              </div>
-            </div>
-
-            <div id="roleModalDemo" class="hidden fixed inset-0 z- flex items-center justify-center">
-              <div
-                class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
-                onclick="document.getElementById('roleModalDemo').classList.add('hidden')"
-              ></div>
-
-              <div
-                class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 border border-slate-100 transform transition-all"
-              >
-                <div class="flex justify-between items-center mb-5">
-                  <h2 class="text-lg font-bold text-slate-800">Tạo vai trò mới</h2>
-                  <button
-                    onclick="document.getElementById('roleModalDemo').classList.add('hidden')"
-                    class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50 transition-colors"
-                  >
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                  </button>
-                </div>
-
-                <form onsubmit="event.preventDefault()" class="space-y-4">
                   <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                      Tên vai trò
-                      <span class="text-rose-500">*</span>
+                    <h2 class="text-base font-bold text-white">1. Thông tin Tài khoản cá nhân (User Model)</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Quản lý thông tin định danh cá nhân và thông tin liên hệ chính.</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-slate-700 px-2 py-1 rounded text-slate-300 font-mono hidden sm:inline-block">User Entity</span>
+              </div>
+              
+              <div class="p-6 md:p-8 space-y-6">
+                <div class="flex items-center space-x-6">
+                  <div class="relative group">
+                    <img id="avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Avatar" class="w-20 h-20 rounded-full object-cover ring-4 ring-slate-100 transition duration-300 group-hover:ring-indigo-100">
+                    <label for="avatar-input" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition">
+                      <i data-lucide="camera" class="w-5 h-5 text-white"></i>
                     </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Ví dụ: Tech Lead, BA Manager..."
-                      class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/5 transition-all"
-                    />
+                    <input type="file" id="avatar-input" class="hidden" accept="image/*">
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-semibold text-slate-800">Ảnh đại diện người dùng</h3>
+                    <p class="text-xs text-slate-400 mt-1">Cập nhật trường dữ liệu <code class="bg-indigo-50 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-[11px]">avatarUrl</code></p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tên đăng nhập (Username) <span class="text-rose-500">*</span></label>
+                    <input type="text" name="username" value="admin_recruiter" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
                   </div>
 
                   <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                      Mô tả ngắn
-                    </label>
-                    <textarea
-                      rows="3"
-                      placeholder="Mô tả tóm tắt trách nhiệm của nhóm vai trò này..."
-                      class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/5 transition-all resize-none"
-                    ></textarea>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa chỉ Email <span class="text-rose-500">*</span></label>
+                    <input type="email" name="email" value="contact@htweb.com" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
                   </div>
 
-                  <div class="flex items-center gap-3 pt-2">
-                    <button
-                      type="button"
-                      onclick="document.getElementById('roleModalDemo').classList.add('hidden')"
-                      class="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-500 hover:bg-slate-50 active:bg-slate-100 transition-all"
-                    >
-                      Hủy bỏ
-                    </button>
-                    <button
-                      type="submit"
-                      class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-100 active:scale-[0.98] transition-all"
-                    >
-                      Xác nhận tạo
-                    </button>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Họ và tên</label>
+                    <input type="text" name="name" value="Trần Thị B" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
                   </div>
-                </form>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Số điện thoại</label>
+                    <input type="tel" name="phone" value="0912345678" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Giới tính (Gender Enum)</label>
+                    <select name="gender" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option value="MALE">Nam</option>
+                      <option value="FEMALE" selected>Nữ</option>
+                      <option value="OTHER">Khác</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Ngày sinh (LocalDate)</label>
+                    <input type="date" name="dateOfBirth" value="1995-05-15" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa chỉ thường trú</label>
+                    <input type="text" name="address" value="456 Đường Điện Biên Phủ, Bình Thạnh" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Quốc gia (Country ID Mapping)</label>
+                    <select name="country_id" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option value="1" selected>Việt Nam</option>
+                      <option value="2">Nhật Bản</option>
+                      <option value="3">Hàn Quốc</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Vai trò hệ thống chính (UserRole Enum)</label>
+                    <select name="userRole" class="w-full px-4 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-400 bg-slate-50 cursor-not-allowed" disabled>
+                      <option value="EMPLOYER" selected>EMPLOYER (Nhà tuyển dụng)</option>
+                      <option value="CANDIDATE">CANDIDATE (Ứng viên)</option>
+                      <option value="ADMIN">ADMIN (Quản trị viên)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
+            </section>
+
+            <!-- SECTION 2: COMPANY MODEL -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div class="bg-indigo-600 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-white/10 rounded-lg">
+                    <i data-lucide="building-2" class="w-5 h-5 text-indigo-200"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-white">2. Thông tin Doanh nghiệp (Company Model)</h2>
+                    <p class="text-xs text-indigo-200 mt-0.5">Hiển thị trên trang chi tiết công ty để thu hút và tạo lòng tin với ứng viên.</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-indigo-700 px-2 py-1 rounded text-indigo-200 font-mono hidden sm:inline-block">Company Entity</span>
+              </div>
+
+              <div class="p-6 md:p-8 space-y-6">
+                <div class="flex items-center space-x-6">
+                  <div class="relative group border border-gray-100 rounded-xl p-2 bg-slate-50 hover:bg-slate-100/50 transition">
+                    <img id="logo-preview" src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=120&h=120&q=80" alt="Logo công ty" class="w-16 h-16 object-contain rounded-lg">
+                    <label for="logo-input" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 cursor-pointer transition">
+                      <i data-lucide="upload" class="w-4 h-4 text-white"></i>
+                    </label>
+                    <input type="file" id="logo-input" class="hidden" accept="image/*">
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-semibold text-slate-800">Logo Thương hiệu</h3>
+                    <p class="text-xs text-slate-400 mt-1">Cập nhật trường dữ liệu <code class="bg-indigo-50 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-[11px]">logoUrl</code></p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tên pháp nhân Công ty</label>
+                    <input type="text" name="company_name" value="Công nghệ và Giải pháp số HTWeb" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Đường dẫn định danh (Slug)</label>
+                    <div class="flex rounded-lg shadow-sm">
+                      <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-200 bg-slate-50 text-slate-400 text-xs font-mono">/co/</span>
+                      <input type="text" name="slug" value="htweb-software" class="w-full px-4 py-2 border border-gray-200 rounded-r-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition font-mono text-sm text-slate-800">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mã số thuế (Tax Code)</label>
+                    <input type="text" name="taxCode" value="0314999999" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Loại hình công ty (CompanyType Enum)</label>
+                    <select name="company_type" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option value="PRODUCT" selected>Công ty Sản phẩm (Product)</option>
+                      <option value="OUTSOURCING">Công ty Gia công (Outsourcing)</option>
+                      <option value="STARTUP">Khởi nghiệp (Startup)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Quy mô nhân sự (EmployeeSize Enum)</label>
+                    <select name="employeeSize" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option value="SIZE_10_50">10 - 50 nhân sự</option>
+                      <option value="SIZE_50_300" selected>50 - 300 nhân sự</option>
+                      <option value="SIZE_300_PLUS">Hơn 300 nhân sự</option>
+                    </select>
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa chỉ trụ sở chính (Address Mapping)</label>
+                    <input type="text" name="company_address" value="Tòa nhà HTWeb, Số 12 Đường Lê Lợi, Bến Nghé, Quận 1" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mô tả tóm tắt doanh nghiệp</label>
+                    <textarea name="description" rows="4" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">HTWeb tự hào là đơn vị tiên phong cung cấp hạ tầng chuyển đổi số và tuyển dụng thông minh tại Đông Nam Á...</textarea>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECTION 3: EMPLOYER PROFILE MODEL -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div class="bg-amber-500 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-white/10 rounded-lg">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-amber-100"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-white">3. Trạng thái Duyệt & Phân quyền (EmployerProfile Model)</h2>
+                    <p class="text-xs text-amber-100 mt-0.5">Cấu hình điều kiện xác thực hồ sơ liên kết giữa User và Company.</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-amber-600 px-2 py-1 rounded text-amber-100 font-mono hidden sm:inline-block">Profile Relation</span>
+              </div>
+
+              <div class="p-6 md:p-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái phê duyệt hồ sơ (EmployerStatus)</label>
+                    <select name="status" id="profile-status-select" onchange="updateStatusAlert(this.value)" class="w-full px-4 py-2 border border-amber-200 bg-amber-50/30 text-amber-900 font-semibold rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition text-sm">
+                      <option value="PENDING" selected>⏳ PENDING (Chờ kiểm duyệt)</option>
+                      <option value="APPROVED">✅ APPROVED (Đã phê duyệt hoạt động)</option>
+                      <option value="REJECTED">❌ REJECTED (Bị từ chối hồ sơ)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">ID Người duyệt hệ thống (Approved By User ID)</label>
+                    <input type="number" name="approved_by_id" value="99" placeholder="Nhập ID Admin phê duyệt..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Thời gian phê duyệt (Approved At - Instant)</label>
+                    <input type="datetime-local" name="approvedAt" id="approvedAt-input" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-600 bg-white">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mã Khóa chính Đồng bộ (User ID / MapsId)</label>
+                    <input type="text" value="Khóa chính đồng bộ ID người dùng (MapsId: 1024)" disabled class="w-full px-4 py-2 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg font-medium cursor-not-allowed text-xs">
+                  </div>
+                </div>
+
+                <!-- ALERT STATE BOX -->
+                <div id="status-alert-box" class="flex items-start bg-amber-50/60 border border-amber-100 p-4 rounded-xl transition-all duration-300">
+                  <div class="flex-shrink-0 mt-0.5" id="status-icon-wrapper">
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>
+                  </div>
+                  <div class="ml-3">
+                    <h4 class="text-xs font-bold text-amber-800 uppercase tracking-wide" id="status-title-text">Hồ sơ đang ở trạng thái chờ (PENDING)</h4>
+                    <p class="mt-1 text-xs text-amber-700/90 leading-relaxed">
+                      Tài khoản tạm thời bị hạn chế đăng tin tuyển dụng mới cho đến khi có hành động phê duyệt từ Quản trị viên hệ thống.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- FOOTER METADATA -->
+                <div class="border-t border-gray-100 pt-4 flex flex-wrap gap-4 md:gap-8 text-[11px] text-slate-400">
+                  <div class="flex items-center gap-1.5">
+                    <i data-lucide="calendar-plus" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span>Ngày tạo hồ sơ: <b class="text-slate-600 font-medium">2026-05-12 14:30</b></span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span>Cập nhật lần cuối: <b class="text-indigo-600 font-medium">Vừa xong</b></span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <button type="button" class="px-5 py-2 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-100 transition-colors">Hủy thay đổi</button>
+              <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-100 transition-colors">Lưu thông tin cập nhật</button>
             </div>
-          </div>
+          </form>
         </main>
 
-        <button
-          class="fixed right-0 top-1/2 -translate-y-1/2 bg-indigo-600 text-white p-2.5 rounded-l-md shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-colors z-50"
-        >
+        <!-- FLOATING SETTING BUTTON -->
+        <button class="fixed right-0 top-1/2 -translate-y-1/2 bg-indigo-600 text-white p-2.5 rounded-l-md shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-colors z-50">
           <i data-lucide="settings" class="w-4 h-4 animate-spin-slow"></i>
         </button>
       </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-      lucide.createIcons();
+        // Khởi tạo các biểu tượng Lucide
+        lucide.createIcons();
+
+        // Xử lý Thay đổi trạng thái Alert Dynamic dựa theo Form Input
+        function updateStatusAlert(statusValue) {
+            const alertBox = document.getElementById('status-alert-box');
+            const titleText = document.getElementById('status-title-text');
+            const iconWrapper = document.getElementById('status-icon-wrapper');
+            const descText = alertBox.querySelector('p');
+            const approvedAtInput = document.getElementById('approvedAt-input');
+
+            // Reset CSS Classes ban đầu
+            alertBox.className = "flex items-start p-4 rounded-xl transition-all duration-300 border";
+
+            if (statusValue === 'APPROVED') {
+                alertBox.classList.add('bg-emerald-50/60', 'border-emerald-100');
+                titleText.innerText = "Hồ sơ đã được phê duyệt (APPROVED)";
+                titleText.className = "text-xs font-bold text-emerald-800 uppercase tracking-wide";
+                descText.innerText = "Doanh nghiệp đã được cấp toàn quyền hoạt động, đăng bài tuyển dụng, tìm kiếm và tiếp cận hồ sơ ứng viên trên hệ thống.";
+                descText.className = "mt-1 text-xs text-emerald-700/90 leading-relaxed";
+                iconWrapper.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i>`;
+                
+                // Tự động điền thời gian hiện tại nếu ô nhập trống
+                if(!approvedAtInput.value){
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    approvedAtInput.value = now.toISOString().slice(0,16);
+                }
+            } else if (statusValue === 'REJECTED') {
+                alertBox.classList.add('bg-rose-50/60', 'border-rose-100');
+                titleText.innerText = "Hồ sơ đã bị từ chối duyệt (REJECTED)";
+                titleText.className = "text-xs font-bold text-rose-800 uppercase tracking-wide";
+                descText.innerText = "Yêu cầu định danh bị hủy bỏ. Vui lòng kiểm tra lại tính hợp pháp của Mã số thuế hoặc thông tin liên hệ của Doanh nghiệp.";
+                descText.className = "mt-1 text-xs text-rose-700/90 leading-relaxed";
+                iconWrapper.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i>`;
+            } else {
+                // Trạng thái PENDING mặc định
+                alertBox.classList.add('bg-amber-50/60', 'border-amber-100');
+                titleText.innerText = "Hồ sơ đang ở trạng thái chờ (PENDING)";
+                titleText.className = "text-xs font-bold text-amber-800 uppercase tracking-wide";
+                descText.innerText = "Tài khoản tạm thời bị hạn chế đăng tin tuyển dụng mới cho đến khi có hành động phê duyệt từ Quản trị viên hệ thống.";
+                descText.className = "mt-1 text-xs text-amber-700/90 leading-relaxed";
+                iconWrapper.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>`;
+            }
+            // Re-render Lucide icons cho thẻ vừa thêm động bằng Javascript
+            lucide.createIcons();
+        }
+
+        // Khắc phục lỗi Preview Ảnh (Sửa lại cú pháp e.target.files)
+        function setupImagePreview(inputId, previewId) {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                if(e.target.files && e.target.files[0]) {
+                    document.getElementById(previewId).src = URL.createObjectURL(e.target.files[0]);
+                }
+            });
+        }
+        setupImagePreview('avatar-input', 'avatar-preview');
+        setupImagePreview('logo-input', 'logo-preview');
     </script>
   </body>
 </html>

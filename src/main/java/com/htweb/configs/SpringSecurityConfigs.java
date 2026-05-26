@@ -88,11 +88,11 @@ public class SpringSecurityConfigs {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers(
-//                                "/",
-//                                "/admin**",
-//                                "/v3/api-docs/**",
-//                                "/swagger-ui/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/",
+                                "/admin/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 ).formLogin(form -> form.loginPage("/admin/login")
                         .loginProcessingUrl("/login")

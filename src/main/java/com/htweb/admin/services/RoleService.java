@@ -2,6 +2,7 @@ package com.htweb.admin.services;
 import com.htweb.core.pojo.Role;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface RoleService {
@@ -12,4 +13,5 @@ public interface RoleService {
     void save(Role role);
     void delete(Long id);
     void updatePermissions(Long roleId, List<Long> permissionIds);
+    Optional<Role> findByName(String name);
 }
