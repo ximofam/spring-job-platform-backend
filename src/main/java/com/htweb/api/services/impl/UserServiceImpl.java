@@ -1,6 +1,9 @@
 package com.htweb.api.services.impl;
 
-import com.htweb.api.dtos.user.*;
+import com.htweb.api.dtos.user.EducationCreateRequest;
+import com.htweb.api.dtos.user.ExperienceCreateRequest;
+import com.htweb.api.dtos.user.UserDetailResponse;
+import com.htweb.api.dtos.user.UserUpdateRequest;
 import com.htweb.api.exceptions.http.NotFoundException;
 import com.htweb.api.exceptions.users.UserNotFoundException;
 import com.htweb.api.mappers.CandidateProfileMapper;
@@ -35,13 +38,6 @@ public class UserServiceImpl implements UserService {
     private final ExperienceRepository experienceRepository;
 
     @Override
-    public UserSimpleResponse getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-
-        return userMapper.toUserSimpleResponse(user);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public UserDetailResponse getUserDetailById(Long id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
@@ -66,7 +62,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
 
         UserDetailResponse userRes = userMapper.toUserDetailResponse(user);
-        if (user.getUserRole().equals(UserRole.CANDIDATE)) {
+        if (user.getUserRole().equals(UserRole.EMPLOYER)) {
+            employerProfileRepository.findById(user.getId()).ifPresent(profile -> {
+                userRes.setProfile(userMapper.toEmployerProfileResponse(profile));
+            });
+        } else if (user.getUserRole().equals(UserRole.CANDIDATE)) {
             candidateProfileRepository.findById(user.getId()).ifPresent(profile -> {
                 userRes.setProfile(candidateProfileMapper.toCandidateProfileResponse(profile));
             });
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addEducationForCandidate(Long userId, EducationCreateRequest request) {
-        CandidateProfile profile = candidateProfileRepository.findByUserId(userId)
+        CandidateProfile profile = candidateProfileRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Not found candidate profile of user id: %d", userId));
 
         Education education = candidateProfileMapper.toEducation(request);
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addExperienceForCandidate(Long userId, ExperienceCreateRequest request) {
-        CandidateProfile profile = candidateProfileRepository.findByUserId(userId)
+        CandidateProfile profile = candidateProfileRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Not found candidate profile of user id: %d", userId));
 
         Experience experience = candidateProfileMapper.toExperience(request);

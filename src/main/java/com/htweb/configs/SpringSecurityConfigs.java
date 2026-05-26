@@ -67,7 +67,8 @@ public class SpringSecurityConfigs {
                         .requestMatchers(HttpMethod.GET,
                                 "api/auth/check-unique",
                                 "/api/countries",
-                                "/api/companies/**"
+                                "/api/companies/**",
+                                "/api/cities/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
