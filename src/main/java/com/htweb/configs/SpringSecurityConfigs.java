@@ -1,7 +1,5 @@
 package com.htweb.configs;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.htweb.api.exceptions.CustomAccessDeniedHandler;
 import com.htweb.api.exceptions.CustomAuthenticationEntryPoint;
 import com.htweb.api.securities.JwtFilter;
@@ -123,15 +121,6 @@ public class SpringSecurityConfigs {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public Cloudinary cloudinary() {
-        return new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "dxxwcby8l",
-                "api_key", "792844686918347",
-                "api_secret", "T8ys_Z9zaKSqmKWa4K1RY6DXUJg",
-                "secure", true));
     }
 
     @Bean

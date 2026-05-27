@@ -21,7 +21,8 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
                 SpringSecurityConfigs.class,
                 RedisConfig.class,
                 SwaggerConfig.class,
-                AsyncConfig.class
+                AsyncConfig.class,
+                StorageConfig.class
         };
     }
 
