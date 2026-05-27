@@ -1,0 +1,28 @@
+{
+  "Công nghệ thông tin": [
+    "Software Development",
+    "Infrastructure & Network",
+    "Data & Analytics",
+    "Information Security",
+    "Software Testing (QA/QC)",
+    "UI/UX Design",
+    "IT Project Management",
+    "AI & Machine Learning",
+    "Cloud Computing",
+    "IT Support / Helpdesk",
+    "Blockchain Development",
+    "Game Development"
+  ],
+  "Luật": [
+    "Dịch vụ pháp lý (Agency/Firm)",
+    "Dịch vụ pháp chế (In-house)"
+  ],
+  "Tài chính / Ngân hàng / Bảo hiểm": [
+    "Tài chính",
+    "Ngân hàng",
+    "Chứng khoán",
+    "Thẩm định và quản trị rủi ro",
+    "Đầu tư và tài trợ",
+    "Bảo hiểm"
+  ]
+}

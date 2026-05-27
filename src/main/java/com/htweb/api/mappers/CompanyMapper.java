@@ -18,4 +18,6 @@ public interface CompanyMapper {
     CompanyDetailResponse toCompanyDetailResponse(Company company);
 
     List<CompanySimpleResponse> toCompanySimpleResponseList(List<Company> companies);
+
+    CompanySimpleResponse toCompanySimpleResponse(Company company);
 }
