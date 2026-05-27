@@ -59,12 +59,6 @@ public class User extends SoftDeleteModel {
     @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;
 
-//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private CandidateProfile candidateProfile;
-//
-//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private EmployerProfile employerProfile;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",

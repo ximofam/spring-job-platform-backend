@@ -20,8 +20,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class EmployerProfile implements Serializable {
     @Id
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
@@ -56,7 +55,7 @@ public class EmployerProfile implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof EmployerProfile other)) return false;
-        return userId != null && userId.equals(other.userId);
+        return id != null && id.equals(other.id);
     }
 
     @Override

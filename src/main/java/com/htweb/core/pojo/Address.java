@@ -31,6 +31,9 @@ public class Address extends BaseModel {
     @OneToMany(mappedBy = "address")
     private Set<Company> companies;
 
+    @OneToMany(mappedBy = "address")
+    private Set<Job> jobs;
+
     public String getFullAddress() {
         List<String> parts = new ArrayList<>();
 

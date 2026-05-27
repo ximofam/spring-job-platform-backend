@@ -27,7 +27,7 @@ public class ApiUserController {
 
 
     @GetMapping("/{username}")
-    @PreAuthorize("hasAuthority('USER_READ') or hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('user:view') or hasRole('ADMIN')")
     public ResponseEntity<UserDetailResponse> getUserDetailByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserDetailByUsername(username));
     }

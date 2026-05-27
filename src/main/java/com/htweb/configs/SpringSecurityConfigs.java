@@ -66,9 +66,11 @@ public class SpringSecurityConfigs {
                                 "/api/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "api/auth/check-unique",
-                                "/api/countries",
+                                "/api/countries/**",
                                 "/api/companies/**",
-                                "/api/cities/**"
+                                "/api/cities/**",
+                                "/api/jobs/**",
+                                "/api/categories/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -91,7 +93,7 @@ public class SpringSecurityConfigs {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
                                 "/",
-                                "/admin**",
+                                "/admin/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

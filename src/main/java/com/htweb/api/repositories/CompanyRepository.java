@@ -14,4 +14,6 @@ public interface CompanyRepository extends PaginateRepository<Company, Long> {
     boolean isExistsTaxCode(String taxCode);
 
     boolean isExistsCompanyName(String name);
+
+    Optional<Company> getByUserId(Long id);
 }
