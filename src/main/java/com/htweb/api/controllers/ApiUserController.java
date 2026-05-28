@@ -33,7 +33,7 @@ public class ApiUserController {
         return ResponseEntity.ok(userService.getUserDetailByUsername(username));
     }
 
-    @PutMapping("/me")
+    @PatchMapping("/me")
     public ResponseEntity<Void> updateMyProfile(
             @AuthenticationPrincipal Long userId,
             @ModelAttribute UserUpdateRequest request) {

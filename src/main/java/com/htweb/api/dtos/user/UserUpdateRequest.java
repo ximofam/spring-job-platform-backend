@@ -3,7 +3,6 @@ package com.htweb.api.dtos.user;
 import com.htweb.core.enums.Gender;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -16,5 +15,4 @@ public class UserUpdateRequest {
     private LocalDate dateOfBirth;
     private Long countryId;
     private String address;
-    private MultipartFile avatar;
 }
