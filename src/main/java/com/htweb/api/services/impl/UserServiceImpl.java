@@ -1,9 +1,7 @@
 package com.htweb.api.services.impl;
 
-import com.htweb.api.dtos.user.EducationCreateRequest;
-import com.htweb.api.dtos.user.ExperienceCreateRequest;
-import com.htweb.api.dtos.user.UserDetailResponse;
-import com.htweb.api.dtos.user.UserUpdateRequest;
+import com.htweb.api.dtos.user.*;
+import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.NotFoundException;
 import com.htweb.api.exceptions.users.UserNotFoundException;
 import com.htweb.api.mappers.CandidateProfileMapper;
@@ -11,14 +9,16 @@ import com.htweb.api.mappers.UserMapper;
 import com.htweb.api.repositories.*;
 import com.htweb.api.services.UserService;
 import com.htweb.core.enums.UserRole;
-import com.htweb.core.pojo.CandidateProfile;
-import com.htweb.core.pojo.Education;
-import com.htweb.core.pojo.Experience;
-import com.htweb.core.pojo.User;
+import com.htweb.core.pojo.*;
+import com.htweb.core.services.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 
 @Service("apiUserService")
@@ -36,6 +36,9 @@ public class UserServiceImpl implements UserService {
     private final EducationRepository educationRepository;
     @Qualifier("apiExperienceRepository")
     private final ExperienceRepository experienceRepository;
+    private final StorageService storageService;
+    @Qualifier("apiCandidateCvRepository")
+    private final CandidateCvRepository candidateCvRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -108,5 +111,57 @@ public class UserServiceImpl implements UserService {
         experience.setCandidateProfile(profile);
 
         experienceRepository.save(experience);
+    }
+
+    @Override
+    @Transactional
+    public String uploadAvatar(Long userId, MultipartFile file) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Người dùng không tồn tại"));
+
+        try {
+            String avatarUrl = storageService.uploadImage(file);
+            user.setAvatarUrl(avatarUrl);
+            userRepository.update(user);
+
+            return avatarUrl;
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi trong quá trình upload ảnh đại diện: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public String uploadCV(Long userId, UserCVUploadRequest request) {
+        CandidateProfile candidateProfile = candidateProfileRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy ứng viên này"));
+
+        try {
+            String cvUrl = storageService.uploadPdf(request.getFile(), "candidate/cv/");
+            CandidateCv candidateCv = new CandidateCv();
+            candidateCv.setTitle(request.getTitle());
+            candidateCv.setFileUrl(cvUrl);
+            candidateCv.setCandidateProfile(candidateProfile);
+            candidateCvRepository.save(candidateCv);
+
+            return cvUrl;
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi trong quá trình upload cv: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public List<CandidateCvResponse> getCandidateCVs(Long userId) {
+        List<CandidateCv> candidateCvs = candidateCvRepository.findByUserId(userId);
+        if (candidateCvs == null || candidateCvs.isEmpty()) {
+            return List.of();
+        }
+
+        return candidateProfileMapper.toCandidateCvResponseList(candidateCvs);
     }
 }

@@ -1,9 +1,7 @@
 package com.htweb.api.controllers;
 
-import com.htweb.api.dtos.user.EducationCreateRequest;
-import com.htweb.api.dtos.user.ExperienceCreateRequest;
-import com.htweb.api.dtos.user.UserDetailResponse;
-import com.htweb.api.dtos.user.UserUpdateRequest;
+import com.htweb.api.dtos.ApiResponse;
+import com.htweb.api.dtos.user.*;
 import com.htweb.api.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -46,7 +47,7 @@ public class ApiUserController {
     @PreAuthorize("hasRole('CANDIDATE')")
     public ResponseEntity<Void> addEducationForCandidate(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody EducationCreateRequest request) {
+            @RequestBody @Valid EducationCreateRequest request) {
 
         userService.addEducationForCandidate(userId, request);
 
@@ -57,10 +58,43 @@ public class ApiUserController {
     @PreAuthorize("hasRole('CANDIDATE')")
     public ResponseEntity<Void> addExperienceForCandidate(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody ExperienceCreateRequest request) {
+            @RequestBody @Valid ExperienceCreateRequest request) {
 
         userService.addExperienceForCandidate(userId, request);
 
         return ResponseEntity.status(201).build();
+    }
+
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<ApiResponse> uploadAvatar(
+            @AuthenticationPrincipal Long userId,
+            @ModelAttribute @Valid UserAvatarUploadRequest request) {
+
+        String avatarUrl = userService.uploadAvatar(userId, request.getFile());
+        ApiResponse apiResponse = new ApiResponse(
+                "Đã upload thành công avatar cho user",
+                Map.of("avatarUrl", avatarUrl));
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/upload-cv")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    public ResponseEntity<ApiResponse> uploadCV(
+            @AuthenticationPrincipal Long userId,
+            @ModelAttribute @Valid UserCVUploadRequest request) {
+
+        String cvUrl = userService.uploadCV(userId, request);
+        ApiResponse apiResponse = new ApiResponse(
+                "Đã upload thành công cv cho user",
+                Map.of("cvUrl", cvUrl));
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/my-cvs")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    public ResponseEntity<List<CandidateCvResponse>> getMyCVs(@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(userService.getCandidateCVs(userId));
     }
 }
