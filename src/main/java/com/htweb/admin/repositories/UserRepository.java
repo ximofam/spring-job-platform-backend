@@ -10,7 +10,5 @@ public interface UserRepository extends BaseRepository<User, Long> {
     @Override
     List<User> findAll();
 
-    Optional<User> findByIdWithProfileAndCompany(Long userId);
-
     Optional<User> findByIdWithRoles(Long userId);
 }

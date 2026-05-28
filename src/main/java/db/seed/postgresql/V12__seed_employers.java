@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-public class V11__seed_employers  extends BaseJavaMigration {
+public class V12__seed_employers extends BaseJavaMigration {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 

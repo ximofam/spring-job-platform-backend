@@ -1,17 +1,11 @@
 package com.htweb.admin.controllers;
 
-import com.htweb.admin.services.CompanyService;
-import com.htweb.admin.services.EmployerProfileService;
-import com.htweb.admin.services.RoleService;
-import com.htweb.admin.services.UserService;
+import com.htweb.admin.services.*;
 import com.htweb.admin.wrappers.EmployerUpdateForm;
 import com.htweb.core.enums.*;
-import com.htweb.core.pojo.Company;
-import com.htweb.core.pojo.EmployerProfile;
-import com.htweb.core.pojo.Role;
-import com.htweb.core.pojo.User;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +14,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/users/employers")
 @RequiredArgsConstructor
 public class EmployerController {
-    private final UserService userService;
+    @Qualifier("adminEmployerProfileServiceImpl")
     private final EmployerProfileService employerProfileService;
-    private final CompanyService companyService;
     private final RoleService roleService;
-
-
+    private final EmployerService employerService;
 
     @GetMapping("")
     public String listView(Model model) {
-        model.addAttribute("users", userService.findAll());
+        model.addAttribute("profiles", employerProfileService.findAll());
         return "admin/pages/employer";
     }
 
@@ -45,14 +37,7 @@ public class EmployerController {
     }
     @GetMapping("/{userId}/edit")
     public String editView(@PathVariable Long userId, Model model) {
-        User user = userService.findByIdWithProfileAndCompany(userId).orElseThrow();
-
-        EmployerUpdateForm form = new EmployerUpdateForm();
-        form.setUser(user);
-        form.setProfile(user.getEmployerProfile());
-        form.setCompany(user.getEmployerProfile().getCompany());
-        form.setDateOfBirth(user.getDateOfBirth());
-        form.setRoles(user.getRoles());
+        EmployerUpdateForm form = employerService.getEmployerEditForm(userId);
         model.addAttribute("form", form);
         return "admin/pages/employer_edit";
     }
@@ -60,75 +45,19 @@ public class EmployerController {
     @PostMapping("/{userId}/edit")
     public String handleUpdate(@PathVariable Long userId,
                                @ModelAttribute("form") EmployerUpdateForm form) {
-
-        User user = userService.findById(userId).orElseThrow();
-        User formUser = form.getUser();
-        if (formUser.getPhone() != null && formUser.getPhone().isBlank()) {
-            formUser.setPhone(null);
-        }
-        if (formUser.getEmail() != null && formUser.getEmail().isBlank()) {
-            formUser.setEmail(null);
-        }
-        if (formUser.getUsername() != null && formUser.getUsername().isBlank()) {
-            formUser.setUsername(null);
-        }
-        BeanUtils.copyProperties(formUser, user,
-                "id", "passwordHash", "refreshTokens",
-                "deletedAt", "createdAt", "updatedAt",
-                "dateOfBirth");
-
-        if (form.getDateOfBirth() != null) {
-            user.setDateOfBirth(form.getDateOfBirth());
-        }
-        user.setRoles(form.getRoles());
-        userService.update(user);
-
-        EmployerProfile profile = employerProfileService.findById(userId).orElseThrow();
-        BeanUtils.copyProperties(form.getProfile(), profile,
-                "userId", "user", "company", "approvedBy", "approvedAt", "createdAt", "updatedAt");
-        employerProfileService.update(profile);
-
-        Company company = profile.getCompany();
-        BeanUtils.copyProperties(form.getCompany(), company,
-                "id", "address", "country", "deletedAt", "createdAt", "updatedAt");
-        companyService.update(company);
-
+        employerService.updateEmployer(userId, form);
         return "redirect:/admin/users/employers/" + userId + "/edit";
     }
 
     @PostMapping("/{userId}/approve")
     public String approve(@PathVariable Long userId) {
-        EmployerProfile profile = employerProfileService.findById(userId).orElseThrow();
-        profile.setStatus(EmployerStatus.APPROVED);
-        employerProfileService.update(profile);
-
-        Company company = profile.getCompany();
-        company.setStatus(CompanyStatus.APPROVED);
-        companyService.update(company);
-
-        User user = userService.findByIdWithRoles(userId).orElseThrow();
-        Role employerRole = roleService.findByName("EMPLOYER").orElseThrow();
-        user.getRoles().add(employerRole);
-        userService.update(user);
-
+        employerService.approveEmployer(userId);
         return "redirect:/admin/users/employers";
     }
 
     @PostMapping("/{userId}/reject")
     public String reject(@PathVariable Long userId) {
-        EmployerProfile profile = employerProfileService.findById(userId).orElseThrow();
-        profile.setStatus(EmployerStatus.DENIED);
-        employerProfileService.update(profile);
-
-        Company company = profile.getCompany();
-        company.setStatus(CompanyStatus.DENIED);
-        companyService.update(company);
-
-        User user = userService.findByIdWithRoles(userId).orElseThrow();
-        Role employerRole = roleService.findByName("EMPLOYER").orElseThrow();
-        user.getRoles().remove(employerRole);
-        userService.update(user);
-
+        employerService.rejectEmployer(userId);
         return "redirect:/admin/users/employers";
     }
 }

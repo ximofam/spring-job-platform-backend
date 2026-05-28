@@ -24,40 +24,21 @@ public class UserRepositoryImpl
         super(User.class);
     }
 
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<User> findAll() {
-        Session session = this.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<User> query = cb.createQuery(User.class);
-        Root<User> root = query.from(User.class);
+//    @Override
+//    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+//    public List<User> findAll() {
+//        Session session = this.getCurrentSession();
+//        CriteriaBuilder cb = session.getCriteriaBuilder();
+//        CriteriaQuery<User> query = cb.createQuery(User.class);
+//        Root<User> root = query.from(User.class);
+//
+//
+//
+//        query.select(root);
+//
+//        return session.createQuery(query).getResultList();
+//    }
 
-        root.fetch("employerProfile", JoinType.LEFT)
-                .fetch("company", JoinType.LEFT);
-
-        query.select(root);
-
-        return session.createQuery(query).getResultList();
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public Optional<User> findByIdWithProfileAndCompany(Long userId) {
-        Session session = this.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<User> query = cb.createQuery(User.class);
-        Root<User> root = query.from(User.class);
-
-        root.fetch("employerProfile", JoinType.LEFT)
-                .fetch("company", JoinType.LEFT);
-        root.fetch("roles", JoinType.LEFT);
-        query.select(root)
-                .where(cb.equal(root.get("id"), userId));
-
-        return Optional.ofNullable(
-                session.createQuery(query).uniqueResult()
-        );
-    }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

@@ -17,26 +17,26 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 text-sm">
-            <tr th:each="user : ${users}" class="hover:bg-gray-50 transition">
+            <tr th:each="profile : ${profiles}" class="hover:bg-gray-50 transition">
               <!-- User -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">
                   <div
                     class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-sm border border-indigo-100">
                     <img
-                      th:if="${user.avatarUrl != null}"
-                      th:src="${user.avatarUrl}"
+                      th:if="${profile.user.avatarUrl != null}"
+                      th:src="${profile.user.avatarUrl}"
                       class="w-full h-full rounded-full object-cover" />
                     <span
-                      th:if="${user.avatarUrl == null}"
-                      th:text="${#strings.toUpperCase(#strings.substring(user.name, 0, 2))}"></span>
+                      th:if="${profile.user.avatarUrl == null}"
+                      th:text="${#strings.toUpperCase(#strings.substring(profile.user.name, 0, 2))}"></span>
                   </div>
                   <div>
-                    <div class="font-semibold text-gray-950" th:text="${user.name}"></div>
-                    <div class="text-xs text-gray-500" th:text="${user.email}"></div>
+                    <div class="font-semibold text-gray-950" th:text="${profile.user.name}"></div>
+                    <div class="text-xs text-gray-500" th:text="${profile.user.email}"></div>
                     <div class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1">
                       <i data-lucide="phone" class="w-3 h-3 text-gray-400"></i>
-                      <span th:text="${user.phone ?: 'Chưa cập nhật'}"></span>
+                      <span th:text="${profile.user.phone ?: 'Chưa cập nhật'}"></span>
                     </div>
                   </div>
                 </div>
@@ -44,73 +44,62 @@
 
               <!-- Company -->
               <td class="px-6 py-4">
-                <div th:if="${user.employerProfile?.company != null}" class="flex items-center gap-3">
+                <div th:if="${profile.company != null}" class="flex items-center gap-3">
                   <div
                     class="w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400 p-1 font-bold text-xs">
                     <img
-                      th:if="${user.employerProfile.company.logoUrl != null}"
-                      th:src="${user.employerProfile.company.logoUrl}"
+                      th:if="${profile.company.logoUrl != null}"
+                      th:src="${profile.company.logoUrl}"
                       class="w-full h-full object-contain" />
                     <span
-                      th:if="${user.employerProfile.company.logoUrl == null}"
-                      th:text="${#strings.toUpperCase(#strings.substring(user.employerProfile.company.name, 0, 2))}"></span>
+                      th:if="${profile.company.logoUrl == null}"
+                      th:text="${#strings.toUpperCase(#strings.substring(profile.company.name, 0, 2))}"></span>
                   </div>
                   <div class="max-w-[200px]">
-                    <div
-                      class="font-medium text-gray-900 truncate"
-                      th:text="${user.employerProfile.company.name}"></div>
+                    <div class="font-medium text-gray-900 truncate" th:text="${profile.company.name}"></div>
                     <div class="text-xs text-gray-700">
                       MST:
-                      <span
-                        class="font-mono font-medium text-gray-900"
-                        th:text="${user.employerProfile.company.taxCode}"></span>
+                      <span class="font-mono font-medium text-gray-900" th:text="${profile.company.taxCode}"></span>
                     </div>
                   </div>
                 </div>
-                <span th:if="${user.employerProfile?.company == null}" class="text-gray-400 text-xs">
-                  Chưa có công ty
-                </span>
+                <span th:if="${profile.company == null}" class="text-gray-400 text-xs">Chưa có công ty</span>
               </td>
 
               <!-- Status -->
               <td class="px-6 py-4 whitespace-nowrap">
-                <!-- PENDING -->
                 <span
-                  th:if="${user.employerProfile?.status?.name() == 'PENDING'}"
+                  th:if="${profile.status?.name() == 'PENDING'}"
                   class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
                   <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
                   Chờ kiểm duyệt
                 </span>
-                <!-- APPROVED -->
                 <span
-                  th:if="${user.employerProfile?.status?.name() == 'APPROVED'}"
+                  th:if="${profile.status?.name() == 'APPROVED'}"
                   class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
                   <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
                   Đã duyệt
                 </span>
-                <!-- REJECTED -->
                 <span
-                  th:if="${user.employerProfile?.status?.name() == 'DENIED'}"
+                  th:if="${profile.status?.name() == 'DENIED'}"
                   class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
                   <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                   Từ chối
                 </span>
-                <!-- Chưa có profile -->
-                <span th:if="${user.employerProfile == null}" class="text-gray-400 text-xs">Chưa có hồ sơ</span>
               </td>
 
               <!-- Actions -->
               <td class="px-6 py-4 whitespace-nowrap text-center text-xs">
                 <div class="flex items-center justify-center gap-1.5">
                   <a
-                    th:href="@{/admin/users/employers/{id}/edit(id=${user.id})}"
+                    th:href="@{/admin/users/employers/{id}/edit(id=${profile.id})}"
                     class="bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 font-medium px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">
                     <i data-lucide="pencil" class="w-3 h-3"></i>
                     Sửa
                   </a>
                   <form
-                    th:if="${user.employerProfile?.status?.name() == 'PENDING'}"
-                    th:action="@{/admin/users/employers/{id}/approve(id=${user.id})}"
+                    th:if="${profile.status?.name() == 'PENDING'}"
+                    th:action="@{/admin/users/employers/{id}/approve(id=${profile.id})}"
                     method="post">
                     <button
                       type="submit"
@@ -119,11 +108,9 @@
                       Duyệt
                     </button>
                   </form>
-
-                  <!-- Từ chối -->
                   <form
-                    th:if="${user.employerProfile?.status?.name() == 'PENDING'}"
-                    th:action="@{/admin/users/employers/{id}/reject(id=${user.id})}"
+                    th:if="${profile.status?.name() == 'PENDING'}"
+                    th:action="@{/admin/users/employers/{id}/reject(id=${profile.id})}"
                     method="post">
                     <button
                       type="submit"
@@ -135,6 +122,8 @@
               </td>
             </tr>
           </tbody>
+
+      
         </table>
       </div>
 
@@ -143,7 +132,7 @@
         class="bg-white px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div class="text-xs sm:text-sm text-gray-500">
           Hiển thị
-          <span class="font-semibold text-gray-900" th:text="${users.size()}"></span>
+          <span class="font-semibold text-gray-900" th:text="${profiles.size()}"></span>
           hồ sơ
         </div>
       </div>

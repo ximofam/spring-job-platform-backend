@@ -2,9 +2,12 @@ package com.htweb.admin.services;
 
 import com.htweb.core.pojo.EmployerProfile;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface EmployerProfileService {
-    public EmployerProfile update(EmployerProfile entity);
-    public Optional<EmployerProfile> findById(Long id);
+     EmployerProfile update(EmployerProfile entity);
+     EmployerProfile findById(Long id);
+
+    List<EmployerProfile> findAll();
 }
