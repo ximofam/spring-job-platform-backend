@@ -22,6 +22,10 @@ public class Utils {
                 .toList();
     }
 
+    public static boolean hasText(String text) {
+        return text != null && !text.isBlank();
+    }
+
     public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

@@ -1,9 +1,9 @@
 package com.htweb.api.services;
 
-import com.htweb.api.dtos.user.EducationCreateRequest;
-import com.htweb.api.dtos.user.ExperienceCreateRequest;
-import com.htweb.api.dtos.user.UserDetailResponse;
-import com.htweb.api.dtos.user.UserUpdateRequest;
+import com.htweb.api.dtos.user.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -16,4 +16,10 @@ public interface UserService {
     void addEducationForCandidate(Long userId, EducationCreateRequest request);
 
     void addExperienceForCandidate(Long userId, ExperienceCreateRequest request);
+
+    String uploadAvatar(Long userId, MultipartFile file);
+
+    String uploadCV(Long userId, UserCVUploadRequest request);
+
+    List<CandidateCvResponse> getCandidateCVs(Long userId);
 }

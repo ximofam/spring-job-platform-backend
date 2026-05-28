@@ -10,7 +10,6 @@ import com.htweb.api.exceptions.tokens.TokenInvalidException;
 import com.htweb.api.exceptions.users.IncorrectUsernameOrPasswordException;
 import com.htweb.api.mappers.CompanyMapper;
 import com.htweb.api.mappers.UserMapper;
-import com.htweb.api.repositories.CountryRepository;
 import com.htweb.api.repositories.RoleRepository;
 import com.htweb.api.repositories.UserRepository;
 import com.htweb.api.services.AuthService;
@@ -43,8 +42,6 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     @Qualifier("apiUserRepository")
     private final UserRepository userRepository;
-    @Qualifier("apiCountryRepository")
-    private final CountryRepository countryRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     @Qualifier("apiRoleRepository")

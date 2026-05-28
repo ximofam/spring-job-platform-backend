@@ -54,4 +54,20 @@ public class CompanyRepositoryImpl extends PaginateRepositoryImpl<Company, Long>
     public boolean isExistsCompanyName(String name) {
         return isFieldExists("name", name);
     }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Optional<Company> getByUserId(Long userId) {
+        String hql = """
+                SELECT c
+                FROM EmployerProfile ep
+                JOIN ep.company c
+                WHERE ep.id = :userId
+                """;
+
+        return getCurrentSession().createQuery(hql, Company.class)
+                .setParameter("userId", userId)
+                .getResultStream()
+                .findFirst();
+    }
 }

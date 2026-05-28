@@ -10,7 +10,6 @@ import com.htweb.api.services.TokenService;
 import com.htweb.core.pojo.RefreshToken;
 import com.htweb.core.pojo.Role;
 import com.htweb.core.pojo.User;
-import com.htweb.core.repositories.UserAuthRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -39,7 +38,6 @@ import java.util.List;
 public class TokenServiceImpl implements TokenService {
     @Qualifier("apiRefreshTokenRepository")
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserAuthRepository userAuthRepository;
 
     @Value("${token.jwt.secret-key}")
     private String secretKey;

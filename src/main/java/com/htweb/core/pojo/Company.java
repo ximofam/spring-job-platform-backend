@@ -40,7 +40,7 @@ public class Company extends SoftDeleteModel {
     @Column(name = "employee_size")
     private EmployeeSize employeeSize;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private Country country;
 
