@@ -14,6 +14,7 @@ public class JobSearchRequest {
     private String employmentType;
     private String experienceLevel;
     private Long categoryId;
+    private Long districtId;
     @Min(value = 1, message = "Page phải bắt đầu từ 1")
     private int page = 1;
     @Min(value = 2, message = "Số lượng tối thiểu cho 1 page là 2")
