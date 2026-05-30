@@ -1,4 +1,4 @@
-package com.htweb.api.dtos.user;
+package com.htweb.api.dtos.application;
 
 import lombok.Getter;
 import lombok.Setter;

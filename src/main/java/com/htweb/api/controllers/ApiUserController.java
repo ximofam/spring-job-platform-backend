@@ -1,6 +1,7 @@
 package com.htweb.api.controllers;
 
 import com.htweb.api.dtos.ApiResponse;
+import com.htweb.api.dtos.application.CandidateCvResponse;
 import com.htweb.api.dtos.user.*;
 import com.htweb.api.services.UserService;
 import jakarta.validation.Valid;

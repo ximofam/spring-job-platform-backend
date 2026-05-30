@@ -1,5 +1,6 @@
 package com.htweb.api.services;
 
+import com.htweb.api.dtos.application.CandidateCvResponse;
 import com.htweb.api.dtos.user.*;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -32,8 +32,6 @@ public abstract class JobMapper {
     @Mapping(target = "children", ignore = true)
     public abstract JobCategoryResponse toJobCategoryResponse(Category category);
 
-    public abstract List<JobCategoryResponse> toJobCategoryResponseList(List<Category> categories);
-
     @Mapping(source = "categoryId", target = "category")
     public abstract Job toJob(JobCreateRequest request);
 

@@ -1,16 +1,15 @@
 package com.htweb.api.mappers;
 
 import com.htweb.api.dtos.auth.AuthRegisterRequest;
-import com.htweb.api.dtos.user.EmployerProfileResponse;
-import com.htweb.api.dtos.user.UserDetailResponse;
-import com.htweb.api.dtos.user.UserSimpleResponse;
-import com.htweb.api.dtos.user.UserUpdateRequest;
+import com.htweb.api.dtos.user.*;
+import com.htweb.core.pojo.CandidateProfile;
 import com.htweb.core.pojo.EmployerProfile;
 import com.htweb.core.pojo.User;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = {CountryMapper.class, CompanyMapper.class, CandidateProfileMapper.class})
 public interface UserMapper {
+
     @Mapping(source = "userRole", target = "role")
     @Mapping(target = "profile", ignore = true)
     UserDetailResponse toUserDetailResponse(User user);
@@ -18,6 +17,8 @@ public interface UserMapper {
     UserSimpleResponse toUserSimpleResponse(User user);
 
     EmployerProfileResponse toEmployerProfileResponse(EmployerProfile profile);
+
+    CandidateProfileResponse toCandidateProfileResponse(CandidateProfile profile);
 
     @Mapping(source = "countryId", target = "country")
     User toUser(AuthRegisterRequest request);

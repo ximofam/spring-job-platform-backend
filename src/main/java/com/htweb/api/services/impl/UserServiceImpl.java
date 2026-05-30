@@ -1,5 +1,6 @@
 package com.htweb.api.services.impl;
 
+import com.htweb.api.dtos.application.CandidateCvResponse;
 import com.htweb.api.dtos.user.*;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.NotFoundException;
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
             });
         } else if (user.getUserRole().equals(UserRole.CANDIDATE)) {
             candidateProfileRepository.findById(id).ifPresent(profile -> {
-                userRes.setProfile(candidateProfileMapper.toCandidateProfileResponse(profile));
+                userRes.setProfile(userMapper.toCandidateProfileResponse(profile));
             });
         }
 
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
             });
         } else if (user.getUserRole().equals(UserRole.CANDIDATE)) {
             candidateProfileRepository.findById(user.getId()).ifPresent(profile -> {
-                userRes.setProfile(candidateProfileMapper.toCandidateProfileResponse(profile));
+                userRes.setProfile(userMapper.toCandidateProfileResponse(profile));
             });
         }
 
