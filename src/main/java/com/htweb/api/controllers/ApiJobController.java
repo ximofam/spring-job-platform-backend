@@ -1,5 +1,6 @@
 package com.htweb.api.controllers;
 
+import com.htweb.api.dtos.ApiResponse;
 import com.htweb.api.dtos.job.JobCreateRequest;
 import com.htweb.api.dtos.job.JobDetailResponse;
 import com.htweb.api.dtos.job.JobSearchRequest;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -35,13 +38,17 @@ public class ApiJobController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('job:create')")
-    public ResponseEntity<Void> createJob(
+    public ResponseEntity<ApiResponse> createJob(
             @AuthenticationPrincipal Long userId,
             @RequestBody @Valid JobCreateRequest request) {
 
-        jobService.createJob(userId, request);
-
-        return ResponseEntity.status(201).build();
+        Long jobId = jobService.createJob(userId, request);
+        ApiResponse res = new ApiResponse(
+                "Đã tạo thành công job",
+                Map.of("jobId", jobId)
+        );
+        
+        return ResponseEntity.status(201).body(res);
     }
 
 

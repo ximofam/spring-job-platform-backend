@@ -11,7 +11,7 @@ public interface JobService {
 
     JobDetailResponse getJob(Long id);
 
-    void createJob(Long userId, JobCreateRequest request);
+    Long createJob(Long userId, JobCreateRequest request);
 
     void publishJob(Long userId, Long jobId);
 }

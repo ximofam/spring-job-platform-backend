@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "applications")
@@ -21,6 +22,9 @@ public class Application extends SoftDeleteModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
+
+    @Column(name = "job_id", insertable = false, updatable = false)
+    private Long jobId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_profile_id", nullable = false)
@@ -39,4 +43,8 @@ public class Application extends SoftDeleteModel {
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
+
+    @OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
+    @OrderBy("id DESC")
+    private List<ReviewApplication> reviews;
 }

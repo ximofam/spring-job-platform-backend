@@ -52,7 +52,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional
-    public void createJob(Long userId, JobCreateRequest request) {
+    public Long createJob(Long userId, JobCreateRequest request) {
         if (userId == null) {
             throw new UnauthorizedException("Bạn chưa xác thực thông tin");
         }
@@ -64,6 +64,8 @@ public class JobServiceImpl implements JobService {
         job.setCompany(company);
 
         jobRepository.save(job);
+
+        return job.getId();
     }
 
     @Override
