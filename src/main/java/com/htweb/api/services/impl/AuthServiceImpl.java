@@ -3,7 +3,6 @@ package com.htweb.api.services.impl;
 import com.htweb.api.dtos.auth.AuthRegisterEmployerRequest;
 import com.htweb.api.dtos.auth.AuthRegisterRequest;
 import com.htweb.api.dtos.auth.AuthTokenResponse;
-import com.htweb.api.dtos.token.AccessTokenResponse;
 import com.htweb.api.dtos.user.UserSimpleResponse;
 import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.tokens.TokenInvalidException;
@@ -18,8 +17,10 @@ import com.htweb.api.services.TokenService;
 import com.htweb.core.enums.CompanyStatus;
 import com.htweb.core.enums.EmployerStatus;
 import com.htweb.core.enums.UserRole;
+import com.htweb.core.helpers.dtos.AccessTokenResponse;
 import com.htweb.core.helpers.security.CustomUserDetails;
 import com.htweb.core.pojo.*;
+import com.htweb.core.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Qualifier("apiTokenService")
     private final TokenService tokenService;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     @Qualifier("apiUserRepository")
     private final UserRepository userRepository;
@@ -158,7 +160,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     private AuthTokenResponse generateTokens(User user) {
-        AccessTokenResponse accessToken = tokenService.generateAccessToken(user);
+        AccessTokenResponse accessToken = jwtService.generateAccessToken(user);
         String refreshToken = tokenService.generateRefreshToken(user);
 
         AuthTokenResponse tokenRes = new AuthTokenResponse();

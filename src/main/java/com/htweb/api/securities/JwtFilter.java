@@ -1,15 +1,14 @@
 package com.htweb.api.securities;
 
-import com.htweb.api.services.TokenService;
 import com.htweb.api.utils.Utils;
 import com.htweb.core.services.AuthorityService;
+import com.htweb.core.services.JwtService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,8 +22,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    @Qualifier("apiTokenService")
-    private final TokenService tokenService;
+    private final JwtService jwtService;
     private final AuthorityService authorityService;
 
     @Override
@@ -37,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String token = authHeader.substring(7);
-            JWTClaimsSet claims = tokenService.verifyAndParseAccessToken(token);
+            JWTClaimsSet claims = jwtService.verifyAndParseAccessToken(token);
 
             Long userId = Long.parseLong(claims.getSubject());
             List<String> roles = Utils.castToStringList(claims.getClaim("roles"));

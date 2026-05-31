@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
+@SQLRestriction("deleted_at IS NULL")
 public class Notification extends SoftDeleteModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
