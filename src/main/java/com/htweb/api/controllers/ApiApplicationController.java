@@ -32,7 +32,7 @@ public class ApiApplicationController {
         return ResponseEntity.status(201).body(res);
     }
 
-    @GetMapping("/my")
+    @GetMapping
     @PreAuthorize("hasAuthority('application:view')")
     public ResponseEntity<List<ApplicationSimpleResponse>> getApplications(@AuthenticationPrincipal Long userId) {
 
