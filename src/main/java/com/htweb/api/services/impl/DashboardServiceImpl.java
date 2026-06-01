@@ -14,6 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
 
+
     @Qualifier("apiDashboardRepository")
     private final DashboardRepository dashboardRepository;
 
@@ -21,12 +22,46 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getProcessingSpeedReviewAppByDay(Long userId, String period, Integer year) {
 
+        if (period == null) {
+            throw new IllegalArgumentException("period is required");
+        }
+
         String dbPeriod = switch (period) {
             case "month"   -> "MONTH";
             case "quarter" -> "QUARTER";
-            default        -> null;
+            default        -> "null";
         };
 
         return dashboardRepository.getProcessingSpeedReviewAppByDay(userId, dbPeriod, year);
     }
+
+    @Override
+    public List<Map<String, Object>> getSalaryGapByJob(Long employerId) {
+        return dashboardRepository.getSalaryGapByJob(employerId);
+    }
+
+    public Map<String, Object> getCvOverviewMetrics(Long employerId, String period, Integer year){
+        if (period == null) {
+            throw new IllegalArgumentException("period is required");
+        }
+
+        String dbPeriod = switch (period) {
+            case "month"   -> "MONTH";
+            case "quarter" -> "QUARTER";
+            default        -> "null";
+        };
+        return dashboardRepository.getCvOverviewMetrics(employerId,dbPeriod,year);
+    }
+
+    @Override
+    public List<Map<String, Object>> getEducationQualityStats(Long employerId, String period, Integer year) {
+        return dashboardRepository.getEducationQualityStats(employerId, period, year);
+    }
+
+    @Override
+    public List<Map<String, Object>> getExperienceQualityStats(Long employerId, String period, Integer year) {
+        return dashboardRepository.getExperienceQualityStats(employerId, period, year);
+    }
+
+
 }
