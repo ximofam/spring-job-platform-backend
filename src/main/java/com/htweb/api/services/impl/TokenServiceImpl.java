@@ -1,20 +1,12 @@
 package com.htweb.api.services.impl;
 
 
-import com.htweb.api.dtos.token.AccessTokenResponse;
-import com.htweb.api.exceptions.http.BadRequestException;
 import com.htweb.api.exceptions.http.InternalServerException;
 import com.htweb.api.exceptions.http.UnauthorizedException;
 import com.htweb.api.repositories.RefreshTokenRepository;
 import com.htweb.api.services.TokenService;
 import com.htweb.core.pojo.RefreshToken;
-import com.htweb.core.pojo.Role;
 import com.htweb.core.pojo.User;
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,11 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.text.ParseException;
 import java.time.Instant;
-import java.util.Date;
 import java.util.HexFormat;
-import java.util.List;
 
 @Service("apiTokenService")
 @RequiredArgsConstructor
@@ -38,12 +27,6 @@ import java.util.List;
 public class TokenServiceImpl implements TokenService {
     @Qualifier("apiRefreshTokenRepository")
     private final RefreshTokenRepository refreshTokenRepository;
-
-    @Value("${token.jwt.secret-key}")
-    private String secretKey;
-    @Value("${token.access-token.ttl.seconds}")
-    private long accessTokenTtlSeconds;
-    private long accessTokenTtlMillis;
     @Value("${token.refresh-token.ttl.days}")
     private long refreshTokenTtlDays;
     private long refreshTokenTtlSeconds;
@@ -51,73 +34,11 @@ public class TokenServiceImpl implements TokenService {
     @Value("${oauth2.google.client-id}")
     private String googleClientId;
 
-    private JWSSigner jwtSigner;
-    private JWSVerifier jwtVerifier;
-
     @PostConstruct
     public void init() {
-        try {
-            this.accessTokenTtlMillis = this.accessTokenTtlSeconds * 1000;
-            this.refreshTokenTtlSeconds = this.refreshTokenTtlDays * 24 * 60 * 60;
-            this.jwtSigner = new MACSigner(secretKey);
-            this.jwtVerifier = new MACVerifier(secretKey);
-        } catch (KeyLengthException e) {
-            throw new InternalServerException("Invalid secret key: %s", e.getMessage());
-        } catch (JOSEException e) {
-            throw new InternalServerException("Token verification failed: %s", e.getMessage());
-        }
+        this.refreshTokenTtlSeconds = this.refreshTokenTtlDays * 24 * 60 * 60;
     }
 
-    @Override
-    public JWTClaimsSet verifyAndParseAccessToken(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-
-            if (!signedJWT.verify(jwtVerifier)) {
-                throw new UnauthorizedException("Invalid token signature");
-            }
-
-            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-
-            if (claims.getExpirationTime().before(new Date())) {
-                throw new UnauthorizedException("Token has expired");
-            }
-
-            return claims;
-
-        } catch (ParseException e) {
-            throw new BadRequestException("Malformed token");
-        } catch (JOSEException e) {
-            throw new InternalServerException("Token verification failed");
-        }
-    }
-
-    @Override
-    public AccessTokenResponse generateAccessToken(User user) {
-        Date exp = new Date(System.currentTimeMillis() + accessTokenTtlMillis);
-
-        List<String> roles = user.getRoles().stream().map(Role::getName).toList();
-
-        JWTClaimsSet.Builder claimsSetBd = new JWTClaimsSet.Builder()
-                .subject(user.getId().toString())
-                .claim("roles", roles)
-                .issueTime(new Date())
-                .expirationTime(exp);
-
-
-        SignedJWT signedJWT = new SignedJWT(
-                new JWSHeader(JWSAlgorithm.HS256),
-                claimsSetBd.build()
-        );
-
-        try {
-            signedJWT.sign(jwtSigner);
-        } catch (JOSEException e) {
-            throw new InternalServerException(e.getMessage());
-        }
-
-        return new AccessTokenResponse(signedJWT.serialize(), exp.getTime());
-    }
 
     @Override
     public String generateRefreshToken(User user) {
@@ -164,7 +85,6 @@ public class TokenServiceImpl implements TokenService {
         new SecureRandom().nextBytes(bytes);
         return HexFormat.of().formatHex(bytes);
     }
-
 
     private String hashRefreshTokenStr(String rawToken) {
         try {

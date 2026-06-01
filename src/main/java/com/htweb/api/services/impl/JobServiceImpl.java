@@ -6,7 +6,6 @@ import com.htweb.api.dtos.job.JobSearchRequest;
 import com.htweb.api.dtos.job.JobSimpleResponse;
 import com.htweb.api.exceptions.http.ForbiddenException;
 import com.htweb.api.exceptions.http.NotFoundException;
-import com.htweb.api.exceptions.http.UnauthorizedException;
 import com.htweb.api.mappers.JobMapper;
 import com.htweb.api.repositories.CompanyRepository;
 import com.htweb.api.repositories.JobRepository;
@@ -17,6 +16,8 @@ import com.htweb.core.pojo.Company;
 import com.htweb.core.pojo.Job;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +27,15 @@ import java.time.temporal.ChronoUnit;
 
 @Service("apiJobService")
 @RequiredArgsConstructor
+@PropertySource("classpath:config.properties")
 public class JobServiceImpl implements JobService {
     @Qualifier("apiJobRepository")
     private final JobRepository jobRepository;
     private final JobMapper jobMapper;
     @Qualifier("apiCompanyRepository")
     private final CompanyRepository companyRepository;
+    @Value("${app.job.expiration-minutes:1440}")
+    private long expirationMinutes;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,11 +56,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional
-    public void createJob(Long userId, JobCreateRequest request) {
-        if (userId == null) {
-            throw new UnauthorizedException("Bạn chưa xác thực thông tin");
-        }
-
+    public Long createJob(Long userId, JobCreateRequest request) {
         Job job = jobMapper.toJob(request);
         Company company = companyRepository.getByUserId(userId)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy công ty của bạn"));
@@ -64,15 +64,13 @@ public class JobServiceImpl implements JobService {
         job.setCompany(company);
 
         jobRepository.save(job);
+
+        return job.getId();
     }
 
     @Override
     @Transactional
     public void publishJob(Long userId, Long jobId) {
-        if (userId == null) {
-            throw new UnauthorizedException("Bạn chưa xác thực thông tin");
-        }
-
         Company company = companyRepository.getByUserId(userId)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy công ty của bạn"));
 
@@ -85,7 +83,7 @@ public class JobServiceImpl implements JobService {
         Instant now = Instant.now();
         job.setStatus(JobStatus.PUBLISHED);
         job.setPublishedAt(now);
-        job.setExpiredAt(now.plus(1, ChronoUnit.DAYS));
+        job.setExpiredAt(now.plus(expirationMinutes, ChronoUnit.MINUTES));
         jobRepository.update(job);
     }
 

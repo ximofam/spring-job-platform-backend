@@ -29,14 +29,18 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
         int page = request.getPage();
         int size = request.getSize();
 
+        StringBuilder fromClause = new StringBuilder("FROM jobs j");
+        if (request.getDistrictId() != null) {
+            fromClause.append(" JOIN addresses a ON a.id = j.address_id");
+        }
+
         StringBuilder whereClause = new StringBuilder("WHERE j.deleted_at IS NULL AND j.status = 'PUBLISHED'");
         Map<String, Object> params = new HashMap<>();
 
         if (Utils.hasText(request.getQ())) {
-            whereClause.append(" AND j.search_vector @@ websearch_to_tsquery('simple', :q)");
+            whereClause.append(" AND j.search_vector @@ websearch_to_tsquery('simple', unaccent(:q))");
             params.put("q", request.getQ().trim());
         }
-
         if (Utils.hasText(request.getEmploymentType())) {
             whereClause.append(" AND j.employment_type = :employmentType");
             params.put("employmentType", request.getEmploymentType());
@@ -57,13 +61,17 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
             whereClause.append(" AND j.salary_min <= :salaryMax");
             params.put("salaryMax", request.getSalaryMax());
         }
+        if (request.getDistrictId() != null) {
+            whereClause.append(" AND a.district_id = :districtId");
+            params.put("districtId", request.getDistrictId());
+        }
 
         String orderBy = Utils.hasText(request.getQ())
-                ? "ORDER BY ts_rank_cd(j.search_vector, websearch_to_tsquery('simple', :q), 4) DESC, j.boost_score DESC"
+                ? "ORDER BY ts_rank_cd(j.search_vector, websearch_to_tsquery('simple', unaccent(:q)), 4) DESC, j.boost_score DESC"
                 : "ORDER BY j.boost_score DESC, j.published_at DESC";
 
-        String sql = "SELECT j.* FROM jobs j " + whereClause + " " + orderBy;
-        String countSql = "SELECT COUNT(*) FROM jobs j " + whereClause;
+        String sql = "SELECT j.* " + fromClause + " " + whereClause + " " + orderBy;
+        String countSql = "SELECT COUNT(*) " + fromClause + " " + whereClause;
 
         NativeQuery<Long> countQuery = session.createNativeQuery(countSql, Long.class);
         NativeQuery<Job> dataQuery = session.createNativeQuery(sql, Job.class);
@@ -83,13 +91,11 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
                     .map(Job::getId)
                     .toList();
 
-
             session.createQuery(
                             "SELECT j FROM Job j LEFT JOIN FETCH j.company WHERE j.id IN :ids",
                             Job.class)
                     .setParameter("ids", jobIds)
                     .getResultList();
-
 
             session.createQuery(
                             "SELECT j FROM Job j LEFT JOIN FETCH j.address a LEFT JOIN FETCH a.city LEFT JOIN FETCH a.district WHERE j.id IN :ids",

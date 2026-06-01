@@ -12,6 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -69,6 +70,12 @@ public class User extends SoftDeleteModel {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RefreshToken> refreshTokens;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Payment> payments;
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private Set<LinkedAccount> linkedAccounts;

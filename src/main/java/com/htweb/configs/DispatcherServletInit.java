@@ -22,7 +22,9 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
                 RedisConfig.class,
                 SwaggerConfig.class,
                 AsyncConfig.class,
-                StorageConfig.class
+                StorageConfig.class,
+                WebSocketConfig.class,
+                StripeConfig.class
         };
     }
 
@@ -40,6 +42,8 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
 
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+        registration.setAsyncSupported(true);
+
         registration.setMultipartConfig(
                 new MultipartConfigElement(
                         null,

@@ -1,6 +1,7 @@
 package com.htweb.api.controllers;
 
 import com.htweb.api.dtos.ApiResponse;
+import com.htweb.api.dtos.application.CandidateCvResponse;
 import com.htweb.api.dtos.user.*;
 import com.htweb.api.services.UserService;
 import jakarta.validation.Valid;
@@ -33,7 +34,7 @@ public class ApiUserController {
         return ResponseEntity.ok(userService.getUserDetailByUsername(username));
     }
 
-    @PutMapping("/me")
+    @PatchMapping("/me")
     public ResponseEntity<Void> updateMyProfile(
             @AuthenticationPrincipal Long userId,
             @ModelAttribute UserUpdateRequest request) {

@@ -56,9 +56,9 @@ CREATE INDEX idx_jobs_company_id ON jobs(company_id);
 CREATE INDEX idx_jobs_address_id ON jobs(address_id);
 
 
-CREATE INDEX jobs_search_vector_idx ON jobs USING GIN (search_vector);
-CREATE INDEX job_title_trgm_idx ON jobs USING GIN (title gin_trgm_ops);
+CREATE INDEX jobs_search_vector_idx ON jobs USING GIN (search_vector) WHERE deleted_at IS NULL;
 
+CREATE EXTENSION IF NOT EXISTS unaccent;
 
 CREATE OR REPLACE FUNCTION update_jobs_search_vector()
 RETURNS TRIGGER AS $$
@@ -70,10 +70,10 @@ BEGIN
     WHERE id = NEW.company_id;
 
     NEW.search_vector :=
-        setweight(to_tsvector('simple', COALESCE(NEW.title, '')), 'A') ||
-        setweight(to_tsvector('simple', COALESCE(v_company_name, '')), 'A') ||
-        setweight(to_tsvector('simple', COALESCE(NEW.description, '')), 'B') ||
-        setweight(to_tsvector('simple', COALESCE(NEW.requirements, '')), 'C');
+        setweight(to_tsvector('simple', unaccent(COALESCE(NEW.title, ''))), 'A') ||
+        setweight(to_tsvector('simple', unaccent(COALESCE(v_company_name, ''))), 'A') ||
+        setweight(to_tsvector('simple', unaccent(COALESCE(NEW.description, ''))), 'B') ||
+        setweight(to_tsvector('simple', unaccent(COALESCE(NEW.requirements, ''))), 'C');
 
     RETURN NEW;
 END;
