@@ -3,7 +3,9 @@ package com.htweb.configs;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.htweb.core.helpers.cache.SimpleGrantedAuthorityMixin;
+import com.htweb.core.subscribers.NotificationSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
@@ -17,6 +19,9 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -46,6 +51,8 @@ public class RedisConfig {
     @Bean("redisObjectMapper")
     public ObjectMapper redisObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
         mapper.activateDefaultTyping(
                 BasicPolymorphicTypeValidator.builder()
                         .allowIfBaseType(Object.class)
@@ -99,5 +106,37 @@ public class RedisConfig {
                 .cacheDefaults(defaultConfig)
                 .withInitialCacheConfigurations(cacheConfigs)
                 .build();
+    }
+
+    @Bean
+    public ChannelTopic notificationTopic() {
+        return new ChannelTopic("system_notifications");
+    }
+
+    @Bean
+    public MessageListenerAdapter messageListenerAdapter(
+            NotificationSubscriber subscriber,
+            @Qualifier("redisObjectMapper") ObjectMapper redisObjectMapper) {
+
+        MessageListenerAdapter adapter = new MessageListenerAdapter(subscriber, "onMessage");
+
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(redisObjectMapper);
+        adapter.setSerializer(serializer);
+
+        return adapter;
+    }
+
+    @Bean
+    public RedisMessageListenerContainer redisContainer(
+            LettuceConnectionFactory redisConnectionFactory,
+            MessageListenerAdapter listenerAdapter,
+            ChannelTopic notificationTopic) {
+
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(redisConnectionFactory);
+
+        container.addMessageListener(listenerAdapter, notificationTopic);
+        return container;
     }
 }

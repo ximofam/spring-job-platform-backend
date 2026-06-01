@@ -1,18 +1,18 @@
 package com.htweb.core.tasks;
 
 import com.htweb.core.pojo.RefreshToken;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
 @Component
+@RequiredArgsConstructor
 public class RefreshTokenCleanupTask {
-    @Autowired
     protected SessionFactory factory;
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Ho_Chi_Minh")
@@ -49,7 +49,7 @@ public class RefreshTokenCleanupTask {
                     if (tx != null && tx.isActive()) {
                         tx.rollback();
                     }
-                    System.err.println("[CronJob] Lỗi khi thực thi xóa dữ liệu: " + e.getMessage());
+                    System.err.println("Lỗi khi thực thi xóa dữ liệu: " + e.getMessage());
                     break;
                 }
 
