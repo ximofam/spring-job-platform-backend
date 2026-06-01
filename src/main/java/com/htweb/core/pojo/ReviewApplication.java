@@ -24,9 +24,10 @@ public class ReviewApplication extends BaseModel {
     private User user;
     @Column(name = "user_id", insertable = false, updatable = false)
     private Long userId;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "old_status")
     private ApplicationStatus oldStatus;
+    @Enumerated(EnumType.STRING)
     @Column(name = "new_status")
     private ApplicationStatus newStatus;
 
