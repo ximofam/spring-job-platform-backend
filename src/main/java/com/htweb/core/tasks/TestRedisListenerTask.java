@@ -18,7 +18,7 @@ public class TestRedisListenerTask {
     private final SessionFactory factory;
     private final NotificationService notificationService;
 
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedDelay = 600000)
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public void execute() {
         String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));

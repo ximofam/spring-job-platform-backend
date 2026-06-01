@@ -11,7 +11,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface NotificationMapper {
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "extras", expression = "java(notification.getExtras())")
     Notification toNotification(NotificationRequest request);
 
     @Mapping(source = "createdAt", target = "sendAt")

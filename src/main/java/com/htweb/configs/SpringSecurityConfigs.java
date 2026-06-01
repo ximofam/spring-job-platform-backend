@@ -61,7 +61,9 @@ public class SpringSecurityConfigs {
                         .requestMatchers(HttpMethod.POST,
                                 "/api/auth/login",
                                 "/api/auth/register/**",
-                                "/api/auth/refresh").permitAll()
+                                "/api/auth/refresh",
+                                "/api/payments/webhook/stripe"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "api/auth/check-unique",
                                 "/api/countries/**",
