@@ -1,13 +1,11 @@
 package com.htweb.core.tasks;
 
 import com.htweb.core.enums.JobStatus;
-import com.htweb.core.helpers.dtos.NotificationRequest;
+import com.htweb.core.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +19,7 @@ import java.util.Map;
 @PropertySource("classpath:config.properties")
 public class ExpireJobsTask {
     private final SessionFactory factory;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final ChannelTopic notificationTopic;
+    private final NotificationService notificationService;
 
     @Scheduled(fixedRateString = "${app.jobs.expire-interval:1h}")
     @Transactional
@@ -60,22 +57,16 @@ public class ExpireJobsTask {
 
 
             for (Object[] row : results) {
-                NotificationRequest notificationRequest = getNotificationRequest(row);
-                redisTemplate.convertAndSend(notificationTopic.getTopic(), notificationRequest);
+                Long employerId = (Long) row[0];
+                String jobTitle = (String) row[1];
+                Long jobId = (Long) row[2];
+
+                notificationService.sendNotify(employerId,
+                        "Tin tuyển dụng của bạn đã hết hạn !!!",
+                        String.format("Tin tuyển dụng \"%s\" đã hết hạn", jobTitle),
+                        Map.of("jobId", jobId));
             }
         }
     }
 
-    private static NotificationRequest getNotificationRequest(Object[] row) {
-        Long employerId = (Long) row[0];
-        String jobTitle = (String) row[1];
-        Long jobId = (Long) row[2];
-
-        NotificationRequest notificationRequest = new NotificationRequest();
-        notificationRequest.setUserId(employerId);
-        notificationRequest.setTitle("Tin tuyển dụng của bạn đã hết hạn !!!");
-        notificationRequest.setMessage(String.format("Tin tuyển dụng \"%s\" đã hết hạn", jobTitle));
-        notificationRequest.setExtras(Map.of("jobId", jobId));
-        return notificationRequest;
-    }
 }
