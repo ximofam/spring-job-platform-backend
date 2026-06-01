@@ -23,7 +23,8 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
                 SwaggerConfig.class,
                 AsyncConfig.class,
                 StorageConfig.class,
-                WebSocketConfig.class
+                WebSocketConfig.class,
+                StripeConfig.class
         };
     }
 

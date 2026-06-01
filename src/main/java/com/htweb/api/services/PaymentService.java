@@ -1,4 +1,11 @@
 package com.htweb.api.services;
 
-public class PaymentService {
+import com.htweb.api.dtos.payment.PaymentProcessRequest;
+
+import java.util.Map;
+
+public interface PaymentService {
+    Map<String, Object> process(PaymentProcessRequest request);
+
+
 }
