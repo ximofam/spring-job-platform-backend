@@ -74,6 +74,8 @@ public class User extends SoftDeleteModel {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Payment> payments;
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private Set<LinkedAccount> linkedAccounts;

@@ -23,6 +23,14 @@ services:
     volumes:
       - redis_data:/data
 
+
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    container_name: stripe-cli-webhook
+    command: "listen --forward-to host.docker.internal:8080/job-platform-backend/api/payments/webhook/stripe"
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+
 volumes:
   postgres_data:
   redis_data:
