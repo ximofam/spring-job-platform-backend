@@ -11,7 +11,7 @@ import com.htweb.core.enums.JobStatus;
 import com.htweb.core.enums.PaymentStatus;
 import com.htweb.core.pojo.Job;
 import com.htweb.core.pojo.Payment;
-import com.htweb.core.services.NotificationService;
+import com.htweb.core.publishers.NotificationPublisher;
 import com.htweb.core.services.StripeService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -40,8 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final StripeService stripeService;
     @Qualifier("apiJobRepository")
     private final JobRepository jobRepository;
-    private final NotificationService notificationService;
-
+    private final NotificationPublisher notificationPublisher;
 
     @Override
     @Transactional
@@ -176,7 +175,7 @@ public class PaymentServiceImpl implements PaymentService {
             job.setBoostScore(10);
             jobRepository.update(job);
 
-            notificationService.sendNotify(
+            notificationPublisher.publish(
                     payment.getUserId(),
                     "Thanh toán thành công",
                     String.format("Tin nổi bật\"%s\" Đã được đăng", job.getTitle()),

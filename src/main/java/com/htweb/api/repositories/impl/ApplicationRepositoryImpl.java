@@ -70,4 +70,20 @@ public class ApplicationRepositoryImpl extends BaseRepositoryImpl<Application, L
                 .setParameter("userId", userId)
                 .getSingleResult();
     }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public boolean existsByJobIdAndCandidateId(Long jobId, Long candidateId) {
+        String hql = """
+                SELECT COUNT(a) > 0
+                FROM Application a
+                WHERE a.job.id = :jobId
+                  AND a.candidateProfile.id = :candidateId
+                """;
+
+        return getCurrentSession().createQuery(hql, Boolean.class)
+                .setParameter("jobId", jobId)
+                .setParameter("candidateId", candidateId)
+                .getSingleResult();
+    }
 }
