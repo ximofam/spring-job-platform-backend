@@ -1,22 +1,22 @@
-package com.htweb.core.services.impl;
+package com.htweb.core.publishers;
 
 import com.htweb.core.helpers.dtos.NotificationRequest;
-import com.htweb.core.services.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class NotificationServiceImpl implements NotificationService {
+public class NotificationPublisher {
     private final RedisTemplate<String, Object> redisTemplate;
+    @Qualifier("notificationTopic")
     private final ChannelTopic notificationTopic;
 
-    @Override
-    public Long sendNotify(Long userId, String title, String message, Map<String, Object> extras) {
+    public Long publish(Long userId, String title, String message, Map<String, Object> extras) {
         NotificationRequest notificationRequest = new NotificationRequest();
         notificationRequest.setUserId(userId);
         notificationRequest.setTitle(title);
@@ -26,8 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
         return redisTemplate.convertAndSend(notificationTopic.getTopic(), notificationRequest);
     }
 
-    @Override
-    public Long sendNotify(Long userId, String title, String message) {
-        return sendNotify(userId, title, message, null);
+    public Long publish(Long userId, String title, String message) {
+        return publish(userId, title, message, null);
     }
 }

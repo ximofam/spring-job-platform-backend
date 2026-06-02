@@ -1,6 +1,6 @@
 package com.htweb.core.tasks;
 
-import com.htweb.core.services.NotificationService;
+import com.htweb.core.publishers.NotificationPublisher;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.SessionFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestRedisListenerTask {
     private final SessionFactory factory;
-    private final NotificationService notificationService;
+    private final NotificationPublisher notificationPublisher;
 
     @Scheduled(fixedDelay = 600000)
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -30,7 +30,7 @@ public class TestRedisListenerTask {
                 .getResultList();
 
         userIds.forEach(userId -> {
-            notificationService.sendNotify(userId, "Tin nhắn từ hệ thống", testMessage);
+            notificationPublisher.publish(userId, "Tin nhắn từ hệ thống", testMessage);
         });
     }
 }
