@@ -3,6 +3,7 @@ package com.htweb.core.helpers.paginates;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -22,6 +23,16 @@ public class PaginateResponse<T> {
                 .size(this.size)
                 .totalElements(this.totalElements)
                 .totalPages(this.totalPages)
+                .build();
+    }
+
+    public static <T> PaginateResponse<T> empty(int page, int size) {
+        return PaginateResponse.<T>builder()
+                .data(Collections.emptyList())
+                .page(page)
+                .size(size)
+                .totalElements(0L)
+                .totalPages(0)
                 .build();
     }
 }

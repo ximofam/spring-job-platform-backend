@@ -32,8 +32,19 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
             vectorStr = Arrays.toString(queryVector);
         }
 
-        StringBuilder fromClause = new StringBuilder("FROM jobs j");
+        if (vectorStr != null) {
+            PaginateResponse<Job> vectorResult = executeSearch(session, request, vectorStr, page, size);
+            if (vectorResult.getTotalElements() > 0) {
+                return vectorResult;
+            }
+        }
 
+        return executeSearch(session, request, null, page, size);
+    }
+
+    private PaginateResponse<Job> executeSearch(Session session, JobSearchRequest request,
+                                                String vectorStr, int page, int size) {
+        StringBuilder fromClause = new StringBuilder("FROM jobs j");
         if (request.getDistrictId() != null) {
             fromClause.append(" JOIN addresses a ON a.id = j.address_id");
         }
@@ -74,12 +85,9 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
             params.put("districtId", request.getDistrictId());
         }
 
-        String orderBy;
-        if (vectorStr != null) {
-            orderBy = "ORDER BY (j.embedding <=> CAST(:queryVector AS vector)) ASC, j.boost_score DESC";
-        } else {
-            orderBy = "ORDER BY j.boost_score DESC, j.published_at DESC";
-        }
+        String orderBy = (vectorStr != null)
+                ? "ORDER BY (j.embedding <=> CAST(:queryVector AS vector)) ASC, j.boost_score DESC"
+                : "ORDER BY j.boost_score DESC, j.published_at DESC";
 
         String sql = "SELECT j.* " + fromClause + " " + whereClause + " " + orderBy;
         String countSql = "SELECT COUNT(*) " + fromClause + " " + whereClause;
@@ -92,28 +100,26 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
         });
 
         long totalElements = countQuery.uniqueResult();
+        if (totalElements == 0) {
+            return PaginateResponse.empty(page, size);
+        }
+
         List<Job> data = dataQuery
                 .setFirstResult((page - 1) * size)
                 .setMaxResults(size)
                 .getResultList();
 
-        if (!data.isEmpty()) {
-            List<Long> jobIds = data.stream()
-                    .map(Job::getId)
-                    .toList();
 
-            session.createQuery(
-                            "SELECT j FROM Job j LEFT JOIN FETCH j.company WHERE j.id IN :ids",
-                            Job.class)
-                    .setParameter("ids", jobIds)
-                    .getResultList();
+        List<Long> jobIds = data.stream().map(Job::getId).toList();
 
-            session.createQuery(
-                            "SELECT j FROM Job j LEFT JOIN FETCH j.address a LEFT JOIN FETCH a.city LEFT JOIN FETCH a.district WHERE j.id IN :ids",
-                            Job.class)
-                    .setParameter("ids", jobIds)
-                    .getResultList();
-        }
+        session.createQuery("SELECT j FROM Job j LEFT JOIN FETCH j.company WHERE j.id IN :ids", Job.class)
+                .setParameter("ids", jobIds)
+                .getResultList();
+
+        session.createQuery("SELECT j FROM Job j LEFT JOIN FETCH j.address a LEFT JOIN FETCH a.city LEFT JOIN FETCH a.district WHERE j.id IN :ids", Job.class)
+                .setParameter("ids", jobIds)
+                .getResultList();
+
 
         return PaginateResponse.<Job>builder()
                 .data(data)
