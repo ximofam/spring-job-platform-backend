@@ -1,6 +1,6 @@
 services:
   postgres-db:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: job_platform_postgres
     restart: always
     env_file:
@@ -30,6 +30,23 @@ services:
     command: "listen --forward-to host.docker.internal:8080/job-platform-backend/api/payments/webhook/stripe"
     environment:
       - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+
+  embed-service:
+    image: ximofam/embed-service:latest
+    ports:
+      - "${EMBED_PORT}:${EMBED_PORT}"
+    environment:
+      HOST: "${EMBED_HOST}"
+      PORT: "${EMBED_PORT}"
+      API_KEY: "${EMBED_API_KEY}"
+      HF_TOKEN: "${EMBED_HF_TOKEN}"
+      HF_MODEL: "${EMBED_HF_MODEL}"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${EMBED_PORT}/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 volumes:
   postgres_data:

@@ -10,10 +10,12 @@ import com.htweb.api.mappers.JobMapper;
 import com.htweb.api.repositories.CompanyRepository;
 import com.htweb.api.repositories.JobRepository;
 import com.htweb.api.services.JobService;
+import com.htweb.api.utils.Utils;
 import com.htweb.core.enums.JobStatus;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 import com.htweb.core.pojo.Company;
 import com.htweb.core.pojo.Job;
+import com.htweb.core.services.EmbedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 
 @Service("apiJobService")
@@ -36,11 +39,16 @@ public class JobServiceImpl implements JobService {
     private final CompanyRepository companyRepository;
     @Value("${app.job.expiration-minutes:1440}")
     private long expirationMinutes;
+    private final EmbedService embedService;
 
     @Override
-    @Transactional(readOnly = true)
     public PaginateResponse<JobSimpleResponse> search(JobSearchRequest request) {
-        PaginateResponse<Job> paginate = jobRepository.searchJobs(request);
+        float[] vector = null;
+        if (Utils.hasText(request.getQ())) {
+            vector = embedService.getEmbedding(request.getQ());
+        }
+
+        PaginateResponse<Job> paginate = jobRepository.searchJobs(request, vector);
 
         return paginate.map(jobMapper::toJobSimpleResponseList);
     }
@@ -85,6 +93,11 @@ public class JobServiceImpl implements JobService {
         job.setPublishedAt(now);
         job.setExpiredAt(now.plus(expirationMinutes, ChronoUnit.MINUTES));
         jobRepository.update(job);
+    }
+
+    @Override
+    public List<String> suggestKeywords(String query) {
+        return jobRepository.suggestKeywords(query);
     }
 
 }

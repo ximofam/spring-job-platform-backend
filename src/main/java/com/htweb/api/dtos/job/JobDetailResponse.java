@@ -27,5 +27,6 @@ public class JobDetailResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private Instant expiredAt;
     private String address;
+    private Integer boostScore = 0;
     private CompanyDetailResponse company;
 }

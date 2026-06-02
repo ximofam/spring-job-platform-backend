@@ -12,9 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository("apiJobRepository")
 public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements JobRepository {
@@ -24,12 +22,18 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
 
     @Override
     @Transactional(readOnly = true)
-    public PaginateResponse<Job> searchJobs(JobSearchRequest request) {
+    public PaginateResponse<Job> searchJobs(JobSearchRequest request, float[] queryVector) {
         Session session = getCurrentSession();
         int page = request.getPage();
         int size = request.getSize();
 
+        String vectorStr = null;
+        if (queryVector != null && queryVector.length > 0) {
+            vectorStr = Arrays.toString(queryVector);
+        }
+
         StringBuilder fromClause = new StringBuilder("FROM jobs j");
+
         if (request.getDistrictId() != null) {
             fromClause.append(" JOIN addresses a ON a.id = j.address_id");
         }
@@ -37,10 +41,14 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
         StringBuilder whereClause = new StringBuilder("WHERE j.deleted_at IS NULL AND j.status = 'PUBLISHED'");
         Map<String, Object> params = new HashMap<>();
 
-        if (Utils.hasText(request.getQ())) {
-            whereClause.append(" AND j.search_vector @@ websearch_to_tsquery('simple', unaccent(:q))");
-            params.put("q", request.getQ().trim());
+        if (vectorStr != null) {
+            whereClause.append(" AND (j.embedding <=> CAST(:queryVector AS vector)) <= 0.5");
+            params.put("queryVector", vectorStr);
+        } else if (Utils.hasText(request.getQ())) {
+            whereClause.append(" AND j.title ILIKE :q");
+            params.put("q", "%" + request.getQ().trim() + "%");
         }
+
         if (Utils.hasText(request.getEmploymentType())) {
             whereClause.append(" AND j.employment_type = :employmentType");
             params.put("employmentType", request.getEmploymentType());
@@ -66,9 +74,12 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
             params.put("districtId", request.getDistrictId());
         }
 
-        String orderBy = Utils.hasText(request.getQ())
-                ? "ORDER BY ts_rank_cd(j.search_vector, websearch_to_tsquery('simple', unaccent(:q)), 4) DESC, j.boost_score DESC"
-                : "ORDER BY j.boost_score DESC, j.published_at DESC";
+        String orderBy;
+        if (vectorStr != null) {
+            orderBy = "ORDER BY (j.embedding <=> CAST(:queryVector AS vector)) ASC, j.boost_score DESC";
+        } else {
+            orderBy = "ORDER BY j.boost_score DESC, j.published_at DESC";
+        }
 
         String sql = "SELECT j.* " + fromClause + " " + whereClause + " " + orderBy;
         String countSql = "SELECT COUNT(*) " + fromClause + " " + whereClause;
@@ -129,6 +140,36 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
                 .getSingleResult();
 
         return count != null && count > 0;
+    }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<String> suggestKeywords(String query) {
+        if (query == null || query.trim().length() < 2) {
+            return Collections.emptyList();
+        }
+
+        String cleanQuery = query.trim();
+        Session session = getCurrentSession();
+
+
+        String sql = """
+                SELECT title
+                FROM jobs
+                WHERE deleted_at IS NULL
+                    AND status = 'PUBLISHED'
+                    AND (title % :keyword OR title ILIKE :prefixKeyword)
+                GROUP BY title
+                ORDER BY
+                    (title ILIKE :prefixKeyword) DESC,
+                similarity(title, :keyword) DESC
+                LIMIT 10
+                """;
+
+        return session.createNativeQuery(sql, String.class)
+                .setParameter("keyword", cleanQuery)
+                .setParameter("prefixKeyword", cleanQuery + "%")
+                .getResultList();
     }
 
 }
