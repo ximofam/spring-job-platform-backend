@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +24,12 @@ import java.util.Map;
 public class ApiJobController {
     @Qualifier("apiJobService")
     private final JobService jobService;
+
+    @GetMapping("/suggest")
+    public ResponseEntity<List<String>> suggestKeywords(@RequestParam("q") String q) {
+        List<String> res = jobService.suggestKeywords(q);
+        return ResponseEntity.ok(res);
+    }
 
     @GetMapping
     public ResponseEntity<PaginateResponse<JobSimpleResponse>> searchJobs(
@@ -47,7 +54,7 @@ public class ApiJobController {
                 "Đã tạo thành công job",
                 Map.of("jobId", jobId)
         );
-        
+
         return ResponseEntity.status(201).body(res);
     }
 

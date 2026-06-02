@@ -19,5 +19,6 @@ public class JobSimpleResponse {
     private String address;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private Instant publishedAt;
+    private Integer boostScore = 0;
     private CompanySimpleResponse company;
 }
