@@ -60,11 +60,11 @@ public class JobPostSubscriber {
 
                 tx.commit();
                 System.out.println("Đã cập nhật vector thành công cho Job ID: " + request.getId() + " (" + updatedRows + " dòng)");
-
             } catch (Exception e) {
                 tx.rollback();
                 System.err.println("Lỗi khi lưu vector vào DB cho Job ID: " + request.getId());
                 redisTemplate.opsForList().rightPush(Utils.JOB_POST_RETRY_QUEUE, request.getId());
+                return;
             }
         }
     }

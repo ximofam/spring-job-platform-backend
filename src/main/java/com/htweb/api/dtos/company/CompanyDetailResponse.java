@@ -9,6 +9,7 @@ import lombok.Setter;
 public class CompanyDetailResponse {
     private Long id;
     private String name;
+    private String taxCode;
     private String slug;
     private String logoUrl;
     private String employeeSize;
