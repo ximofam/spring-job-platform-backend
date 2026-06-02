@@ -21,7 +21,6 @@ import java.util.Map;
 public class EmbedServiceImpl implements EmbedService {
     private final String apiUrl;
     private final String apiKey;
-    private final int timeoutMs;
     private final int requestTimeoutMs;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
@@ -34,7 +33,6 @@ public class EmbedServiceImpl implements EmbedService {
 
         this.apiUrl = apiUrl;
         this.apiKey = apiKey;
-        this.timeoutMs = timeoutMs;
         this.requestTimeoutMs = requestTimeoutMs;
         this.objectMapper = new ObjectMapper();
         this.httpClient = HttpClient.newBuilder()
