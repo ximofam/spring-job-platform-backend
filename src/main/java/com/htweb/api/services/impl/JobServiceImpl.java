@@ -74,7 +74,6 @@ public class JobServiceImpl implements JobService {
         job.setCompany(company);
 
         jobRepository.save(job);
-        jobPostPublisher.publish(job.getId());
         return job.getId();
     }
 
@@ -95,6 +94,7 @@ public class JobServiceImpl implements JobService {
         job.setPublishedAt(now);
         job.setExpiredAt(now.plus(expirationMinutes, ChronoUnit.MINUTES));
         jobRepository.update(job);
+        jobPostPublisher.publish(job.getId());
     }
 
     @Override

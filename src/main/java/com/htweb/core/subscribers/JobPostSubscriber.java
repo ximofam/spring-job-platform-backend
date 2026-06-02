@@ -2,6 +2,7 @@ package com.htweb.core.subscribers;
 
 import com.htweb.core.helpers.dtos.JobPostRequest;
 import com.htweb.core.services.EmbedService;
+import com.htweb.core.tasks.FindRelatedJobAndSendToCandidateTask;
 import com.htweb.core.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
@@ -18,6 +19,7 @@ public class JobPostSubscriber {
     private final RedisTemplate<String, Object> redisTemplate;
     private final SessionFactory factory;
     private final EmbedService embedService;
+    private final FindRelatedJobAndSendToCandidateTask findRelatedJobAndSendToCandidateTask;
 
     private static final String sqlJobFullText = """
             SELECT
@@ -66,6 +68,8 @@ public class JobPostSubscriber {
                 redisTemplate.opsForList().rightPush(Utils.JOB_POST_RETRY_QUEUE, request.getId());
                 return;
             }
+
+            findRelatedJobAndSendToCandidateTask.execute(request.getId());
         }
     }
 }

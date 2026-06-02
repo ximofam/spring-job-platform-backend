@@ -11,6 +11,7 @@ import com.htweb.core.enums.JobStatus;
 import com.htweb.core.enums.PaymentStatus;
 import com.htweb.core.pojo.Job;
 import com.htweb.core.pojo.Payment;
+import com.htweb.core.publishers.JobPostPublisher;
 import com.htweb.core.publishers.NotificationPublisher;
 import com.htweb.core.services.StripeService;
 import com.stripe.exception.SignatureVerificationException;
@@ -41,6 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Qualifier("apiJobRepository")
     private final JobRepository jobRepository;
     private final NotificationPublisher notificationPublisher;
+    private final JobPostPublisher jobPostPublisher;
 
     @Override
     @Transactional
@@ -180,6 +182,8 @@ public class PaymentServiceImpl implements PaymentService {
                     "Thanh toán thành công",
                     String.format("Tin nổi bật\"%s\" Đã được đăng", job.getTitle()),
                     Map.of("jobId", job.getId()));
+            
+            jobPostPublisher.publish(job.getId());
         }
 
         payment.setStatus(PaymentStatus.COMPLETED);
