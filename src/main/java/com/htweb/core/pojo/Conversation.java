@@ -30,6 +30,9 @@ public class Conversation extends BaseModel {
     @Column(name = "last_message_at")
     private Instant lastMessageAt = Instant.now();
 
+    @Column(name = "room_hash")
+    private String roomHash;
+
     @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
     @OrderBy("id DESC")
     @BatchSize(size = 20)
