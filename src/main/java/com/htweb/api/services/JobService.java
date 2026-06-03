@@ -6,6 +6,8 @@ import com.htweb.api.dtos.job.JobSearchRequest;
 import com.htweb.api.dtos.job.JobSimpleResponse;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 
+import java.util.List;
+
 public interface JobService {
     PaginateResponse<JobSimpleResponse> search(JobSearchRequest request);
 
@@ -14,4 +16,6 @@ public interface JobService {
     Long createJob(Long userId, JobCreateRequest request);
 
     void publishJob(Long userId, Long jobId);
+
+    List<String> suggestKeywords(String query);
 }

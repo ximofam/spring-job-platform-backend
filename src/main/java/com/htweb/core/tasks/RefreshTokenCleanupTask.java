@@ -13,7 +13,7 @@ import java.time.Instant;
 @Component
 @RequiredArgsConstructor
 public class RefreshTokenCleanupTask {
-    protected SessionFactory factory;
+    private final SessionFactory factory;
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Ho_Chi_Minh")
     public void cleanupExpiredTokens() {
