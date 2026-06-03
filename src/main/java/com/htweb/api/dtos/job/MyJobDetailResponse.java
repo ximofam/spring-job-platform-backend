@@ -1,8 +1,7 @@
 package com.htweb.api.dtos.job;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.htweb.api.dtos.company.CompanyDetailResponse;
-import com.htweb.api.dtos.user.UserSimpleResponse;
+import com.htweb.api.dtos.locations.AddressDetailResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +10,7 @@ import java.time.Instant;
 
 @Getter
 @Setter
-public class JobDetailResponse {
+public class MyJobDetailResponse {
     private Long id;
     private String title;
     private String description;
@@ -27,8 +26,5 @@ public class JobDetailResponse {
     private Instant publishedAt;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private Instant expiredAt;
-    private String address;
-    private Integer boostScore = 0;
-    private CompanyDetailResponse company;
-    private UserSimpleResponse employer;
+    private AddressDetailResponse address;
 }

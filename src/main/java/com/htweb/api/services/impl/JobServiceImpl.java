@@ -4,13 +4,16 @@ import com.htweb.api.dtos.job.*;
 import com.htweb.api.exceptions.http.ForbiddenException;
 import com.htweb.api.exceptions.http.NotFoundException;
 import com.htweb.api.mappers.JobMapper;
+import com.htweb.api.mappers.UserMapper;
 import com.htweb.api.repositories.CompanyRepository;
+import com.htweb.api.repositories.EmployerProfileRepository;
 import com.htweb.api.repositories.JobRepository;
 import com.htweb.api.services.JobService;
 import com.htweb.api.utils.Utils;
 import com.htweb.core.enums.JobStatus;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 import com.htweb.core.pojo.Company;
+import com.htweb.core.pojo.EmployerProfile;
 import com.htweb.core.pojo.Job;
 import com.htweb.core.publishers.JobPostPublisher;
 import com.htweb.core.services.EmbedService;
@@ -40,6 +43,9 @@ public class JobServiceImpl implements JobService {
     private long expirationMinutes;
     private final EmbedService embedService;
     private final JobPostPublisher jobPostPublisher;
+    @Qualifier("apiEmployerProfileRepository")
+    private final EmployerProfileRepository employerProfileRepository;
+    private final UserMapper userMapper;
 
     @Override
     public PaginateResponse<JobSimpleResponse> search(JobSearchRequest request) {
@@ -59,7 +65,13 @@ public class JobServiceImpl implements JobService {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy công việc này"));
 
-        return jobMapper.toJobDetailResponse(job);
+        EmployerProfile employerProfile = employerProfileRepository.findByJobId(id)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy nhà tuyển dụng của công việc này"));
+
+        JobDetailResponse res = jobMapper.toJobDetailResponse(job);
+        res.setEmployer(userMapper.toUserSimpleResponse(employerProfile.getUser()));
+
+        return res;
     }
 
     @Override
@@ -130,5 +142,39 @@ public class JobServiceImpl implements JobService {
         });
 
         return res;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyJobDetailResponse getMyJobById(Long userId, Long jobId) {
+        if (!jobRepository.isRelateToUser(jobId, userId)) {
+            throw new ForbiddenException("Bạn không được quyền xem tin đăng này");
+        }
+
+        Job job = jobRepository.findById(jobId).orElse(null);
+
+        return jobMapper.toMyJobDetailResponse(job);
+    }
+
+    @Override
+    @Transactional
+    public void updateJob(Long userId, Long jobId, JobUpdateRequest request) {
+        if (!jobRepository.isRelateToUser(jobId, userId)) {
+            throw new ForbiddenException("Bạn không được quyền chỉnh sửa tin đăng này");
+        }
+
+        Job job = jobRepository.findById(jobId).orElse(null);
+        jobMapper.updateJob(request, job);
+        jobRepository.update(job);
+    }
+
+    @Override
+    @Transactional
+    public void deleteJob(Long userId, Long jobId) {
+        if (!jobRepository.isRelateToUser(jobId, userId)) {
+            throw new ForbiddenException("Bạn không được quyền xóa tin đăng này");
+        }
+
+        jobRepository.delete(jobId);
     }
 }

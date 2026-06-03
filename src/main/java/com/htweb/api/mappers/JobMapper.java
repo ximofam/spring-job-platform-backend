@@ -5,8 +5,7 @@ import com.htweb.api.exceptions.http.NotFoundException;
 import com.htweb.api.repositories.CategoryRepository;
 import com.htweb.core.pojo.Category;
 import com.htweb.core.pojo.Job;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -33,6 +32,11 @@ public abstract class JobMapper {
     public abstract Job toJob(JobCreateRequest request);
 
     public abstract List<MyJobResponse> toMyJobResponseList(List<Job> jobs);
+
+    public abstract MyJobDetailResponse toMyJobDetailResponse(Job job);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    public abstract void updateJob(JobUpdateRequest request, @MappingTarget Job job);
 
     protected Category mapCategory(Long id) {
         if (id == null) return null;

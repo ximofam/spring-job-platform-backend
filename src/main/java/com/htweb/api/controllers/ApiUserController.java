@@ -2,6 +2,7 @@ package com.htweb.api.controllers;
 
 import com.htweb.api.dtos.ApiResponse;
 import com.htweb.api.dtos.application.CandidateCvResponse;
+import com.htweb.api.dtos.job.MyJobDetailResponse;
 import com.htweb.api.dtos.job.MyJobResponse;
 import com.htweb.api.dtos.user.*;
 import com.htweb.api.services.JobService;
@@ -108,5 +109,13 @@ public class ApiUserController {
     public ResponseEntity<List<MyJobResponse>> getMyJobs(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(jobService.getMyJobs(userId));
     }
-    
+
+    @GetMapping("/me/jobs/{id}")
+    @PreAuthorize("hasAuthority('job:create')")
+    public ResponseEntity<MyJobDetailResponse> getMyJob(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable("id") Long id) {
+
+        return ResponseEntity.ok(jobService.getMyJobById(userId, id));
+    }
 }
