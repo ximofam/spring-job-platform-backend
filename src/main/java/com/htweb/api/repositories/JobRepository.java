@@ -1,5 +1,6 @@
 package com.htweb.api.repositories;
 
+import com.htweb.api.dtos.job.JobComparationResponse;
 import com.htweb.api.dtos.job.JobSearchRequest;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 import com.htweb.core.pojo.Job;
@@ -13,4 +14,6 @@ public interface JobRepository extends BaseRepository<Job, Long> {
     boolean isJobBelongToCompany(Long jobId, Long companyId);
     
     List<String> suggestKeywords(String query);
+
+    List<JobComparationResponse> findMatchScores(List<Long> jobIds, float[] candidateVector);
 }

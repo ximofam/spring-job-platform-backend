@@ -1,10 +1,7 @@
 package com.htweb.api.controllers;
 
 import com.htweb.api.dtos.ApiResponse;
-import com.htweb.api.dtos.job.JobCreateRequest;
-import com.htweb.api.dtos.job.JobDetailResponse;
-import com.htweb.api.dtos.job.JobSearchRequest;
-import com.htweb.api.dtos.job.JobSimpleResponse;
+import com.htweb.api.dtos.job.*;
 import com.htweb.api.services.JobService;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 import jakarta.validation.Valid;
@@ -68,5 +65,11 @@ public class ApiJobController {
         jobService.publishJob(userId, id);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/compare")
+    public ResponseEntity<List<JobComparationResponse>> compareJobs(
+            @RequestBody @Valid JobComparationRequest request) {
+        return ResponseEntity.ok(jobService.compareJobs(request));
     }
 }
