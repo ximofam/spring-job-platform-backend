@@ -1,11 +1,13 @@
 package com.htweb.api.repositories.impl;
 
+import com.htweb.api.dtos.job.JobComparationResponse;
 import com.htweb.api.dtos.job.JobSearchRequest;
 import com.htweb.api.repositories.JobRepository;
 import com.htweb.api.utils.Utils;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 import com.htweb.core.pojo.Job;
 import com.htweb.core.repositories.impl.BaseRepositoryImpl;
+import groovy.lang.Tuple;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
@@ -176,6 +178,42 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
                 .setParameter("keyword", cleanQuery)
                 .setParameter("prefixKeyword", cleanQuery + "%")
                 .getResultList();
+    }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<JobComparationResponse> findMatchScores(List<Long> jobIds, float[] candidateVector) {
+        if (jobIds == null || jobIds.isEmpty() || candidateVector == null) {
+            return Collections.emptyList();
+        }
+
+        String vectorStr = Arrays.toString(candidateVector);
+
+        String sql = """
+            SELECT
+                j.id    AS job_id,
+                j.title AS title,
+                ROUND(
+                    CAST((1 - (j.embedding <=> CAST(:vector AS vector))) * 100 AS numeric)
+                , 1)    AS score
+            FROM jobs j
+            WHERE j.id = ANY(:jobIds)
+              AND j.embedding IS NOT NULL
+              AND j.deleted_at IS NULL
+            ORDER BY score DESC
+            """;
+
+        return getCurrentSession().createNativeQuery(sql, Object[].class)
+                .setParameter("vector", vectorStr)
+                .setParameter("jobIds", jobIds.toArray(new Long[0]))  // fix ở đây
+                .getResultList()
+                .stream()
+                .map(row -> new JobComparationResponse(
+                        ((Number) row[0]).longValue(),  // job_id
+                        (String) row[1],                // title
+                        ((Number) row[2]).doubleValue() // score
+                ))
+                .toList();
     }
 
 }

@@ -96,10 +96,10 @@ public class SpringSecurityConfigs {
                                 "/admin/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 ).formLogin(form -> form.loginPage("/admin/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/admin/", true)
                         .failureUrl("/admin/login?error=true")
                         .permitAll()
                 ).logout((logout) -> logout.logoutSuccessUrl("/admin/login").permitAll());

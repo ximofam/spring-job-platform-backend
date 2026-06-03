@@ -1,9 +1,6 @@
 package com.htweb.api.services;
 
-import com.htweb.api.dtos.job.JobCreateRequest;
-import com.htweb.api.dtos.job.JobDetailResponse;
-import com.htweb.api.dtos.job.JobSearchRequest;
-import com.htweb.api.dtos.job.JobSimpleResponse;
+import com.htweb.api.dtos.job.*;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 
 import java.util.List;
@@ -18,4 +15,6 @@ public interface JobService {
     void publishJob(Long userId, Long jobId);
 
     List<String> suggestKeywords(String query);
+
+    List<JobComparationResponse> compareJobs(JobComparationRequest request);
 }

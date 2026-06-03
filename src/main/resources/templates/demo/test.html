@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTWeb Admin - Chỉnh sửa Nhà Tuyển Dụng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="bg-gray-50 text-slate-600 font-sans antialiased">
+    <div class="flex min-h-screen overflow-hidden">
+
+      <!-- SIDEBAR -->
+      <aside class="w-64 bg-white border-r border-gray-100 fixed inset-y-0 left-0 z-50 flex-col hidden md:flex">
+        <div class="h-16 flex items-center px-6 border-b border-gray-50">
+          <a th:href="@{/admin}" class="flex items-center gap-2 font-bold text-xl text-slate-800 tracking-wide uppercase">
+            <i data-lucide="layers" class="w-6 h-6 text-indigo-600 fill-indigo-100"></i>
+            <span>HTWeb</span>
+          </a>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+          <div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">Quản lý</p>
+            <ul class="space-y-1">
+              <li>
+                <a th:href="@{/admin}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-gray-50 hover:text-slate-800 text-sm transition-all">
+                  <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                  <span>Dashboard</span>
+                </a>
+              </li>
+              <li>
+                <a th:href="@{/admin/users}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-indigo-50/50 text-indigo-600 font-medium text-sm transition-all">
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                  <span>Nhà tuyển dụng</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="flex-1 pl-0 md:pl-64 flex flex-col min-h-screen">
+
+        <!-- HEADER -->
+        <header class="h-16 bg-white border-b border-gray-100 fixed top-0 right-0 left-0 md:left-64 z-40 flex items-center justify-between px-6">
+          <div class="flex items-center gap-3">
+            <a th:href="@{/admin/users}" class="p-1.5 rounded hover:bg-gray-100 text-slate-500 transition-colors">
+              <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div>
+              <h1 class="text-sm font-semibold text-slate-800">Chỉnh sửa hồ sơ nhà tuyển dụng</h1>
+              <p class="text-xs text-slate-400" th:text="${'ID: ' + form.user.id}"></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 text-slate-500 hover:bg-gray-50 rounded-full relative transition-colors">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+            </button>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
+                 alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-gray-100" />
+          </div>
+        </header>
+
+        <!-- FORM -->
+        <main class="flex-1 p-6 mt-16 overflow-y-auto max-w-5xl w-full mx-auto">
+          <form th:action="@{/admin/users/{id}/edit(id=${form.user.id})}"
+                th:object="${form}"
+                method="post"
+                class="space-y-8">
+
+            <!-- ===== SECTION 1: USER ===== -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div class="bg-slate-800 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-white/10 rounded-lg">
+                    <i data-lucide="user" class="w-5 h-5 text-indigo-400"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-white">1. Thông tin Tài khoản cá nhân (User)</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Quản lý thông tin định danh cá nhân và thông tin liên hệ chính.</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-slate-700 px-2 py-1 rounded text-slate-300 font-mono hidden sm:inline-block">User Entity</span>
+              </div>
+
+              <div class="p-6 md:p-8 space-y-6">
+                <!-- Avatar -->
+                <div class="flex items-center space-x-6">
+                  <div class="relative group">
+                    <img th:src="${form.user.avatarUrl != null ? form.user.avatarUrl : 'https://ui-avatars.com/api/?name=' + form.user.name}"
+                         alt="Avatar"
+                         class="w-20 h-20 rounded-full object-cover ring-4 ring-slate-100 transition duration-300 group-hover:ring-indigo-100">
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-semibold text-slate-800" th:text="${form.user.name}"></h3>
+                    <p class="text-xs text-slate-400 mt-1">
+                      Trường <code class="bg-indigo-50 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-[11px]">avatarUrl</code>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                      Tên đăng nhập <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" th:field="*{user.username}" required
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                      Email <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="email" th:field="*{user.email}" required
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Họ và tên</label>
+                    <input type="text" th:field="*{user.name}"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Số điện thoại</label>
+                    <input type="tel" th:field="*{user.phone}"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Giới tính</label>
+                    <select th:field="*{user.gender}"
+                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option th:each="g : ${T(com.htweb.core.enums.Gender).values()}"
+                              th:value="${g}"
+                              th:text="${g}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Ngày sinh</label>
+                    <input type="date"
+                           th:field="*{user.dateOfBirth}"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa chỉ</label>
+                    <input type="text" th:field="*{user.address}"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Vai trò hệ thống</label>
+                    <input type="text" th:value="${form.user.userRole}" disabled
+                           class="w-full px-4 py-2 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg cursor-not-allowed text-sm">
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===== SECTION 2: COMPANY ===== -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div class="bg-indigo-600 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-white/10 rounded-lg">
+                    <i data-lucide="building-2" class="w-5 h-5 text-indigo-200"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-white">2. Thông tin Doanh nghiệp (Company)</h2>
+                    <p class="text-xs text-indigo-200 mt-0.5">Hiển thị trên trang chi tiết công ty.</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-indigo-700 px-2 py-1 rounded text-indigo-200 font-mono hidden sm:inline-block">Company Entity</span>
+              </div>
+
+              <div class="p-6 md:p-8 space-y-6">
+                <!-- Logo -->
+                <div class="flex items-center space-x-6">
+                  <div class="border border-gray-100 rounded-xl p-2 bg-slate-50">
+                    <img th:src="${form.company.logoUrl != null ? form.company.logoUrl : 'https://ui-avatars.com/api/?name=' + form.company.name}"
+                         alt="Logo" class="w-16 h-16 object-contain rounded-lg">
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-semibold text-slate-800" th:text="${form.company.name}"></h3>
+                    <p class="text-xs text-slate-400 mt-1">
+                      Trường <code class="bg-indigo-50 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-[11px]">logoUrl</code>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tên công ty</label>
+                    <input type="text" th:field="*{company.name}"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Slug</label>
+                    <div class="flex rounded-lg shadow-sm">
+                      <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-200 bg-slate-50 text-slate-400 text-xs font-mono">/co/</span>
+                      <input type="text" th:field="*{company.slug}"
+                             class="w-full px-4 py-2 border border-gray-200 rounded-r-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition font-mono text-sm text-slate-800">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mã số thuế</label>
+                    <input type="text" th:field="*{company.taxCode}"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Loại hình công ty</label>
+                    <select th:field="*{company.type}"
+                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option th:each="t : ${T(com.htweb.core.enums.CompanyType).values()}"
+                              th:value="${t}"
+                              th:text="${t}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Quy mô nhân sự</label>
+                    <select th:field="*{company.employeeSize}"
+                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option th:each="s : ${T(com.htweb.core.enums.EmployeeSize).values()}"
+                              th:value="${s}"
+                              th:text="${s}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái công ty</label>
+                    <select th:field="*{company.status}"
+                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800 bg-white">
+                      <option th:each="s : ${T(com.htweb.core.enums.CompanyStatus).values()}"
+                              th:value="${s}"
+                              th:text="${s}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mô tả</label>
+                    <textarea th:field="*{company.description}" rows="4"
+                              class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition text-sm text-slate-800"></textarea>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===== SECTION 3: EMPLOYER PROFILE ===== -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div class="bg-amber-500 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-white/10 rounded-lg">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-amber-100"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-white">3. Trạng thái Duyệt & Phân quyền (EmployerProfile)</h2>
+                    <p class="text-xs text-amber-100 mt-0.5">Cấu hình điều kiện xác thực hồ sơ liên kết giữa User và Company.</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-amber-600 px-2 py-1 rounded text-amber-100 font-mono hidden sm:inline-block">Profile Relation</span>
+              </div>
+
+              <div class="p-6 md:p-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái phê duyệt (EmployerStatus)</label>
+                    <select th:field="*{profile.status}"
+                            onchange="updateStatusAlert(this.value)"
+                            class="w-full px-4 py-2 border border-amber-200 bg-amber-50/30 text-amber-900 font-semibold rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition text-sm">
+                      <option th:each="s : ${T(com.htweb.core.enums.EmployerStatus).values()}"
+                              th:value="${s}"
+                              th:text="${s}">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Duyệt bởi (Admin ID)</label>
+                    <input type="text"
+                           th:value="${form.profile.approvedBy != null ? form.profile.approvedBy.name : 'Chưa có'}"
+                           disabled
+                           class="w-full px-4 py-2 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg cursor-not-allowed text-sm">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Thời gian phê duyệt</label>
+                    <input type="text"
+                           th:value="${form.profile.approvedAt != null ? #temporals.format(form.profile.approvedAt, 'dd/MM/yyyy HH:mm') : 'Chưa duyệt'}"
+                           disabled
+                           class="w-full px-4 py-2 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg cursor-not-allowed text-sm">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">MapsId (User ID)</label>
+                    <input type="text" th:value="${form.profile.userId}" disabled
+                           class="w-full px-4 py-2 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg cursor-not-allowed text-sm font-mono">
+                  </div>
+                </div>
+
+                <!-- Alert box -->
+                <div id="status-alert-box"
+                     th:classappend="${form.profile.status?.name() == 'APPROVED'} ? 'bg-emerald-50/60 border-emerald-100' : (${form.profile.status?.name() == 'REJECTED'} ? 'bg-rose-50/60 border-rose-100' : 'bg-amber-50/60 border-amber-100')"
+                     class="flex items-start p-4 rounded-xl border transition-all duration-300">
+                  <div class="flex-shrink-0 mt-0.5" id="status-icon-wrapper">
+                    <i data-lucide="alert-circle"
+                       th:classappend="${form.profile.status?.name() == 'APPROVED'} ? 'text-emerald-600' : (${form.profile.status?.name() == 'REJECTED'} ? 'text-rose-600' : 'text-amber-600')"
+                       class="w-5 h-5"></i>
+                  </div>
+                  <div class="ml-3">
+                    <h4 id="status-title-text"
+                        th:classappend="${form.profile.status?.name() == 'APPROVED'} ? 'text-emerald-800' : (${form.profile.status?.name() == 'REJECTED'} ? 'text-rose-800' : 'text-amber-800')"
+                        class="text-xs font-bold uppercase tracking-wide"
+                        th:text="${form.profile.status?.name() == 'APPROVED'} ? 'Hồ sơ đã được phê duyệt (APPROVED)' : (${form.profile.status?.name() == 'REJECTED'} ? 'Hồ sơ đã bị từ chối (REJECTED)' : 'Hồ sơ đang ở trạng thái chờ (PENDING)')">
+                    </h4>
+                    <p class="mt-1 text-xs leading-relaxed"
+                       th:classappend="${form.profile.status?.name() == 'APPROVED'} ? 'text-emerald-700/90' : (${form.profile.status?.name() == 'REJECTED'} ? 'text-rose-700/90' : 'text-amber-700/90')"
+                       th:text="${form.profile.status?.name() == 'APPROVED'} ? 'Doanh nghiệp đã được cấp toàn quyền hoạt động và đăng tuyển dụng.' : (${form.profile.status?.name() == 'REJECTED'} ? 'Yêu cầu định danh bị hủy bỏ. Vui lòng kiểm tra lại thông tin doanh nghiệp.' : 'Tài khoản tạm thời bị hạn chế cho đến khi có hành động phê duyệt từ quản trị viên.')">
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Footer metadata -->
+                <div class="border-t border-gray-100 pt-4 flex flex-wrap gap-4 md:gap-8 text-[11px] text-slate-400">
+                  <div class="flex items-center gap-1.5">
+                    <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
+                    <span>Ngày tạo:
+                      <b class="text-slate-600 font-medium"
+                         th:text="${#temporals.format(form.profile.createdAt, 'dd/MM/yyyy HH:mm')}"></b>
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                    <span>Cập nhật lần cuối:
+                      <b class="text-indigo-600 font-medium"
+                         th:text="${#temporals.format(form.profile.updatedAt, 'dd/MM/yyyy HH:mm')}"></b>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <a th:href="@{/admin/users}"
+                 class="px-5 py-2 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-100 transition-colors">
+                Hủy thay đổi
+              </a>
+              <button type="submit"
+                      class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-100 transition-colors">
+                Lưu thông tin cập nhật
+              </button>
+            </div>
+          </form>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+      function updateStatusAlert(statusValue) {
+        const alertBox = document.getElementById('status-alert-box');
+        const titleText = document.getElementById('status-title-text');
+        const iconWrapper = document.getElementById('status-icon-wrapper');
+        const descText = alertBox.querySelector('p');
+
+        alertBox.className = "flex items-start p-4 rounded-xl border transition-all duration-300";
+
+        if (statusValue === 'APPROVED') {
+          alertBox.classList.add('bg-emerald-50/60', 'border-emerald-100');
+          titleText.innerText = "Hồ sơ đã được phê duyệt (APPROVED)";
+          titleText.className = "text-xs font-bold text-emerald-800 uppercase tracking-wide";
+          descText.innerText = "Doanh nghiệp đã được cấp toàn quyền hoạt động và đăng tuyển dụng.";
+          descText.className = "mt-1 text-xs text-emerald-700/90 leading-relaxed";
+          iconWrapper.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i>`;
+        } else if (statusValue === 'REJECTED') {
+          alertBox.classList.add('bg-rose-50/60', 'border-rose-100');
+          titleText.innerText = "Hồ sơ đã bị từ chối (REJECTED)";
+          titleText.className = "text-xs font-bold text-rose-800 uppercase tracking-wide";
+          descText.innerText = "Yêu cầu định danh bị hủy bỏ. Vui lòng kiểm tra lại thông tin doanh nghiệp.";
+          descText.className = "mt-1 text-xs text-rose-700/90 leading-relaxed";
+          iconWrapper.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i>`;
+        } else {
+          alertBox.classList.add('bg-amber-50/60', 'border-amber-100');
+          titleText.innerText = "Hồ sơ đang ở trạng thái chờ (PENDING)";
+          titleText.className = "text-xs font-bold text-amber-800 uppercase tracking-wide";
+          descText.innerText = "Tài khoản tạm thời bị hạn chế cho đến khi có hành động phê duyệt từ quản trị viên.";
+          descText.className = "mt-1 text-xs text-amber-700/90 leading-relaxed";
+          iconWrapper.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>`;
+        }
+        lucide.createIcons();
+      }
+    </script>
+  </body>
+</html>

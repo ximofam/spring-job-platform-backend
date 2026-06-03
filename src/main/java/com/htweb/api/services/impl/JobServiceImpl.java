@@ -1,9 +1,6 @@
 package com.htweb.api.services.impl;
 
-import com.htweb.api.dtos.job.JobCreateRequest;
-import com.htweb.api.dtos.job.JobDetailResponse;
-import com.htweb.api.dtos.job.JobSearchRequest;
-import com.htweb.api.dtos.job.JobSimpleResponse;
+import com.htweb.api.dtos.job.*;
 import com.htweb.api.exceptions.http.ForbiddenException;
 import com.htweb.api.exceptions.http.NotFoundException;
 import com.htweb.api.mappers.JobMapper;
@@ -102,4 +99,16 @@ public class JobServiceImpl implements JobService {
         return jobRepository.suggestKeywords(query);
     }
 
+    @Override
+    public List<JobComparationResponse> compareJobs(JobComparationRequest request) {
+        float[] candidateVector = embedService.getEmbedding(request.getDescription());
+
+        List<JobComparationResponse> results = jobRepository.findMatchScores(
+                request.getJobIds(), candidateVector);
+
+        if (results.isEmpty()) {
+            throw new NotFoundException("Không tìm thấy job nào hoặc job chưa được index");
+        }
+        return results;
+    }
 }

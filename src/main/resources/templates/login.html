@@ -1,25 +1,98 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Đăng nhập</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập — Otika</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="bg-gray-50 text-slate-600 font-sans antialiased min-h-screen flex items-center justify-center p-8">
 
-<section class="container">
-    <form method="post" th:action="@{/login}">
-        <div class="form-floating mb-3 mt-3">
-            <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username"/>
-            <label for="username">Tên đăng nhập</label>
-        </div>
-        <div class="form-floating mb-3 mt-3">
-            <input type="password" class="form-control" id="password" placeholder="Mật khẩu" name="password"/>
-            <label for="username">Mật khẩu</label>
-        </div>
-        <div class="form-floating mb-3 mt-3">
-            <button class="btn btn-success">Đăng nhập</button>
-        </div>
-    </form>
-</section>
+  <div class="flex w-full max-w-3xl bg-white rounded-2xl border border-gray-100 overflow-hidden min-h-[520px]">
 
+    <!-- Left panel -->
+    <div class="flex-1 bg-indigo-600 p-12 flex flex-col justify-between min-w-[260px]">
+      <div>
+        <a href="#" class="flex items-center gap-2 font-bold text-xl text-white tracking-wide uppercase mb-12">
+          <i data-lucide="layers" class="w-6 h-6 fill-indigo-300"></i>
+          <span>JobHub</span>
+        </a>
+        <p class="text-xl font-medium text-white mb-2">Chào mừng trở lại</p>
+        <p class="text-sm text-indigo-200 leading-relaxed">Đăng nhập để truy cập vào bảng quản trị JobHub của bạn.</p>
+      </div>
+      <div class="space-y-3.5">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 bg-indigo-500 rounded-md flex items-center justify-center shrink-0">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-white"></i>
+          </div>
+          <span class="text-sm text-indigo-200">Bảo mật & mã hóa dữ liệu</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 bg-indigo-500 rounded-md flex items-center justify-center shrink-0">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-white"></i>
+          </div>
+          <span class="text-sm text-indigo-200">Quản lý người dùng tập trung</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 bg-indigo-500 rounded-md flex items-center justify-center shrink-0">
+            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-white"></i>
+          </div>
+          <span class="text-sm text-indigo-200">Tổng quan thời gian thực</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="flex-1 p-12 flex flex-col justify-center">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Bảng quản trị</p>
+      <h1 class="text-xl font-semibold text-slate-800 mb-8">Đăng nhập</h1>
+
+      <form method="post" th:action="@{/login}" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tên đăng nhập</label>
+          <div class="relative">
+            <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" name="username" placeholder="Nhập tên đăng nhập"
+              class="w-full bg-slate-50 border border-transparent focus:border-indigo-500 focus:bg-white text-sm pl-9 pr-4 py-2 rounded-lg outline-none transition-all" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Mật khẩu</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu"
+              class="w-full bg-slate-50 border border-transparent focus:border-indigo-500 focus:bg-white text-sm pl-9 pr-10 py-2 rounded-lg outline-none transition-all" />
+            <button type="button" onclick="togglePassword()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors">
+              <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+ 
+        <button type="submit"
+          class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-sm font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          Đăng nhập
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    function togglePassword() {
+      const pw = document.getElementById('password');
+      const icon = document.getElementById('eye-icon');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        pw.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
