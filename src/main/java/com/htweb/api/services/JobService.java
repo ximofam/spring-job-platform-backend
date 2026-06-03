@@ -21,4 +21,8 @@ public interface JobService {
     List<MyJobResponse> getMyJobs(Long userId);
 
     MyJobDetailResponse getMyJobById(Long userId, Long jobId);
+
+    void updateJob(Long userId, Long jobId, JobUpdateRequest request);
+
+    void deleteJob(Long userId, Long jobId);
 }

@@ -72,4 +72,27 @@ public class ApiJobController {
             @RequestBody @Valid JobComparationRequest request) {
         return ResponseEntity.ok(jobService.compareJobs(request));
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('job:update')")
+    public ResponseEntity<Void> updateJob(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long id,
+            @RequestBody @Valid JobUpdateRequest request) {
+
+        jobService.updateJob(userId, id, request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('job:delete')")
+    public ResponseEntity<Void> deleteJob(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long id) {
+
+        jobService.deleteJob(userId, id);
+
+        return ResponseEntity.ok().build();
+    }
 }

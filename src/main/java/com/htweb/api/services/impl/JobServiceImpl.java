@@ -155,4 +155,26 @@ public class JobServiceImpl implements JobService {
 
         return jobMapper.toMyJobDetailResponse(job);
     }
+
+    @Override
+    @Transactional
+    public void updateJob(Long userId, Long jobId, JobUpdateRequest request) {
+        if (!jobRepository.isRelateToUser(jobId, userId)) {
+            throw new ForbiddenException("Bạn không được quyền chỉnh sửa tin đăng này");
+        }
+
+        Job job = jobRepository.findById(jobId).orElse(null);
+        jobMapper.updateJob(request, job);
+        jobRepository.update(job);
+    }
+
+    @Override
+    @Transactional
+    public void deleteJob(Long userId, Long jobId) {
+        if (!jobRepository.isRelateToUser(jobId, userId)) {
+            throw new ForbiddenException("Bạn không được quyền xóa tin đăng này");
+        }
+
+        jobRepository.delete(jobId);
+    }
 }
