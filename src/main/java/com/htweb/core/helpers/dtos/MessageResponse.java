@@ -11,6 +11,7 @@ import java.time.Instant;
 @Setter
 public class MessageResponse {
     private Long id;
+    private Long conversationId;
     private String content;
     private UserSimpleResponse sender;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
