@@ -257,4 +257,23 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
                 ));
     }
 
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public boolean isRelateToUser(Long jobId, Long userId) {
+        String hql = """
+                SELECT COUNT(j) FROM Job j
+                WHERE j.id = :jobId
+                  AND j.company.id = (
+                      SELECT ep.company.id FROM EmployerProfile ep
+                      WHERE ep.id = :userId
+                  )
+                """;
+
+        Long count = getCurrentSession().createQuery(hql, Long.class)
+                .setParameter("jobId", jobId)
+                .setParameter("userId", userId)
+                .uniqueResult();
+
+        return count != null && count > 0;
+    }
 }

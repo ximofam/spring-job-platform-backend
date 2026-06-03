@@ -131,4 +131,16 @@ public class JobServiceImpl implements JobService {
 
         return res;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyJobDetailResponse getMyJobById(Long userId, Long jobId) {
+        if (!jobRepository.isRelateToUser(jobId, userId)) {
+            throw new ForbiddenException("Bạn không được quyền xem tin đăng này");
+        }
+
+        Job job = jobRepository.findById(jobId).orElse(null);
+
+        return jobMapper.toMyJobDetailResponse(job);
+    }
 }

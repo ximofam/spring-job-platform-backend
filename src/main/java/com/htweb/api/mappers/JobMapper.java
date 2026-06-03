@@ -34,6 +34,8 @@ public abstract class JobMapper {
 
     public abstract List<MyJobResponse> toMyJobResponseList(List<Job> jobs);
 
+    public abstract MyJobDetailResponse toMyJobDetailResponse(Job job);
+
     protected Category mapCategory(Long id) {
         if (id == null) return null;
 

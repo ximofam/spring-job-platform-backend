@@ -21,4 +21,6 @@ public interface JobRepository extends BaseRepository<Job, Long> {
     List<Job> findByEmployerId(Long userId);
 
     Map<Long, Integer> getApplicationsCount(List<Long> jobIds);
+
+    boolean isRelateToUser(Long jobId, Long userId);
 }

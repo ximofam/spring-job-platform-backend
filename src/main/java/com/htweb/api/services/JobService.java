@@ -19,4 +19,6 @@ public interface JobService {
     List<JobComparationResponse> compareJobs(JobComparationRequest request);
 
     List<MyJobResponse> getMyJobs(Long userId);
+
+    MyJobDetailResponse getMyJobById(Long userId, Long jobId);
 }

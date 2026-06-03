@@ -1,6 +1,7 @@
 package com.htweb.api.mappers;
 
 import com.htweb.api.dtos.locations.AddressCreateRequest;
+import com.htweb.api.dtos.locations.AddressDetailResponse;
 import com.htweb.api.dtos.locations.CitySimpleResponse;
 import com.htweb.api.dtos.locations.DistrictSimpleResponse;
 import com.htweb.api.exceptions.http.NotFoundException;
@@ -29,9 +30,15 @@ public abstract class LocationMapper {
     @Mapping(source = "districtId", target = "district")
     public abstract Address toAddress(AddressCreateRequest request);
 
+    public abstract CitySimpleResponse toCitySimpleResponse(City city);
+
     public abstract List<CitySimpleResponse> toCitySimpleResponseList(List<City> cities);
 
+    public abstract DistrictSimpleResponse toDistrictSimpleResponse(District district);
+
     public abstract List<DistrictSimpleResponse> toDistrictSimpleResponseList(List<District> districts);
+
+    public abstract AddressDetailResponse toAddressDetailResponse(Address address);
 
     protected City mapCity(Long id) {
         if (id == null) return null;
