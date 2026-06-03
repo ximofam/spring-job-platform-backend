@@ -2,6 +2,7 @@ package com.htweb.api.dtos.job;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.htweb.api.dtos.company.CompanyDetailResponse;
+import com.htweb.api.dtos.user.UserSimpleResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,4 +30,5 @@ public class JobDetailResponse {
     private String address;
     private Integer boostScore = 0;
     private CompanyDetailResponse company;
+    private UserSimpleResponse employer;
 }
