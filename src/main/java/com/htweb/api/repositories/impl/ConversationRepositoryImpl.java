@@ -54,4 +54,14 @@ public class ConversationRepositoryImpl
 
         return count != null && count > 0;
     }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Optional<Conversation> findByRoomHash(String roomHash) {
+        String hql = "FROM Conversation c WHERE c.roomHash = :roomHash";
+
+        return getCurrentSession().createQuery(hql, Conversation.class)
+                .setParameter("roomHash", roomHash)
+                .uniqueResultOptional();
+    }
 }

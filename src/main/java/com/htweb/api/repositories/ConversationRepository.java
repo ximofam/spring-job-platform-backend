@@ -9,4 +9,6 @@ public interface ConversationRepository extends PaginateRepository<Conversation,
     Optional<Conversation> findPrivateConversation(Long userId1, Long userId2);
 
     boolean isMemberOfConversation(Long userId, Long conversationId);
+
+    Optional<Conversation> findByRoomHash(String roomHash);
 }

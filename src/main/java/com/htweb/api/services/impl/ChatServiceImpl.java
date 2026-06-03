@@ -40,6 +40,12 @@ public class ChatServiceImpl implements ChatService {
     private final MessageRepository messageRepository;
     private final SendMessageToUsersTask sendMessageToUsersTask;
 
+    private static String generatePrivateRoomHash(Long userId1, Long userId2) {
+        long minId = Math.min(userId1, userId2);
+        long maxId = Math.max(userId1, userId2);
+        return "PRIVATE_" + minId + "_" + maxId;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public PaginateResponse<ConversationSimpleResponse> getConversations(Long userId, int page, int size) {
@@ -64,8 +70,9 @@ public class ChatServiceImpl implements ChatService {
             throw new BadRequestException("Không thể tạo nhóm chat với chính mình.");
         }
 
-        Optional<Conversation> existingConv = conversationRepository.findPrivateConversation(currentUserId, partnerId);
+        String roomHash = generatePrivateRoomHash(currentUserId, partnerId);
 
+        Optional<Conversation> existingConv = conversationRepository.findByRoomHash(roomHash);
         if (existingConv.isPresent()) {
             return chatMapper.toConversationSimpleResponse(existingConv.get(), currentUserId);
         }
@@ -77,6 +84,7 @@ public class ChatServiceImpl implements ChatService {
 
         Conversation newConv = new Conversation();
         newConv.setType(ConversationType.PRIVATE);
+        newConv.setRoomHash(roomHash);
 
         ConversationMember member1 = new ConversationMember();
         member1.setUser(currentUser);
