@@ -21,18 +21,19 @@ import java.util.Map;
 public class EmbedServiceImpl implements EmbedService {
     private final String apiUrl;
     private final String apiKey;
-    private final int timeoutMs;
+    private final int requestTimeoutMs;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
 
     public EmbedServiceImpl(
             @Value("${app.ai.embed.url:http://localhost:8000/embed}") String apiUrl,
             @Value("${app.ai.embed.api-key}") String apiKey,
-            @Value("${app.ai.embed.timeout-ms:3000}") int timeoutMs) {
+            @Value("${app.ai.embed.timeout-ms:3000}") int timeoutMs,
+            @Value("${app.ai.embed.request-timeout-ms:7000}") int requestTimeoutMs) {
 
         this.apiUrl = apiUrl;
         this.apiKey = apiKey;
-        this.timeoutMs = timeoutMs;
+        this.requestTimeoutMs = requestTimeoutMs;
         this.objectMapper = new ObjectMapper();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofMillis(timeoutMs))
@@ -63,7 +64,7 @@ public class EmbedServiceImpl implements EmbedService {
             System.out.println(payload);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))
-                    .timeout(Duration.ofMillis(timeoutMs))
+                    .timeout(Duration.ofMillis(requestTimeoutMs))
                     .header("Content-Type", "application/json")
                     .header("X-API-Key", apiKey)
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))

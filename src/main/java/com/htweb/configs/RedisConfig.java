@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.htweb.core.helpers.cache.SimpleGrantedAuthorityMixin;
+import com.htweb.core.subscribers.JobPostSubscriber;
 import com.htweb.core.subscribers.NotificationSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -65,20 +66,23 @@ public class RedisConfig {
     }
 
     @Bean
+    public GenericJackson2JsonRedisSerializer redisSerializer(
+            @Qualifier("redisObjectMapper") ObjectMapper redisObjectMapper) {
+        return new GenericJackson2JsonRedisSerializer(redisObjectMapper);
+    }
+
+    @Bean
     public RedisTemplate<String, Object> redisTemplate(
             LettuceConnectionFactory redisConnectionFactory,
-            @Qualifier("redisObjectMapper") ObjectMapper redisObjectMapper) {
+            GenericJackson2JsonRedisSerializer redisSerializer) {
 
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
-        GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer(redisObjectMapper);
-
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(serializer);
-        template.setHashValueSerializer(serializer);
+        template.setValueSerializer(redisSerializer);
+        template.setHashValueSerializer(redisSerializer);
 
         return template;
     }
@@ -86,17 +90,14 @@ public class RedisConfig {
     @Bean
     public CacheManager cacheManager(
             LettuceConnectionFactory redisConnectionFactory,
-            @Qualifier("redisObjectMapper") ObjectMapper redisObjectMapper) {
-
-        GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer(redisObjectMapper);
+            GenericJackson2JsonRedisSerializer redisSerializer) {
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(30))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(serializer))
+                        .fromSerializer(redisSerializer))
                 .disableCachingNullValues();
 
         Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
@@ -114,29 +115,43 @@ public class RedisConfig {
     }
 
     @Bean
-    public MessageListenerAdapter messageListenerAdapter(
+    public ChannelTopic jobPostTopic() {
+        return new ChannelTopic("job_post");
+    }
+
+    @Bean
+    public MessageListenerAdapter notificationListenerAdapter(
             NotificationSubscriber subscriber,
-            @Qualifier("redisObjectMapper") ObjectMapper redisObjectMapper) {
+            GenericJackson2JsonRedisSerializer redisSerializer) {
 
         MessageListenerAdapter adapter = new MessageListenerAdapter(subscriber, "onMessage");
+        adapter.setSerializer(redisSerializer);
+        return adapter;
+    }
 
-        GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer(redisObjectMapper);
-        adapter.setSerializer(serializer);
+    @Bean
+    public MessageListenerAdapter jobPostListenerAdapter(
+            JobPostSubscriber subscriber,
+            GenericJackson2JsonRedisSerializer redisSerializer) {
 
+        MessageListenerAdapter adapter = new MessageListenerAdapter(subscriber, "onMessage");
+        adapter.setSerializer(redisSerializer);
         return adapter;
     }
 
     @Bean
     public RedisMessageListenerContainer redisContainer(
             LettuceConnectionFactory redisConnectionFactory,
-            MessageListenerAdapter listenerAdapter,
-            ChannelTopic notificationTopic) {
+            @Qualifier("notificationListenerAdapter") MessageListenerAdapter notificationListenerAdapter,
+            @Qualifier("notificationTopic") ChannelTopic notificationTopic,
+            @Qualifier("jobPostListenerAdapter") MessageListenerAdapter jobPostListenerAdapter,
+            @Qualifier("jobPostTopic") ChannelTopic jobPostTopic) {
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
 
-        container.addMessageListener(listenerAdapter, notificationTopic);
+        container.addMessageListener(notificationListenerAdapter, notificationTopic);
+        container.addMessageListener(jobPostListenerAdapter, jobPostTopic);
         return container;
     }
 }

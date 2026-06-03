@@ -26,4 +26,21 @@ public class EmployerProfileRepositoryImpl
                 .setParameter("id", id)
                 .uniqueResultOptional();
     }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Optional<EmployerProfile> findByJobId(Long jobId) {
+        String hql = """
+                    SELECT ep FROM EmployerProfile ep
+                    WHERE ep.company.id = (
+                        SELECT j.company.id
+                        FROM Job j
+                        WHERE j.id = :jobId
+                    )
+                """;
+
+        return getCurrentSession().createQuery(hql, EmployerProfile.class)
+                .setParameter("jobId", jobId)
+                .uniqueResultOptional();
+    }
 }

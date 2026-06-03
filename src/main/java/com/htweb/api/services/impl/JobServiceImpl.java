@@ -15,6 +15,7 @@ import com.htweb.core.enums.JobStatus;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 import com.htweb.core.pojo.Company;
 import com.htweb.core.pojo.Job;
+import com.htweb.core.publishers.JobPostPublisher;
 import com.htweb.core.services.EmbedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,6 +41,7 @@ public class JobServiceImpl implements JobService {
     @Value("${app.job.expiration-minutes:1440}")
     private long expirationMinutes;
     private final EmbedService embedService;
+    private final JobPostPublisher jobPostPublisher;
 
     @Override
     public PaginateResponse<JobSimpleResponse> search(JobSearchRequest request) {
@@ -72,7 +74,6 @@ public class JobServiceImpl implements JobService {
         job.setCompany(company);
 
         jobRepository.save(job);
-
         return job.getId();
     }
 
@@ -93,6 +94,7 @@ public class JobServiceImpl implements JobService {
         job.setPublishedAt(now);
         job.setExpiredAt(now.plus(expirationMinutes, ChronoUnit.MINUTES));
         jobRepository.update(job);
+        jobPostPublisher.publish(job.getId());
     }
 
     @Override

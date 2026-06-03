@@ -11,4 +11,6 @@ public interface ApplicationRepository extends BaseRepository<Application, Long>
     List<Application> findApplicationOfEmployer(Long employerId);
 
     boolean isRelateToUser(Long applicationId, Long userId);
+
+    boolean existsByJobIdAndCandidateId(Long jobId, Long candidateId);
 }

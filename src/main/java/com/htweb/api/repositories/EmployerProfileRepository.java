@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface EmployerProfileRepository extends BaseRepository<EmployerProfile, Long> {
     Optional<EmployerProfile> findAndFetchUserById(Long id);
+
+    Optional<EmployerProfile> findByJobId(Long jobId);
 }

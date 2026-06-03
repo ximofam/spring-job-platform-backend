@@ -1,7 +1,7 @@
 package com.htweb.core.tasks;
 
 import com.htweb.core.enums.JobStatus;
-import com.htweb.core.services.NotificationService;
+import com.htweb.core.publishers.NotificationPublisher;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,7 +19,7 @@ import java.util.Map;
 @PropertySource("classpath:config.properties")
 public class ExpireJobsTask {
     private final SessionFactory factory;
-    private final NotificationService notificationService;
+    private final NotificationPublisher notificationPublisher;
 
     @Scheduled(fixedRateString = "${app.jobs.expire-interval:1h}")
     @Transactional
@@ -61,7 +61,7 @@ public class ExpireJobsTask {
                 String jobTitle = (String) row[1];
                 Long jobId = (Long) row[2];
 
-                notificationService.sendNotify(employerId,
+                notificationPublisher.publish(employerId,
                         "Tin tuyển dụng của bạn đã hết hạn !!!",
                         String.format("Tin tuyển dụng \"%s\" đã hết hạn", jobTitle),
                         Map.of("jobId", jobId));

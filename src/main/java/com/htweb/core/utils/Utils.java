@@ -2,6 +2,8 @@ package com.htweb.core.utils;
 
 public class Utils {
 
+    public static final String JOB_POST_RETRY_QUEUE = "job_post_retry_queue";
+
     public static int parseInt(String input, int defaultVal) {
         if (input == null || input.isEmpty()) {
             return defaultVal;
