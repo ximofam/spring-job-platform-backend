@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@PreAuthorize("hasAuthority('report:view_own')")
 @RequestMapping("/api/statistics")
 @RequiredArgsConstructor
 public class ApiDashboardController {
@@ -41,7 +42,7 @@ public class ApiDashboardController {
             @RequestParam(defaultValue = "month") String period,
             @RequestParam(defaultValue = "2024") Integer year
     ) {
-        return ResponseEntity.ok(dashboardService.getCvOverviewMetrics(userId,period,year));
+        return ResponseEntity.ok(dashboardService.getCvOverviewMetrics(userId, period, year));
     }
 
     @GetMapping("/edu-quality")
@@ -50,7 +51,7 @@ public class ApiDashboardController {
             @RequestParam(defaultValue = "month") String period,
             @RequestParam(defaultValue = "2024") Integer year
     ) {
-        return ResponseEntity.ok(dashboardService.getEducationQualityStats(userId,period,year));
+        return ResponseEntity.ok(dashboardService.getEducationQualityStats(userId, period, year));
     }
 
     @GetMapping("/exp-quality")
@@ -59,7 +60,7 @@ public class ApiDashboardController {
             @RequestParam(defaultValue = "month") String period,
             @RequestParam(defaultValue = "2024") Integer year
     ) {
-        return ResponseEntity.ok(dashboardService.getExperienceQualityStats(userId,period,year));
+        return ResponseEntity.ok(dashboardService.getExperienceQualityStats(userId, period, year));
     }
 
 }

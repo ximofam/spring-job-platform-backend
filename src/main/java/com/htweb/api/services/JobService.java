@@ -17,4 +17,6 @@ public interface JobService {
     List<String> suggestKeywords(String query);
 
     List<JobComparationResponse> compareJobs(JobComparationRequest request);
+
+    List<MyJobResponse> getMyJobs(Long userId);
 }

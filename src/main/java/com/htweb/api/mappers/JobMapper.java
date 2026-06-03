@@ -1,9 +1,6 @@
 package com.htweb.api.mappers;
 
-import com.htweb.api.dtos.job.JobCategoryResponse;
-import com.htweb.api.dtos.job.JobCreateRequest;
-import com.htweb.api.dtos.job.JobDetailResponse;
-import com.htweb.api.dtos.job.JobSimpleResponse;
+import com.htweb.api.dtos.job.*;
 import com.htweb.api.exceptions.http.NotFoundException;
 import com.htweb.api.repositories.CategoryRepository;
 import com.htweb.core.pojo.Category;
@@ -34,6 +31,8 @@ public abstract class JobMapper {
 
     @Mapping(source = "categoryId", target = "category")
     public abstract Job toJob(JobCreateRequest request);
+
+    public abstract List<MyJobResponse> toMyJobResponseList(List<Job> jobs);
 
     protected Category mapCategory(Long id) {
         if (id == null) return null;

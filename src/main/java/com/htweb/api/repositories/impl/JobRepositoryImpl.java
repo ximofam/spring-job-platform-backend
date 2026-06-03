@@ -7,7 +7,6 @@ import com.htweb.api.utils.Utils;
 import com.htweb.core.helpers.paginates.PaginateResponse;
 import com.htweb.core.pojo.Job;
 import com.htweb.core.repositories.impl.BaseRepositoryImpl;
-import groovy.lang.Tuple;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository("apiJobRepository")
 public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements JobRepository {
@@ -190,22 +190,22 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
         String vectorStr = Arrays.toString(candidateVector);
 
         String sql = """
-            SELECT
-                j.id    AS job_id,
-                j.title AS title,
-                ROUND(
-                    CAST((1 - (j.embedding <=> CAST(:vector AS vector))) * 100 AS numeric)
-                , 1)    AS score
-            FROM jobs j
-            WHERE j.id = ANY(:jobIds)
-              AND j.embedding IS NOT NULL
-              AND j.deleted_at IS NULL
-            ORDER BY score DESC
-            """;
+                SELECT
+                    j.id    AS job_id,
+                    j.title AS title,
+                    ROUND(
+                        CAST((1 - (j.embedding <=> CAST(:vector AS vector))) * 100 AS numeric)
+                    , 1)    AS score
+                FROM jobs j
+                WHERE j.id = ANY(:jobIds)
+                  AND j.embedding IS NOT NULL
+                  AND j.deleted_at IS NULL
+                ORDER BY score DESC
+                """;
 
         return getCurrentSession().createNativeQuery(sql, Object[].class)
                 .setParameter("vector", vectorStr)
-                .setParameter("jobIds", jobIds.toArray(new Long[0]))  // fix ở đây
+                .setParameter("jobIds", jobIds.toArray(new Long[0]))
                 .getResultList()
                 .stream()
                 .map(row -> new JobComparationResponse(
@@ -214,6 +214,47 @@ public class JobRepositoryImpl extends BaseRepositoryImpl<Job, Long> implements 
                         ((Number) row[2]).doubleValue() // score
                 ))
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Job> findByEmployerId(Long userId) {
+        String hql = """
+                SELECT j FROM Job j
+                WHERE j.company.id = (
+                    SELECT ep.company.id FROM EmployerProfile ep
+                    WHERE ep.id = :userId
+                )
+                """;
+
+        return getCurrentSession().createQuery(hql, Job.class)
+                .setParameter("userId", userId)
+                .getResultList();
+    }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Map<Long, Integer> getApplicationsCount(List<Long> jobIds) {
+        if (jobIds == null || jobIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        String hql = """
+                SELECT a.job.id, COUNT(a.id)
+                FROM Application a
+                WHERE a.job.id IN (:jobIds)
+                GROUP BY a.job.id
+                """;
+
+        List<Object[]> results = getCurrentSession().createQuery(hql, Object[].class)
+                .setParameter("jobIds", jobIds)
+                .getResultList();
+
+        return results.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Long) row[1]).intValue()
+                ));
     }
 
 }
