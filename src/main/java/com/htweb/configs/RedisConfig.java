@@ -102,6 +102,7 @@ public class RedisConfig {
 
         Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
         cacheConfigs.put("rolePermissionCache", defaultConfig.entryTtl(Duration.ofMinutes(15)));
+        cacheConfigs.put("getEmbedding", defaultConfig.entryTtl(Duration.ofMinutes(60)));
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)

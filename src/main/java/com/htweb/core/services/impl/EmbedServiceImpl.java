@@ -2,8 +2,10 @@ package com.htweb.core.services.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.htweb.core.helpers.dtos.VectorDto;
 import com.htweb.core.services.EmbedService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,19 @@ public class EmbedServiceImpl implements EmbedService {
                 .build();
     }
 
+    @Override
+    @Cacheable(value = "getEmbedding", key = "#text.toLowerCase().trim()", unless = "#result == null || #result.vector == null || #result.vector.length == 0")
+    public VectorDto getEmbeddingCached(String text) {
+        float[] vector = getEmbedding(text);
+        if (vector == null || vector.length == 0) {
+            return null;
+        }
+
+        return new VectorDto(vector);
+    }
+
+
+    @Override
     public float[] getEmbedding(String text) {
         if (text == null || text.trim().isEmpty()) {
             return null;
@@ -51,6 +66,7 @@ public class EmbedServiceImpl implements EmbedService {
     }
 
 
+    @Override
     public float[][] getEmbeddings(List<String> texts) {
         if (texts == null || texts.isEmpty()) {
             return new float[0][0];

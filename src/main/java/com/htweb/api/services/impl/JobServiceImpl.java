@@ -44,7 +44,7 @@ public class JobServiceImpl implements JobService {
     public PaginateResponse<JobSimpleResponse> search(JobSearchRequest request) {
         float[] vector = null;
         if (Utils.hasText(request.getQ())) {
-            vector = embedService.getEmbedding(request.getQ());
+            vector = embedService.getEmbeddingCached(request.getQ()).getVector();
         }
 
         PaginateResponse<Job> paginate = jobRepository.searchJobs(request, vector);
