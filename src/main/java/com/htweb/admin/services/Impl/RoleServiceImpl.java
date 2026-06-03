@@ -6,8 +6,8 @@ import com.htweb.admin.repositories.RoleRepository;
 import com.htweb.admin.services.RoleService;
 import com.htweb.core.pojo.Permission;
 import com.htweb.core.pojo.Role;
+import com.htweb.core.services.impl.AuthorityCacheService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepo;
     private final PermissionRepository permissionRepository;
+    private final AuthorityCacheService authorityCacheService;
 
     @Override
     public List<Role> findAll() {
@@ -40,8 +41,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void save(Role role){
-         this.roleRepo.save(role);
+    public void save(Role role) {
+        this.roleRepo.save(role);
     }
 
     @Override
@@ -66,6 +67,7 @@ public class RoleServiceImpl implements RoleService {
                 : new HashSet<>();
         role.setPermissions(newPerms);
         roleRepo.save(role);
+        authorityCacheService.evictCache(role.getName());
     }
 
     @Override

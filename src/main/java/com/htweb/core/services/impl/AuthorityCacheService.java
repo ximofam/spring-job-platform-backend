@@ -2,6 +2,7 @@ package com.htweb.core.services.impl;
 
 import com.htweb.core.repositories.PermissionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,5 +21,9 @@ public class AuthorityCacheService {
         return permissionRepository.findByRoleName(roleName).stream()
                 .map(per -> new SimpleGrantedAuthority(per.getName()))
                 .collect(Collectors.toSet());
+    }
+
+    @CacheEvict(value = "rolePermissionCache", key = "#roleName")
+    public void evictCache(String roleName) {
     }
 }
