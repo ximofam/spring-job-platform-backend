@@ -8,6 +8,8 @@ package com.htweb.configs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.htweb.admin.formatters.RoleFormatter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +52,9 @@ import java.util.List;
 @EnableWebMvc
 @EnableTransactionManagement
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class WebAppContextConfigs implements WebMvcConfigurer {
+    private final RoleFormatter roleFormatter;
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -72,6 +76,7 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(roleFormatter);
     }
 
     @Bean

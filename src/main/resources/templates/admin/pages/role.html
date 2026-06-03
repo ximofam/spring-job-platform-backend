@@ -1,0 +1,149 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{admin/base/admin_layout}"
+>
+  >
+  <div layout:fragment="content">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">Cấu hình Vai trò</h1>
+          <p class="text-sm text-slate-400 mt-1">Quản lý các nhóm quyền hạn trong hệ thống</p>
+        </div>
+        <button
+          onclick="document.getElementById('createRoleModal').classList.remove('hidden')"
+          class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm shadow-sm shadow-indigo-100 transition-all active:scale-[0.98]"
+        >
+          <i class="bi bi-plus-lg mr-2"></i>
+          Tạo Vai Trò Mới
+        </button>
+      </div>
+
+      <!-- Flash success -->
+      <div
+        th:if="${success}"
+        class="flex items-center gap-3 my-3 bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium shadow-sm"
+      >
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+        <span th:text="${success}"></span>
+      </div>
+
+      <!-- Role cards -->
+      <div class="h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          th:each="role : ${roles}"
+          class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col relative group"
+        >
+          <div class="flex justify-between items-start mb-4">
+            <div class="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+              <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            </div>
+            <div class="flex gap-x-3">
+              <a
+                href="#"
+                th:onclick="|window.open('@{/admin/roles/{id}/update(id=${role.id})}', 'popup', 'width=800,height=600')|"
+                class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors"
+              >
+                <i data-lucide="edit-2" class="w-4 h-4"></i>
+              </a>
+              <form
+                th:action="@{/admin/roles/{id}/delete(id=${role.id})}"
+                method="post"
+                onsubmit="return confirm('Xóa role này?');"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                >
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <h3 class="text-base font-bold text-gray-800" th:text="${role.name}">Role Name</h3>
+          <p class="mb-4 text-sm text-slate-400 mt-2 line-clamp-2" th:text="${role.description} ?: 'Chưa có mô tả'">Mô tả</p>
+
+          <a
+            th:href="@{/admin/roles/{id}/permission(id=${role.id})}"
+            class="mt-auto block w-full text-center bg-slate-50 hover:bg-indigo-600 text-slate-600 hover:text-white font-semibold py-2.5 text-xs rounded-xl transition-all border border-slate-100 hover:border-transparent"
+          >
+             Cấu hình chi tiết quyền
+          </a>
+        </div>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(roles)}" class="col-span-3 text-center py-16 text-gray-400">
+          <i class="bi bi-shield-x text-5xl mb-4 block"></i>
+          <p>Chưa có vai trò nào. Hãy tạo mới!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal tạo role mới -->
+    <div id="createRoleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onclick="document.getElementById('createRoleModal').classList.add('hidden')"
+      ></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+        <div class="flex justify-between items-center mb-5">
+          <h2 class="text-lg font-bold text-gray-800">Tạo vai trò mới</h2>
+          <button
+            onclick="document.getElementById('createRoleModal').classList.add('hidden')"
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <i class="bi bi-x-lg text-xl"></i>
+          </button>
+        </div>
+
+        <form th:action="@{/admin/roles}" method="post">
+          <div class="mb-4">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+              Tên vai trò
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              required
+              placeholder="VD: HR Manager"
+              class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+            />
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Mô tả</label>
+            <textarea
+              name="description"
+              rows="3"
+              placeholder="Mô tả trách nhiệm của vai trò..."
+              class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition resize-none"
+            ></textarea>
+          </div>
+
+          <div class="flex gap-3">
+            <button
+              type="button"
+              onclick="document.getElementById('createRoleModal').classList.add('hidden')"
+              class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition text-sm"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition text-sm shadow-lg shadow-blue-100"
+            >
+              <i class="bi bi-check-lg mr-1"></i>
+              Xác nhận tạo
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</html>

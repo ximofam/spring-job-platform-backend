@@ -1,0 +1,120 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{admin/base/admin_layout}">
+  <div layout:fragment="content">
+    <div class="flex h-screen overflow-hidden">
+      <!-- Main Content Area -->
+      <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Filter Bar -->
+        <form th:action="@{/admin/stats/market}" method="get" class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2 shadow-xs">
+            <i data-lucide="calendar-days" class="w-4 h-4 text-gray-400"></i>
+            <span class="text-xs text-gray-400 font-medium uppercase tracking-wider mr-1">Giai đoạn</span>
+            <select
+              name="period"
+              onchange="this.form.submit()"
+              class="text-xs font-semibold text-gray-700 bg-transparent outline-none cursor-pointer">
+              <option value="MONTH" th:selected="${currentPeriod.name() == 'MONTH'}">Tháng</option>
+              <option value="QUARTER" th:selected="${currentPeriod.name() == 'QUARTER'}">Quý</option>
+              <option value="YEAR" th:selected="${currentPeriod.name() == 'YEAR'}">Năm</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2 shadow-xs">
+            <i data-lucide="calendar" class="w-4 h-4 text-gray-400"></i>
+            <span class="text-xs text-gray-400 font-medium uppercase tracking-wider mr-1">Năm</span>
+            <select
+              name="year"
+              onchange="this.form.submit()"
+              class="text-xs font-semibold text-gray-700 bg-transparent outline-none cursor-pointer">
+              <option value="2024" th:selected="${currentYear == 2024}">2024</option>
+              <option value="2025" th:selected="${currentYear == 2025}">2025</option>
+              <option value="2026" th:selected="${currentYear == 2026}">2026</option>
+            </select>
+          </div>
+
+          <div class="ml-auto text-xs font-medium text-gray-500">
+            <span th:text="${currentPeriod.name() + ' · ' + currentYear}"></span>
+          </div>
+        </form>
+
+        <!-- Dashboard Content -->
+        <div class="p-6 space-y-6 max-w-7xl w-full mx-auto">
+          <!-- CHARTS GRID -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Top ngành nghề (Category) -->
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-xs lg:col-span-2">
+              <div class="mb-4">
+                <h4 class="font-bold text-gray-900">Top Ngành Nghề Đang Khát Nhân Lực</h4>
+                <p class="text-xs text-gray-400">Số lượng tin tuyển dụng phân bố theo danh mục (categories)</p>
+              </div>
+              <div class="h-72">
+                <canvas id="chartTopCategories"></canvas>
+              </div>
+            </div>
+
+            <!-- Tỷ lệ trạng thái ứng tuyển -->
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-xs">
+              <div class="mb-4">
+                <h4 class="font-bold text-gray-900">Trạng Thái Hồ Sơ Ứng Tuyển</h4>
+                <p class="text-xs text-gray-400">Tỷ lệ trạng thái hiện tại của bảng applications</p>
+              </div>
+              <div class="h-72 flex items-center justify-center">
+                <canvas id="chartAppStatus"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+            const categoryData  = [[${categoryData}]];
+      const appStatusData = [[${appStatusData}]];
+
+      // Biểu đồ: Top ngành nghề (Horizontal Bar)
+      new Chart(document.getElementById("chartTopCategories").getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: categoryData.labels,
+          datasets: [{
+            label: "Số lượng tin tuyển dụng",
+            data: categoryData.data,
+            backgroundColor: "#4f46e5",
+            borderRadius: 4,
+          }],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { grid: { color: "#f3f4f6" } }, y: { grid: { display: false } } },
+        },
+      });
+
+      // Biểu đồ: Trạng thái ứng tuyển (Doughnut)
+      new Chart(document.getElementById("chartAppStatus").getContext("2d"), {
+        type: "doughnut",
+        data: {
+          labels: appStatusData.labels,
+          datasets: [{
+            data: appStatusData.data,
+            backgroundColor: ["#f59e0b", "#3b82f6", "#10b981", "#ef4444"],
+            cutout: "70%",
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom", labels: { boxWidth: 12, padding: 10 } },
+          },
+        },
+      });
+    </script>
+  </th:block>
+</html>
