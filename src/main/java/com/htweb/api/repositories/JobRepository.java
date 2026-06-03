@@ -7,13 +7,18 @@ import com.htweb.core.pojo.Job;
 import com.htweb.core.repositories.BaseRepository;
 
 import java.util.List;
+import java.util.Map;
 
 public interface JobRepository extends BaseRepository<Job, Long> {
     PaginateResponse<Job> searchJobs(JobSearchRequest request, float[] queryVector);
 
     boolean isJobBelongToCompany(Long jobId, Long companyId);
-    
+
     List<String> suggestKeywords(String query);
 
     List<JobComparationResponse> findMatchScores(List<Long> jobIds, float[] candidateVector);
+
+    List<Job> findByEmployerId(Long userId);
+
+    Map<Long, Integer> getApplicationsCount(List<Long> jobIds);
 }

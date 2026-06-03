@@ -2,7 +2,9 @@ package com.htweb.api.controllers;
 
 import com.htweb.api.dtos.ApiResponse;
 import com.htweb.api.dtos.application.CandidateCvResponse;
+import com.htweb.api.dtos.job.MyJobResponse;
 import com.htweb.api.dtos.user.*;
+import com.htweb.api.services.JobService;
 import com.htweb.api.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,8 @@ import java.util.Map;
 public class ApiUserController {
     @Qualifier("apiUserService")
     private final UserService userService;
+    @Qualifier("apiJobService")
+    private final JobService jobService;
 
     @GetMapping("/me")
     public ResponseEntity<UserDetailResponse> getMe(@AuthenticationPrincipal Long userId) {
@@ -98,4 +102,11 @@ public class ApiUserController {
     public ResponseEntity<List<CandidateCvResponse>> getMyCVs(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(userService.getCandidateCVs(userId));
     }
+
+    @GetMapping("/me/jobs")
+    @PreAuthorize("hasAuthority('job:create')")
+    public ResponseEntity<List<MyJobResponse>> getMyJobs(@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(jobService.getMyJobs(userId));
+    }
+    
 }

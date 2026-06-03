@@ -136,7 +136,7 @@ public class ChatServiceImpl implements ChatService {
         conversationRepository.update(conversation);
 
         MessageResponse res = chatMapper.toMessageResponse(message);
-
+        res.setConversationId(conversation.getId());
         List<Long> memberUserIds = conversation.getMembers().stream()
                 .map(member -> member.getUser().getId())
                 .toList();

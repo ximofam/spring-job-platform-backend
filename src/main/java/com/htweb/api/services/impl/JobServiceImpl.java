@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 
 @Service("apiJobService")
@@ -110,5 +111,24 @@ public class JobServiceImpl implements JobService {
             throw new NotFoundException("Không tìm thấy job nào hoặc job chưa được index");
         }
         return results;
+    }
+
+    @Override
+    public List<MyJobResponse> getMyJobs(Long userId) {
+        List<Job> jobs = jobRepository.findByEmployerId(userId);
+        if (jobs == null || jobs.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> jobIds = jobs.stream().map(Job::getId).toList();
+        Map<Long, Integer> mapJobApplicationsCount = jobRepository.getApplicationsCount(jobIds);
+
+        List<MyJobResponse> res = jobMapper.toMyJobResponseList(jobs);
+        res.forEach(myJob -> {
+            Integer appCount = mapJobApplicationsCount.getOrDefault(myJob.getId(), 0);
+            myJob.setApplicationsCount(appCount);
+        });
+
+        return res;
     }
 }
