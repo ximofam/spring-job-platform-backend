@@ -2,9 +2,11 @@ package com.htweb.admin.repositories.Impl;
 
 import com.htweb.admin.enums.StatisticPeriod;
 import com.htweb.admin.repositories.StatisticsActivityRepository;
+import com.htweb.core.enums.ApplicationStatus;
 import com.htweb.core.enums.CompanyStatus;
-import com.htweb.core.pojo.Company;
-import com.htweb.core.pojo.User;
+import com.htweb.core.enums.JobStatus;
+import com.htweb.core.enums.PaymentStatus;
+import com.htweb.core.pojo.*;
 import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -92,13 +95,14 @@ public class StatisticsActivityRepositoryImpl implements StatisticsActivityRepos
             case YEAR -> {
                 // Từ targetYear trở về trước
                 predicates.add(cb.lessThanOrEqualTo(yearPart, (double) targetYear));
-        }
+            }
         }
         cq.select(cb.count(root))
                 .where(predicates.toArray(new Predicate[0]));
 
         return session.createQuery(cq).getSingleResult();
     }
+
     public Map<String, Long> countNewUsersByRole(StatisticPeriod period, Integer value, Integer year) {
         Session session = getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -122,6 +126,290 @@ public class StatisticsActivityRepositoryImpl implements StatisticsActivityRepos
         result.putIfAbsent("CANDIDATE", 0L);
         result.putIfAbsent("EMPLOYER", 0L);
         return result;
+    }
+
+    public List<Map<String, Object>> countNewUsersByRoleGrouped(StatisticPeriod period, Integer year) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<User> root = cq.from(User.class);
+
+        int targetYear = (year != null) ? year : LocalDate.now().getYear();
+
+        Expression<Double> yearPart = cb.function("date_part", Double.class,
+                cb.literal("year"), root.get("createdAt"));
+
+        List<Predicate> predicates = new ArrayList<>();
+        Expression<?> groupExpr = switch (period) {
+            case MONTH -> {
+                // Lọc đúng năm, group by tháng
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                yield cb.function("date_part", Double.class,
+                        cb.literal("month"), root.get("createdAt"));
+            }
+            case QUARTER -> {
+                // Lọc đúng năm, group by quý
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                yield cb.function("date_part", Double.class,
+                        cb.literal("quarter"), root.get("createdAt"));
+            }
+            case YEAR -> {
+                // Không lọc năm, group by năm
+                predicates.add(cb.lessThanOrEqualTo(yearPart, (double) targetYear));
+                yield yearPart;
+            }
+        };
+
+        cq.multiselect(groupExpr, root.get("userRole"), cb.count(root))
+                .where(predicates.toArray(new Predicate[0]))
+                .groupBy(groupExpr, root.get("userRole"))
+                .orderBy(cb.asc(groupExpr));
+
+        return getCurrentSession().createQuery(cq).getResultList()
+                .stream()
+                .map(row -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("period", row[0]);
+                    map.put("role", row[1]);
+                    map.put("count", row[2]);
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    public Map<String, Long> countCompaniesByStatus(StatisticPeriod period, Integer value, Integer year) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<Company> root = cq.from(Company.class);
+
+        List<Predicate> predicates = buildPeriodPredicates(cb, root.get("createdAt"), period, value, year);
+
+        cq.multiselect(root.get("status"), cb.count(root))
+                .where(predicates.toArray(new Predicate[0]))
+                .groupBy(root.get("status"));
+
+        Map<String, Long> result = session.createQuery(cq)
+                .getResultList()
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> row[0].toString(),
+                        row -> (Long) row[1]
+                ));
+
+        // Default value cho từng status
+        for (CompanyStatus status : CompanyStatus.values()) {
+            result.putIfAbsent(status.name(), 0L);
+        }
+
+        return result;
+    }
+
+    public List<Map<String, Object>> countNewJobsGrouped(StatisticPeriod period, Integer year) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<Job> root = cq.from(Job.class);
+
+        int targetYear = (year != null) ? year : LocalDate.now().getYear();
+
+        Expression<Double> yearPart = cb.function("date_part", Double.class,
+                cb.literal("year"), root.get("createdAt"));
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.notEqual(root.get("status"), JobStatus.DRAFT));
+        Expression<?> groupExpr = switch (period) {
+            case MONTH -> {
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                yield cb.function("date_part", Double.class,
+                        cb.literal("month"), root.get("createdAt"));
+            }
+            case QUARTER -> {
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                yield cb.function("date_part", Double.class,
+                        cb.literal("quarter"), root.get("createdAt"));
+            }
+            case YEAR -> {
+                predicates.add(cb.lessThanOrEqualTo(yearPart, (double) targetYear));
+                yield yearPart;
+            }
+        };
+
+        cq.multiselect(groupExpr, cb.count(root))
+                .where(predicates.toArray(new Predicate[0]))
+                .groupBy(groupExpr)
+                .orderBy(cb.asc(groupExpr));
+
+        return getCurrentSession().createQuery(cq).getResultList()
+                .stream()
+                .map(row -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("period", row[0]);
+                    map.put("count", row[1]);
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> countJobsByCategory(StatisticPeriod period, Integer value, Integer year) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<Job> root = cq.from(Job.class);
+        Join<Job, Category> categoryJoin = root.join("category", JoinType.LEFT);
+
+        int targetYear = (year != null) ? year : LocalDate.now().getYear();
+
+        Expression<Double> yearPart = cb.function("date_part", Double.class,
+                cb.literal("year"), root.get("createdAt"));
+        Expression<Double> monthPart = cb.function("date_part", Double.class,
+                cb.literal("month"), root.get("createdAt"));
+        Expression<Double> quarterPart = cb.function("date_part", Double.class,
+                cb.literal("quarter"), root.get("createdAt"));
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.notEqual(root.get("status"), JobStatus.DRAFT));
+
+        switch (period) {
+            case MONTH -> {
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                if (value != null) predicates.add(cb.equal(monthPart, (double) value));
+            }
+            case QUARTER -> {
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                if (value != null) predicates.add(cb.equal(quarterPart, (double) value));
+            }
+            case YEAR -> predicates.add(cb.lessThanOrEqualTo(yearPart, (double) targetYear));
+        }
+
+        cq.multiselect(categoryJoin.get("name"), cb.count(root))
+                .where(predicates.toArray(new Predicate[0]))
+                .groupBy(categoryJoin.get("name"))
+                .orderBy(cb.desc(cb.count(root)));
+
+        return session.createQuery(cq)
+                .setMaxResults(7)           // ← Top 5
+                .getResultList()
+                .stream()
+                .map(row -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("category", row[0]);   // tên ngành
+                    map.put("count", row[1]);   // số lượng tin
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, Long> countApplicationsByStatus(StatisticPeriod period, Integer value, Integer year) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<Application> root = cq.from(Application.class);
+
+        List<Predicate> predicates = buildPeriodPredicates(cb, root.get("createdAt"), period, value, year);
+
+        cq.multiselect(root.get("status"), cb.count(root))
+                .where(predicates.toArray(new Predicate[0]))
+                .groupBy(root.get("status"));
+
+        Map<String, Long> result = session.createQuery(cq)
+                .getResultList()
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> row[0].toString(),
+                        row -> (Long) row[1]
+                ));
+
+        for (ApplicationStatus status : ApplicationStatus.values()) {
+            result.putIfAbsent(status.name(), 0L);
+        }
+
+        return result;
+    }
+
+    public List<Map<String, Object>> revenueGrouped(StatisticPeriod period, Integer year) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<Payment> root = cq.from(Payment.class);
+
+        int targetYear = (year != null) ? year : LocalDate.now().getYear();
+
+        Expression<Double> yearPart = cb.function("date_part", Double.class,
+                cb.literal("year"), root.get("createdAt"));
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("status"), PaymentStatus.COMPLETED));
+
+        Expression<?> groupExpr = switch (period) {
+            case MONTH -> {
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                yield cb.function("date_part", Double.class,
+                        cb.literal("month"), root.get("createdAt"));
+            }
+            case QUARTER -> {
+                predicates.add(cb.equal(yearPart, (double) targetYear));
+                yield cb.function("date_part", Double.class,
+                        cb.literal("quarter"), root.get("createdAt"));
+            }
+            case YEAR -> {
+                predicates.add(cb.lessThanOrEqualTo(yearPart, (double) targetYear));
+                yield yearPart;
+            }
+        };
+
+        cq.multiselect(groupExpr, cb.sum(root.get("amount")))
+                .where(predicates.toArray(new Predicate[0]))
+                .groupBy(groupExpr)
+                .orderBy(cb.asc(groupExpr));
+
+        return session.createQuery(cq).getResultList()
+                .stream()
+                .map(row -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("period", row[0]);  // tháng / quý / năm
+                    map.put("revenue", row[1]);  // tổng doanh thu
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> topCompaniesByRevenue(StatisticPeriod period, Integer year) {
+        Session session = getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+
+        Root<Payment> paymentRoot = cq.from(Payment.class);
+        Join<Payment, User> userJoin = paymentRoot.join("user", JoinType.INNER);
+
+        Root<EmployerProfile> epRoot = cq.from(EmployerProfile.class);
+        Join<EmployerProfile, Company> companyJoin = epRoot.join("company", JoinType.INNER);
+
+        List<Predicate> predicates = buildPeriodPredicates(cb, paymentRoot.get("createdAt"), period, null, year);
+        predicates.add(cb.equal(paymentRoot.get("status"), PaymentStatus.COMPLETED));
+
+        predicates.add(cb.equal(userJoin.get("id"), epRoot.get("id")));
+
+        cq.multiselect(
+                        companyJoin.get("name"),
+                        cb.sum(paymentRoot.get("amount"))
+                )
+                .where(predicates.toArray(new Predicate[0]))
+                .groupBy(companyJoin.get("name"))
+                .orderBy(cb.desc(cb.sum(paymentRoot.get("amount"))));
+
+        return session.createQuery(cq)
+                .setMaxResults(5)
+                .getResultList()
+                .stream()
+                .map(row -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("companyName", row[0]);
+                    map.put("revenue", row[1]);
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }
 

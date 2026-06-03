@@ -14,11 +14,4 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class PermissionController {
     private final RoleService roleService;
 
-//    // vứt
-//    @GetMapping("/permission")
-//    public String index(Model model){
-//        model.addAttribute("roles",this.roleService.findAll());
-//        System.out.println(this.roleService.findAll());
-//        return "admin/permission";
-//    }
 }

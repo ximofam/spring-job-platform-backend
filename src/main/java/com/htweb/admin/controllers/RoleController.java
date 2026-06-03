@@ -51,7 +51,7 @@ public class RoleController {
 
         roleService.updatePermissions(id, permissionIds);
         redirectAttrs.addFlashAttribute("success", "Đã lưu thay đổi!");
-        return "redirect:/admin/roles/" + id + "/edit";
+        return "redirect:/admin/roles/" + id + "/permission";
     }
 
     // POST /admin/roles/create — tạo mới
